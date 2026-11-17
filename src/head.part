@@ -180,6 +180,13 @@ body{background:#4E7A35}
 .stats{background:rgba(0,0,0,.55);border:2px solid #000;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
 .srow{display:flex;align-items:center;gap:10px;font-size:17px;text-shadow:2px 2px 0 #000}
 .slab{width:150px}.sbar{display:flex;gap:3px;flex:1}.sbar i{width:14px;height:14px;border:2px solid #000}
+.fixtag{background:var(--ok);color:#fff;border:2px solid #000;padding:2px 8px;font-size:14px;margin-left:8px}
+.fixtag.wip{background:var(--better)}
+.relnotes{margin:0;padding-left:22px;font-size:19px;text-shadow:2px 2px 0 #000}
+.relhow{margin:0;font-size:16px;color:#fff;text-shadow:2px 2px 0 #000}
+.relpanel .tile{box-sizing:border-box}
+.tile.mm.newver{background:#B8860B;box-shadow:inset 3px 3px 0 #E2B23D,inset -3px -4px 0 #6E5006}
+.relpanel{background:rgba(0,0,0,.55);border:2px solid #000;padding:12px}
 /* iOS share sheet and Messages stay iOS-looking: they are the iPad's own screens */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20;font-family:-apple-system,system-ui,sans-serif;text-shadow:none}
 .sheet{width:min(560px,100%);background:#F2F2F7;color:#111;border-radius:22px 22px 0 0;padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}

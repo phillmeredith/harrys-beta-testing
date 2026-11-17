@@ -2,7 +2,7 @@ import json, os
 from PIL import Image, ImageDraw
 out='.'; os.makedirs(out, exist_ok=True)
 h=open('src/head.part').read(); mp=open('src/map.part').read()
-js=open('src/designer.js').read()+'const MOD = '+open('src/mod.json').read()+';\n'+open('src/mc.js').read()+open('src/flow.js').read()+open('src/maths.js').read()+open('src/real.js').read()
+js=open('src/designer.js').read()+'const MOD = '+open('src/mod.json').read()+';\n'+open('src/mc.js').read()+open('src/flow.js').read()+open('src/maths.js').read()+open('src/releases.js').read()+open('src/real.js').read()
 pre='''<!doctype html>
 <html lang="en-GB"><head>
 <meta charset="utf-8">
@@ -22,10 +22,10 @@ html=pre+h[:i]+'<style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</
 open(f'{out}/index.html','w').write(html)
 json.dump({"name":"Harry's Beta Testing","short_name":"Beta Testing","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#2B1F16","theme_color":"#2B1F16",
  "icons":[{"src":"icon-180.png","sizes":"180x180","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]},open(f'{out}/manifest.webmanifest','w'),indent=1)
-open(f'{out}/sw.js','w').write('''const C="hbt-v1";
+open(f'{out}/sw.js','w').write('''const C="hbt-v2";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","index.html","manifest.webmanifest","icon-180.png"])));self.skipWaiting();});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim();});
-self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;
+self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET"||/\/releases\/|releases\.json|\.mcaddon$/.test(r.url)||!r.url.startsWith(self.location.origin)&&!/fonts\.(googleapis|gstatic)\.com/.test(r.url))return;
   e.respondWith(fetch(r).then(res=>{const cp=res.clone();caches.open(C).then(c=>c.put(r,cp));return res;}).catch(()=>caches.match(r).then(m=>m||caches.match("index.html"))));});
 ''')
 # icon: grass-topped block with pixel "HBT"

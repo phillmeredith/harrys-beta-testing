@@ -103,6 +103,13 @@ const BROKEN_FOR = {
   yard:["vanished","looks","nothing","wrongthing","sound","crash"], riding:["stuck","wrongthing","looks","sound","crash"],
   shows:["nothing","wrongthing","looks","lost","crash"], other:BROKEN.map(b=>b.id)
 };
+const TAPPED = ["Tapped the horse","Tapped a block or thing","Used what was in my hand","Pressed a Horse Guide button","Got on or off","Jumped","Whistled","Just walking or riding","Don't know"];
+const WORDS = ["Yes, words came up","No words","Don't remember"];
+const WHERE_NEW = ["In the shop","In the Horse Guide","In the yard","Out in the world","I craft it","I start with it","A prize at a show","Somewhere else"];
+const HOLD_TREE = () => [{l:"Nothing", id:"hand:empty", tp:"other"},
+  ...MOD_TREE.filter(n=>["Horse tack and gear","Horse food, treats and potions","Rider clothes, tools and weapons","Coins and the shop","Other mod things"].includes(n.l)),
+  {l:"Something from normal Minecraft", tp:"other", k: fromObj(MC_TREE.Items, "mc:", "other")},
+  {l:"Don't know", id:"hand:unknown", tp:"other", vague:true}];
 const DOING = ["Riding","Leading","Tapping it","Feeding or grooming","In the Horse Guide","Just opened my world","Don't know"];
 const OFTEN = ["Every time","A few times","Just once"];
 
@@ -125,8 +132,8 @@ function shown(node){ // children to show for a node (or the root list), grouped
 const ico = d => `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const IC = { back: ico('<path d="M15 5l-7 7 7 7"/>'), up: ico('<path d="M12 19V5"/><path d="M6 11l6-6 6 6"/>'), x: ico('<path d="M6 6l12 12M18 6L6 18"/>') };
 let S, drawer = false, showSaved = false, saveWarn = false;
-const PART_KEYS = ["thing","like","change","detail","what","doing","often","when","onlyif"];
-function blankPart(){ return {thing:null, like:null, likeMode:null, change:null, detail:null, what:null, doing:null, often:null, when:null, onlyif:null, pk:{path:[],page:0}}; }
+const PART_KEYS = ["thing","like","where","change","detail","what","doing","holding","tapped","words","often","when","onlyif"];
+function blankPart(){ return {thing:null, like:null, likeMode:null, where:null, change:null, detail:null, what:null, doing:null, holding:null, tapped:null, words:null, version:null, often:null, when:null, onlyif:null, pk:{path:[],page:0}}; }
 function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
 const code = (s=S) => "HBT-" + s.id.slice(-4);
 
@@ -172,9 +179,9 @@ reset();
 /* ---------- Steps ---------- */
 function steps(){
   const s = ["kind","thing"];
-  if (S.kind === "broken") s.push("what","doing","often");
+  if (S.kind === "broken"){ s.push("what","doing","holding","tapped","words","often"); if (!installedVersion()) s.push("version"); }
   else {
-    if (S.thing?.isNew) s.push("like");
+    if (S.thing?.isNew) s.push("like","where");
     s.push("change");
     if (S.change && S.change.dt && S.change.dt !== "none") s.push("detail");
     s.push("when","onlyif","more");
@@ -184,7 +191,7 @@ function steps(){
 }
 const cur = () => S.step === "done" ? "done" : steps()[S.step];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ORDER = ["kind","thing","like","change","detail","what","doing","often","when","onlyif","shot"];
+const ORDER = ["kind","thing","like","where","change","detail","what","doing","holding","tapped","words","often","version","when","onlyif","shot"];
 function clearAfter(key){
   ORDER.slice(ORDER.indexOf(key)+1).forEach(k=>{ S[k] = k==="shot" ? false : null; });
   if (key==="kind") S.parts = [];
@@ -194,6 +201,7 @@ function clearAfter(key){
 // Which tree each picker step walks
 function pickerRoot(st){
   if (st==="thing") return {k: ROOT(S.kind==="idea", false)};
+  if (st==="holding") return {k: HOLD_TREE()};
   if (st==="like") return {k: S.likeMode==="mod" ? MOD_TREE : fromObj(MC_TREE,"mc:","other")};
   if (st==="change") return {k: CHANGES};
   if (st==="detail"){
@@ -230,6 +238,7 @@ const QUESTIONS = {
   thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
   like:  () => S.likeMode ? "Which one is it like?" : `Is ${subj()} like something that already exists?`,
   change:() => S.pk.path.length ? "Which one?" : S.kind==="idea" ? `What should ${subj()} be like or do?` : `What should change about ${subj()}?`,
+  holding:() => S.pk.path.length ? "Which one?" : "What was in your hand?",
   detail:() => ({colour:"Which colour?", amount:"How much?", list:"Which one?", thing:"Which thing?"})[S.change.dt]
 };
 
@@ -246,20 +255,21 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => `<button class="tile mm resume" data-resume="${r.id}"><span class="kindtag k-${r.kind}">${esc(KINDS[r.kind].label)}</span> ${esc((r.parts?.[0]||r).thing?.l || "Not finished")} <small>${r.sent?"Sent "+clock(r.sent):clock(r.updated)}</small></button>`;
+    const row = r => `<button class="tile mm resume" data-resume="${r.id}"><span class="kindtag k-${r.kind}">${esc(KINDS[r.kind].label)}</span> ${esc((r.parts?.[0]||r).thing?.l || "Not finished")} ${reportTag(r)}<small>${r.sent?"Sent "+clock(r.sent):clock(r.updated)}</small></button>`;
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="l1">Harry's</div><div class="l2">Beta Testing</div></div>
       <div class="ask">What do you want to report to Daddy?</div>
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
+        ${releaseTile()}${releasePanel()}
         <div class="menu-row"><button class="tile mm half" id="savedbtn" ${all.length?"":"disabled"}>My reports${all.length?` (${all.length})`:""}</button><button class="tile mm half" id="grown">Grown-up view</button></div>
         ${showSaved && all.length ? `<div class="savedlist">${statsHTML(all)}${drafts.length?`<div class="listlabel">Not sent yet</div>${drafts.map(row).join("")}`:""}${sent.length?`<div class="listlabel">Sent to Daddy</div>${sent.map(row).join("")}`:""}</div>`:""}
       </div>
-      <div class="foot"><span>Harry's Equestrian ${VERSION}</span><span>Made for Harry</span></div>
+      <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span>Made for Harry</span></div>
     </div>`;
     wire(); if (drawer) openDrawer(); return;
   }
-  if (["thing","change","detail"].includes(st) || (st==="like" && S.likeMode)){
+  if (["thing","change","detail","holding"].includes(st) || (st==="like" && S.likeMode)){
     q = QUESTIONS[st]();
     if (st==="detail" && S.change.dt==="amount" && !S.amtWords){ ({q, body} = numberScreen()); }
     else if (st==="thing" && S.typing){
@@ -281,6 +291,19 @@ function render(){
     q = S.thing?.vague ? "What happened?" : `What happened to ${S.thing?.l}?`;
     const ok = BROKEN_FOR[S.thing?.tp] || BROKEN_FOR.other;
     body = `<div class="grid">${BROKEN.filter(w=>ok.includes(w.id)).map(w=>tile({v:w.id,label:w.label,sel:S.what===w.id})).join("")}</div>`;
+  } else if (st === "tapped"){
+    q = "What did you do just before it happened?";
+    body = `<div class="grid">${TAPPED.map(l=>tile({v:l,label:l,sel:S.tapped===l})).join("")}</div>`;
+  } else if (st === "words"){
+    q = "Did any words come up on the screen?";
+    body = `<div class="grid big">${WORDS.map(l=>tile({v:l,label:l,sel:S.words===l})).join("")}</div>`;
+  } else if (st === "version"){
+    q = "Which version does your Horse Guide say?";
+    const vs = (REL?.releases||[]).map(r=>r.version).slice(0,6); if (!vs.length) vs.push(VERSION);
+    body = `<p class="hint" style="margin-top:-18px">It's on the front page of the Horse Guide.</p><div class="grid">${vs.map(v=>tile({v:"ver:"+v,label:v,sel:S.version===v})).join("")}${tile({v:"ver:?",label:"Don't know",sel:S.version==="?"})}</div>`;
+  } else if (st === "where"){
+    q = `Where would you find ${subj()}?`;
+    body = `<div class="grid">${WHERE_NEW.map(l=>tile({v:l,label:l,sel:S.where===l})).join("")}</div><button class="go quiet" id="next">Skip</button>`;
   } else if (st === "doing"){
     q = "What were you doing?";
     body = `<div class="grid">${DOING.map(l=>tile({v:l,label:l,sel:S.doing===l})).join("")}</div>`;
@@ -300,8 +323,8 @@ function render(){
     body = `<div class="soFar"><span>So far</span><p>${esc(sentence())}</p></div>
       <div class="grid big2">${tile({v:"more:add",label:"Add another part",sub:"Something else should happen too"})}${tile({v:"more:done",label:"That's everything",sub:"Go to the picture and check",cls:"primary"})}</div>`;
   } else if (st === "extras"){
-    q = "Want to show Daddy a picture?";
-    body = `<p class="hint" style="margin-top:-18px">You can skip this.</p><div class="extras">
+    q = S.words==="Yes, words came up" ? "Can you show Daddy the words?" : "Want to show Daddy a picture?";
+    body = `<p class="hint" style="margin-top:-18px">${S.words==="Yes, words came up"?"A screenshot of the words helps Daddy most. You can skip this.":"You can skip this."}</p><div class="extras">
       <div class="panel"><h2>Add a picture</h2>
         <div class="slot">${S.shot?`<img src="${S.shot}" alt="Harry's picture"><span class="tag">Picture added</span>`:`<span class="empty">No picture yet</span>`}</div>
         <input type="file" accept="image/*" id="pickfile" class="filepick">
@@ -314,7 +337,7 @@ function render(){
     body = `<div class="chips"><span class="kindtag k-${S.kind}">${esc(KINDS[S.kind].label)}</span>${S.parts.length?`<span class="chip">${S.parts.length+1} parts</span>`:""}${S.shot?'<span class="chip">Picture</span>':""}<span class="chip">Report ${code()}</span></div>
       <section class="editor">
         <div class="edhead"><label for="msg" class="row-label" style="margin:0">What you want to tell Daddy</label><span class="status" id="status">${statusText()}</span></div>
-        <p class="hint" style="margin:0">These are your words. Tap them to change or add anything.</p>
+        <p class="hint" style="margin:0">These are your words. Tap them to change or add anything.${S.kind==="broken"&&S.words==="Yes, words came up"&&!S.shot?" If you remember the words on the screen, add them here.":""}</p>
         <textarea id="msg" spellcheck="true" autocapitalize="sentences">${esc(S.text)}</textarea>
         <div class="btns left"><button class="go quiet small" id="save">Save</button><button class="go quiet small" id="undoall" ${S.text===S.base?"disabled":""}>Undo all my changes</button></div>
         <details class="hist" ${S.histOpen?"open":""} id="hist"><summary>My changes (<span id="vcount">${S.versions.length}</span>)</summary><ol id="vlist">${historyHTML()}</ol></details>
@@ -343,8 +366,8 @@ function statusText(){
 /* ---------- Words ---------- */
 function partSentence(p){
   if (!p.change) return "";
-  let s = `${cap(subj(p))}: ${lc(p.change.l)}`;
-  if (p.detail?.num) s = `${cap(subj(p))}: ${p.detail.l}`;
+  let s = `${cap(subj(p))}${p.where?` (${lc(p.where)})`:""}: ${lc(p.change.l)}`;
+  if (p.detail?.num) s = `${cap(subj(p))}${p.where?` (${lc(p.where)})`:""}: ${p.detail.l}`;
   else if (p.detail) s += ` (${lc(p.detail.l)})`;
   if (p.when && p.when!=="All the time") s += `, ${lc(p.when)}`;
   if (p.onlyif) s += `, ${lc(p.onlyif)}`;
@@ -355,6 +378,9 @@ function sentence(){
     const w = brokenObj(); if (!w) return "";
     let s = S.thing?.vague ? `Something went wrong: ${lc(w.label)}` : `${S.thing?.l}: ${lc(w.label)}`;
     if (S.doing && S.doing!=="Don't know") s += ` when I was ${lc(S.doing).replace("in the horse guide","in the Horse Guide")}`;
+    if (S.holding && !S.holding.vague) s += S.holding.id==="hand:empty" ? " with nothing in my hand" : ` holding ${S.holding.l}`;
+    if (S.tapped && S.tapped!=="Don't know") s += `. Just before, I ${lc(S.tapped).replace(/^tapped/,"tapped").replace(/^just walking or riding/,"was just walking or riding").replace(/^got on or off/,"got on or off")}`;
+    if (S.words==="Yes, words came up") s += ". Some words came up on the screen";
     s += "."; if (S.often) s += ` ${S.often}.`; return s;
   }
   const parts = [...S.parts, S].map(partSentence).filter(Boolean);
@@ -367,15 +393,21 @@ function prompt(){
   const when = S.sent || Date.now(), d = new Date(when), L = [];
   L.push(`[Harry's Beta Testing] ${KINDS[S.kind].word} · report ${code()}`);
   L.push(`Harry said: "${(S.text ?? sentence()) || "…"}"`, "");
-  L.push(`Add-on: Harry's Equestrian ${VERSION} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
+  L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
   L.push(`Sent: ${d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}, ${d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`);
   if (S.kind==="broken"){
     const w = brokenObj();
     L.push(`About: ${trailOf(S.thing)}`);
     if (w) L.push(`What happened: ${w.label} (${w.id})`);
     if (S.doing) L.push(`Harry was: ${S.doing}`);
+    if (S.holding) L.push(`In his hand: ${S.holding.id==="hand:empty"?"nothing":trailOf(S.holding)}`);
+    if (S.tapped) L.push(`Just before: ${S.tapped}`);
+    if (S.words) L.push(`Words on screen: ${S.words}${S.words==="Yes, words came up" ? (S.shot?" (see screenshot)":" (no screenshot; check Harry's sentence, otherwise ask)") : ""}`);
     if (S.often) L.push(`How often: ${S.often}`);
-    if (w){ L.push("", "Steps (from Harry's taps):", `1. ${S.doing && S.doing!=="Don't know" ? S.doing : "Playing normally"}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}`, `2. ${S.thing?.l||"It"}: ${w.act}`, `Expected: ${w.exp}.`, `Actual: ${w.act}.`); }
+    if (w){ L.push("", "Steps (from Harry's taps):",
+      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
+      `2. ${S.tapped && S.tapped!=="Don't know" ? S.tapped : "(what he did just before is unknown)"}`,
+      `3. ${S.thing?.l||"It"}: ${w.act}`, `Expected: ${w.exp}.`, `Actual: ${w.act}.`); }
   } else {
     [...S.parts, S].forEach((p,i)=>{
       if (!p.thing) return;
@@ -388,6 +420,7 @@ function prompt(){
       if (p.onlyif) L.push(`  only if: ${p.onlyif}`);
     });
   }
+  const bn = builderNotes(); if (bn.length) L.push("", "For the builder:", ...bn.map(x=>"- "+x));
   L.push(S.shot ? `Screenshot: 1 attached to this message (report ${code()}). If it's missing, ask Phill for it.` : "Screenshot: none", "");
   if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
   else if (S.kind==="better") L.push("Please suggest how to make this change (tap-only, no fail states), say what it would take, and add it to the feature plan.");
@@ -400,7 +433,7 @@ function advance(){ S.step++; S.pk={path:[],page:0}; persist(); render(); }
 function pick(v){
   const st = cur();
   if (st==="kind"){ if(S.kind!==v) clearAfter("kind"); S.kind=v; return advance(); }
-  if (["thing","change","detail","like"].includes(st) && (st!=="like" || S.likeMode)){
+  if (["thing","change","detail","holding","like"].includes(st) && (st!=="like" || S.likeMode)){
     if (v==="__more"){ S.pk.page=(S.pk.page||0)+1; return render(); }
     const {list, trail} = pickerList(st), n = list[+v.slice(1)];
     if (n.k){ S.pk.path.push(+v.slice(1)); S.pk.page=0; return render(); }
@@ -417,6 +450,10 @@ function pick(v){
   }
   if (st==="what"){ if(S.what!==v) clearAfter("what"); S.what=v; return advance(); }
   if (st==="doing"){ if(S.doing!==v) clearAfter("doing"); S.doing=v; return advance(); }
+  if (st==="tapped"){ if(S.tapped!==v) clearAfter("tapped"); S.tapped=v; return advance(); }
+  if (st==="words"){ if(S.words!==v) clearAfter("words"); S.words=v; return advance(); }
+  if (st==="version"){ S.version=v.slice(4); return advance(); }
+  if (st==="where"){ if(S.where!==v) clearAfter("where"); S.where=v; return advance(); }
   if (st==="often"){ S.often=v; return advance(); }
   if (st==="when"){ if(S.when!==v) clearAfter("when"); S.when=v; return advance(); }
   if (st==="onlyif"){ S.onlyif=v; return advance(); }
@@ -431,7 +468,7 @@ function goBack(){
   if (S.typing){ S.typing=false; return render(); }
   if (st==="detail" && S.amtWords && !S.pk.path.length && !S.pk.page){ S.amtWords=false; return render(); }
   if (st==="detail"){ S.num=null; S.numLog=null; }
-  if (["thing","change","detail","like"].includes(st)){
+  if (["thing","change","detail","holding","like"].includes(st)){
     if (S.pk.page){ S.pk.page--; return render(); }
     if (S.pk.path.length){ S.pk.path.pop(); return render(); }
     if (st==="like" && S.likeMode){ S.likeMode=null; return render(); }
@@ -471,6 +508,9 @@ function wire(){
   $("puzzle") && ($("puzzle").onclick=()=>{ S.puz=makePuzzle(); render(); });
   $("puzno") && ($("puzno").onclick=()=>{ S.puz=null; render(); });
   document.querySelectorAll("[data-ans]").forEach(b=>b.onclick=()=>{ if(S.puz && S.puz.picked===null){ S.puz.picked=+b.dataset.ans; render(); } });
+  $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
+  $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
+  $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
   if ($("msg")) wireEditor();
 }
 
