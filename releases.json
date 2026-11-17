@@ -1,0 +1,16 @@
+{
+  "latest": "4.0.6",
+  "releases": [
+    {
+      "version": "4.0.6",
+      "date": "2026-11-14",
+      "file": "releases/HarrysEquestrian_v4.0.6.mcaddon",
+      "notes_for_harry": [
+        "A flying checklist in the bottom-left corner shows what your horse still needs to fly",
+        "Each piece gets a tick when it goes on",
+        "The Horse Guide's Flying page explains the order"
+      ],
+      "fixed": []
+    }
+  ]
+}
