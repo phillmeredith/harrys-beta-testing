@@ -76,7 +76,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .go[disabled]{opacity:.45;cursor:default;outline:none}
 .go.quiet{background:#4E4E4E;box-shadow:inset 3px 3px 0 #777,inset -3px -4px 0 #2A2A2A}
 .go.small{font-size:20px;padding:10px 20px;min-width:0}
-.go#send,.go#namedone,.go#again,.go#next{background:var(--ok);box-shadow:inset 3px 3px 0 #6FC25A,inset -3px -4px 0 #24561A}
+.go#send,.go#later,.go#namedone,.go#again,.go#next{background:var(--ok);box-shadow:inset 3px 3px 0 #6FC25A,inset -3px -4px 0 #24561A}
 
 /* inventory panel */
 .panel,.story,.editor,.namebox{background:var(--panel);color:var(--panel-ink);border:3px solid var(--line);border-radius:0;text-shadow:none;
@@ -137,6 +137,7 @@ body{background:#4E7A35}
 .logo .l2{font-size:clamp(40px,8vw,96px);text-transform:uppercase}
 .splash{position:absolute;right:-6%;bottom:-6px;color:#FFFF00;font:600 clamp(18px,2.4vw,28px) var(--pix);text-shadow:3px 3px 0 #3F3F00;transform:rotate(-17deg);white-space:nowrap;animation:splash .5s ease-in-out infinite alternate;transform-origin:center}
 @keyframes splash{from{transform:rotate(-17deg) scale(.94)}to{transform:rotate(-17deg) scale(1.06)}}
+.today{max-width:520px;text-align:center;font-size:19px;line-height:1.35;color:#fff;background:rgba(0,0,0,.55);border:2px solid #000;padding:12px 16px;text-shadow:2px 2px 0 #000}
 .ask{font-size:clamp(20px,2.4vw,26px);color:#fff;text-shadow:2px 2px 0 #000;text-align:center;margin-top:auto}
 .menu{width:min(520px,100%);display:flex;flex-direction:column;gap:12px;margin-top:auto}
 .tile.mm{min-height:62px;padding:10px 16px;font-size:26px;width:100%;flex-direction:row}
@@ -478,6 +479,7 @@ const code = (s=S) => "HBT-" + s.id.slice(-4);
 const STORE = "fixit_reports_v1";
 function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORE)||"{}"); }catch(e){ return {}; } }
 function saveAll(o){ try{ localStorage.setItem(STORE, JSON.stringify(o)); return true; }catch(e){ return false; } }
+function sentToday(){ const d=new Date().toDateString(); return Object.values(loadAll()).some(r=>r.sent && r.id!==S.id && new Date(r.sent).toDateString()===d) || (S.sent && new Date(S.sent).toDateString()===d && false); }
 function persist(){
   if(!S.kind) return true;
   const all=loadAll(); all[S.id]={...S, typing:false, puz:null, updated:Date.now()};
@@ -597,6 +599,7 @@ function render(){
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="l1">Harry's</div><div class="l2">Beta Testing</div></div>
       <div class="ask">What do you want to report to Daddy?</div>
+      ${sentToday() ? `<div class="today">You've sent today's report to Daddy. Claude works on one each day, so come back tomorrow to send the next one. You can still make one now and it will wait for tomorrow.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${releaseTile()}${releasePanel()}
@@ -681,7 +684,7 @@ function render(){
         <details class="hist" ${S.histOpen?"open":""} id="hist"><summary>My changes (<span id="vcount">${S.versions.length}</span>)</summary><ol id="vlist">${historyHTML()}</ol></details>
       </section>
       ${S.kind==="broken"?`<div class="laura"><span>Were you playing with Laura?</span><div class="btns"><button class="tile mm yn ${S.laura?"sel":""}" id="laurayes">Yes</button><button class="tile mm yn ${S.laura?"":"sel"}" id="laurano">No</button></div></div>`:""}
-      <div class="btns"><button class="go quiet" id="fix">Change my taps</button><button class="go" id="send">Send to Daddy</button></div>`;
+      <div class="btns"><button class="go quiet" id="fix">Change my taps</button>${sentToday() && !S.sent ? `<button class="go" id="later">Save it for tomorrow</button></div><p class="hint" style="text-align:center;margin:0">You've already sent one today. This one will be in "Not sent yet" for tomorrow.</p>` : `<button class="go" id="send">Send to Daddy</button></div>`}`;
   } else if (st === "done"){
     app.innerHTML = head + `<div class="done"><div class="toast"><div class="ic">✓</div><div><b>Report sent!</b><span>Thank you, Harry</span></div></div>
       <p>Daddy has your message. Claude will start fixing it.</p>
@@ -849,6 +852,7 @@ function wire(){
   $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
+  $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved=true; render(); });
   if ($("msg")) wireEditor();
 }
 

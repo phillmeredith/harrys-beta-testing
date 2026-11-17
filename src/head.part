@@ -63,7 +63,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .go[disabled]{opacity:.45;cursor:default;outline:none}
 .go.quiet{background:#4E4E4E;box-shadow:inset 3px 3px 0 #777,inset -3px -4px 0 #2A2A2A}
 .go.small{font-size:20px;padding:10px 20px;min-width:0}
-.go#send,.go#namedone,.go#again,.go#next{background:var(--ok);box-shadow:inset 3px 3px 0 #6FC25A,inset -3px -4px 0 #24561A}
+.go#send,.go#later,.go#namedone,.go#again,.go#next{background:var(--ok);box-shadow:inset 3px 3px 0 #6FC25A,inset -3px -4px 0 #24561A}
 
 /* inventory panel */
 .panel,.story,.editor,.namebox{background:var(--panel);color:var(--panel-ink);border:3px solid var(--line);border-radius:0;text-shadow:none;
@@ -124,6 +124,7 @@ body{background:#4E7A35}
 .logo .l2{font-size:clamp(40px,8vw,96px);text-transform:uppercase}
 .splash{position:absolute;right:-6%;bottom:-6px;color:#FFFF00;font:600 clamp(18px,2.4vw,28px) var(--pix);text-shadow:3px 3px 0 #3F3F00;transform:rotate(-17deg);white-space:nowrap;animation:splash .5s ease-in-out infinite alternate;transform-origin:center}
 @keyframes splash{from{transform:rotate(-17deg) scale(.94)}to{transform:rotate(-17deg) scale(1.06)}}
+.today{max-width:520px;text-align:center;font-size:19px;line-height:1.35;color:#fff;background:rgba(0,0,0,.55);border:2px solid #000;padding:12px 16px;text-shadow:2px 2px 0 #000}
 .ask{font-size:clamp(20px,2.4vw,26px);color:#fff;text-shadow:2px 2px 0 #000;text-align:center;margin-top:auto}
 .menu{width:min(520px,100%);display:flex;flex-direction:column;gap:12px;margin-top:auto}
 .tile.mm{min-height:62px;padding:10px 16px;font-size:26px;width:100%;flex-direction:row}

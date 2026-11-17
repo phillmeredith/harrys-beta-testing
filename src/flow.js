@@ -140,6 +140,7 @@ const code = (s=S) => "HBT-" + s.id.slice(-4);
 const STORE = "fixit_reports_v1";
 function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORE)||"{}"); }catch(e){ return {}; } }
 function saveAll(o){ try{ localStorage.setItem(STORE, JSON.stringify(o)); return true; }catch(e){ return false; } }
+function sentToday(){ const d=new Date().toDateString(); return Object.values(loadAll()).some(r=>r.sent && r.id!==S.id && new Date(r.sent).toDateString()===d) || (S.sent && new Date(S.sent).toDateString()===d && false); }
 function persist(){
   if(!S.kind) return true;
   const all=loadAll(); all[S.id]={...S, typing:false, puz:null, updated:Date.now()};
@@ -259,6 +260,7 @@ function render(){
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="l1">Harry's</div><div class="l2">Beta Testing</div></div>
       <div class="ask">What do you want to report to Daddy?</div>
+      ${sentToday() ? `<div class="today">You've sent today's report to Daddy. Claude works on one each day, so come back tomorrow to send the next one. You can still make one now and it will wait for tomorrow.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${releaseTile()}${releasePanel()}
@@ -343,7 +345,7 @@ function render(){
         <details class="hist" ${S.histOpen?"open":""} id="hist"><summary>My changes (<span id="vcount">${S.versions.length}</span>)</summary><ol id="vlist">${historyHTML()}</ol></details>
       </section>
       ${S.kind==="broken"?`<div class="laura"><span>Were you playing with Laura?</span><div class="btns"><button class="tile mm yn ${S.laura?"sel":""}" id="laurayes">Yes</button><button class="tile mm yn ${S.laura?"":"sel"}" id="laurano">No</button></div></div>`:""}
-      <div class="btns"><button class="go quiet" id="fix">Change my taps</button><button class="go" id="send">Send to Daddy</button></div>`;
+      <div class="btns"><button class="go quiet" id="fix">Change my taps</button>${sentToday() && !S.sent ? `<button class="go" id="later">Save it for tomorrow</button></div><p class="hint" style="text-align:center;margin:0">You've already sent one today. This one will be in "Not sent yet" for tomorrow.</p>` : `<button class="go" id="send">Send to Daddy</button></div>`}`;
   } else if (st === "done"){
     app.innerHTML = head + `<div class="done"><div class="toast"><div class="ic">✓</div><div><b>Report sent!</b><span>Thank you, Harry</span></div></div>
       <p>Daddy has your message. Claude will start fixing it.</p>
@@ -511,6 +513,7 @@ function wire(){
   $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
+  $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved=true; render(); });
   if ($("msg")) wireEditor();
 }
 
