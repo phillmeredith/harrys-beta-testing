@@ -249,23 +249,22 @@ function render(){
     <button class="round" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}</button>
     ${S.parts.length && !["kind","done"].includes(st) ? `<span class="partno">Part ${S.parts.length+1}</span>`:""}
     <div class="spacer"></div>
-    <button class="grown" id="grown">Grown-up view</button>
   </div>`;
   let body = "", q = "";
   document.body.classList.toggle("home", st==="kind");
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => `<button class="tile mm resume" data-resume="${r.id}"><span class="kindtag k-${r.kind}">${esc(KINDS[r.kind].label)}</span> ${esc((r.parts?.[0]||r).thing?.l || "Not finished")} ${reportTag(r)}<small>${r.sent?"Sent "+clock(r.sent):clock(r.updated)}</small></button>`;
+    const row = r => { const st = reportState(r); return `<button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="l1">Harry's</div><div class="l2">Beta Testing</div></div>
       <div class="ask">What do you want to report to Daddy?</div>
-      ${sentToday() ? `<div class="today">You've sent today's report to Daddy. Claude works on one each day, so come back tomorrow to send the next one. You can still make one now and it will wait for tomorrow.</div>` : ""}
+      ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${releaseTile()}${releasePanel()}
-        <div class="menu-row"><button class="tile mm half" id="savedbtn" ${all.length?"":"disabled"}>My reports${all.length?` (${all.length})`:""}</button><button class="tile mm half" id="grown">Grown-up view</button></div>
-        ${showSaved && all.length ? `<div class="savedlist">${statsHTML(all)}${drafts.length?`<div class="listlabel">Not sent yet</div>${drafts.map(row).join("")}`:""}${sent.length?`<div class="listlabel">Sent to Daddy</div>${sent.map(row).join("")}`:""}</div>`:""}
+        ${all.length?`<button class="tile mm" id="savedbtn">My reports (${all.length})</button>`:""}
+        ${showSaved && all.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">My reports</div>${[...drafts,...sent].map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span>Made for Harry</span></div>
     </div>`;
@@ -514,6 +513,9 @@ function wire(){
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved=true; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else showRelease=false; render(); });
+  document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
+    el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
 }
 

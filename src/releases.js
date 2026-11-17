@@ -17,17 +17,27 @@ function loadReleases(){
   if (!/^https?:/.test(location.protocol)) return;
   fetch("releases.json", {cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if (j && Array.isArray(j.releases)){ REL=j; if (S.step===0 || S.step==="done") render(); } }).catch(()=>{});
 }
+function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
-  const r = newRelease(); if (!r) return "";
-  return `<button class="tile mm primary newver" id="newver">New version ${esc(r.version)} is ready!</button>`;
+  const r = latestRelease(); if (!r) return "";
+  return newRelease()
+    ? `<button class="tile mm primary newver" id="newver">New version ${esc(r.version)} is ready!</button>`
+    : `<button class="tile mm latestver" id="newver">Latest version ${esc(r.version)}</button>`;
 }
 function releasePanel(){
-  const r = newRelease(); if (!r || !showRelease) return "";
+  const r = latestRelease(); if (!r || !showRelease) return "";
+  const isNew = !!newRelease();
   const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
-  return `<div class="savedlist relpanel"><div class="listlabel">What's new in ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
-    <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">Download it</a>
+  return `<div class="homeover" data-close="rel"><div class="inner savedlist relpanel"><div class="listlabel">${isNew?"What's new in":"You've got"} ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
+    <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download it":"Download it again"}</a>
     <p class="relhow">When it has downloaded, tap it and choose Minecraft. Your world and horses stay safe.</p>
-    <button class="tile mm half" id="gotver">I've got it now</button></div>`;
+    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:""}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
+}
+function reportState(r){
+  if (!r.sent) return ["draft","Not sent yet. Tap to finish"];
+  if (fixedIn(code(r))) return ["fixed",`Fixed in ${fixedIn(code(r))}!`];
+  const st = statusOf(code(r)); if (st) return ["wip", st];
+  return ["sent","Sent to Daddy"];
 }
 function reportTag(r){
   if (!r.sent) return "";

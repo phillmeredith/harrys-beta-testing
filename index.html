@@ -199,8 +199,36 @@ body{background:#4E7A35}
 .relnotes{margin:0;padding-left:22px;font-size:19px;text-shadow:2px 2px 0 #000}
 .relhow{margin:0;font-size:16px;color:#fff;text-shadow:2px 2px 0 #000}
 .relpanel .tile{box-sizing:border-box}
+.tile.mm.latestver{font-size:20px;min-height:52px}
 .tile.mm.newver{background:#B8860B;box-shadow:inset 3px 3px 0 #E2B23D,inset -3px -4px 0 #6E5006}
 .relpanel{background:rgba(0,0,0,.55);border:2px solid #000;padding:12px}
+/* home screen: exactly one screen, never scrolls; lists open as overlays */
+html:has(body.home),body.home{height:100%;overflow:hidden;overscroll-behavior:none}
+body.home{padding-top:0!important}
+body.home .app{height:100dvh;min-height:0;box-sizing:border-box;overflow:hidden;padding-block:max(10px,env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-bottom,0px));gap:0}
+body.home .title-screen{height:100%;min-height:0;padding-top:0;gap:clamp(8px,2dvh,22px)}
+body.home .logo{margin-top:clamp(6px,7dvh,110px)}
+body.home .foot{padding-top:0}
+.homeover{position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
+.homeover .inner{width:min(560px,100%);max-height:84dvh;overflow:auto;box-sizing:border-box;background:#2B2B2B;border:3px solid #000;padding:14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.tile.mm.closeover{background:#4E4E4E;box-shadow:inset 3px 3px 0 #777,inset -3px -4px 0 #2A2A2A;flex:none}
+body.home .logo .l1{font-size:min(4.5vw,6dvh,52px)}
+body.home .logo .l2{font-size:min(8vw,11dvh,96px)}
+body.home .tile.mm{min-height:clamp(44px,7.4dvh,62px);padding-block:6px}
+body.home .menu{gap:clamp(6px,1.4dvh,12px)}
+body.home .ask{font-size:min(2.4vw,3.2dvh,26px)}
+body.home .today{font-size:min(17px,2.4dvh);padding:6px 12px}
+body.home .foot{font-size:min(17px,2.2dvh)}
+@media (max-height:700px){ body.home .logo .l2{font-size:clamp(34px,6vw,72px)} body.home .tile.mm{min-height:50px;font-size:22px} body.home .today{font-size:16px;padding:8px 12px} }
+.rcard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-family:var(--pix);color:#fff;background:var(--stone);border:3px solid #000;box-shadow:inset 3px 3px 0 var(--stone-hi),inset -3px -4px 0 var(--stone-lo);padding:10px 12px;cursor:pointer;text-shadow:2px 2px 0 var(--shade)}
+.rkind{flex:none;width:18px;align-self:stretch;border:2px solid #000}
+.rwhat{flex:1;min-width:0;display:flex;flex-direction:column}
+.rwhat b{font-size:21px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rwhat small{font-size:15px;color:#E0E0E0}
+.rstate{flex:none;font-size:16px;padding:6px 10px;border:2px solid #000;max-width:45%;text-align:center}
+.st-draft{background:#4E4E4E}.st-sent{background:var(--idea)}.st-wip{background:var(--better)}.st-fixed{background:var(--ok)}
+.q h1,.logo{-webkit-touch-callout:none}
+@media (max-height:480px){ body.home .ask,body.home .logo .l1{display:none} body.home .tile.mm{min-height:38px;font-size:18px} }
 /* iOS share sheet and Messages stay iOS-looking: they are the iPad's own screens */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20;font-family:-apple-system,system-ui,sans-serif;text-shadow:none}
 .sheet{width:min(560px,100%);background:#F2F2F7;color:#111;border-radius:22px 22px 0 0;padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
@@ -588,23 +616,22 @@ function render(){
     <button class="round" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}</button>
     ${S.parts.length && !["kind","done"].includes(st) ? `<span class="partno">Part ${S.parts.length+1}</span>`:""}
     <div class="spacer"></div>
-    <button class="grown" id="grown">Grown-up view</button>
   </div>`;
   let body = "", q = "";
   document.body.classList.toggle("home", st==="kind");
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => `<button class="tile mm resume" data-resume="${r.id}"><span class="kindtag k-${r.kind}">${esc(KINDS[r.kind].label)}</span> ${esc((r.parts?.[0]||r).thing?.l || "Not finished")} ${reportTag(r)}<small>${r.sent?"Sent "+clock(r.sent):clock(r.updated)}</small></button>`;
+    const row = r => { const st = reportState(r); return `<button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="l1">Harry's</div><div class="l2">Beta Testing</div></div>
       <div class="ask">What do you want to report to Daddy?</div>
-      ${sentToday() ? `<div class="today">You've sent today's report to Daddy. Claude works on one each day, so come back tomorrow to send the next one. You can still make one now and it will wait for tomorrow.</div>` : ""}
+      ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${releaseTile()}${releasePanel()}
-        <div class="menu-row"><button class="tile mm half" id="savedbtn" ${all.length?"":"disabled"}>My reports${all.length?` (${all.length})`:""}</button><button class="tile mm half" id="grown">Grown-up view</button></div>
-        ${showSaved && all.length ? `<div class="savedlist">${statsHTML(all)}${drafts.length?`<div class="listlabel">Not sent yet</div>${drafts.map(row).join("")}`:""}${sent.length?`<div class="listlabel">Sent to Daddy</div>${sent.map(row).join("")}`:""}</div>`:""}
+        ${all.length?`<button class="tile mm" id="savedbtn">My reports (${all.length})</button>`:""}
+        ${showSaved && all.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">My reports</div>${[...drafts,...sent].map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span>Made for Harry</span></div>
     </div>`;
@@ -853,6 +880,9 @@ function wire(){
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved=true; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else showRelease=false; render(); });
+  document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
+    el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
 }
 
@@ -1038,17 +1068,27 @@ function loadReleases(){
   if (!/^https?:/.test(location.protocol)) return;
   fetch("releases.json", {cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if (j && Array.isArray(j.releases)){ REL=j; if (S.step===0 || S.step==="done") render(); } }).catch(()=>{});
 }
+function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
-  const r = newRelease(); if (!r) return "";
-  return `<button class="tile mm primary newver" id="newver">New version ${esc(r.version)} is ready!</button>`;
+  const r = latestRelease(); if (!r) return "";
+  return newRelease()
+    ? `<button class="tile mm primary newver" id="newver">New version ${esc(r.version)} is ready!</button>`
+    : `<button class="tile mm latestver" id="newver">Latest version ${esc(r.version)}</button>`;
 }
 function releasePanel(){
-  const r = newRelease(); if (!r || !showRelease) return "";
+  const r = latestRelease(); if (!r || !showRelease) return "";
+  const isNew = !!newRelease();
   const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
-  return `<div class="savedlist relpanel"><div class="listlabel">What's new in ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
-    <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">Download it</a>
+  return `<div class="homeover" data-close="rel"><div class="inner savedlist relpanel"><div class="listlabel">${isNew?"What's new in":"You've got"} ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
+    <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download it":"Download it again"}</a>
     <p class="relhow">When it has downloaded, tap it and choose Minecraft. Your world and horses stay safe.</p>
-    <button class="tile mm half" id="gotver">I've got it now</button></div>`;
+    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:""}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
+}
+function reportState(r){
+  if (!r.sent) return ["draft","Not sent yet. Tap to finish"];
+  if (fixedIn(code(r))) return ["fixed",`Fixed in ${fixedIn(code(r))}!`];
+  const st = statusOf(code(r)); if (st) return ["wip", st];
+  return ["sent","Sent to Daddy"];
 }
 function reportTag(r){
   if (!r.sent) return "";
