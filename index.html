@@ -1398,7 +1398,7 @@ function releasePanel(){
   const isNew = !!newRelease();
   const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
   return `<div class="homeover" data-close="rel"><div class="inner savedlist relpanel"><div class="listlabel">${isNew?"What's new in":"You've got"} ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
-    <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download it":"Download it again"}</a>
+    <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download":"Download again"}</a>
     <p class="relhow">When it has downloaded, tap it and choose Minecraft. Your world and horses stay safe.</p>
     ${isNew?"":(fbAllowedVer(r.version)?`<button class="tile mm fbbtn" data-fb="ver:${esc(r.version)}">Something not right in this version?</button>`:"")}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
 }
