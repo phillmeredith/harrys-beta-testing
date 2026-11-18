@@ -444,6 +444,167 @@
         "Lots of new art: blocks, racks, rider poses, coat pictures, paintings of your horses and mood bubbles"
       ],
       "fixed": []
+    },
+    {
+      "version": "2.0.5",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Horses sometimes refuse a jump, rear or buck, like real horses",
+        "The jump button is the only way to earn jump points",
+        "Take all the tack off in one tap"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "2.0.4",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Horses move their legs and heads when they walk, trot and canter"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "2.0.3",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Fixes to how horses move"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "2.0.2",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Poo stays where it lands",
+        "Horse animations fixed"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "2.0.1",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "If a horse gets stuck in a wall, it gets rescued"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Shows: clear round, bending poles and barrel racing",
+        "Win rosettes for the Hall of Fame",
+        "Marked hacks and trips in the horsebox to the beach and the forest"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.10.0",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Yard day: a Jobs Board, turn out and Goodnight Horses",
+        "Fran the Farrier comes to visit",
+        "The Horse Book with 52 horse cards"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.9.0",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "My horses: every horse has its own personality and a passport",
+        "Calm mode"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.8.2",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.8.1",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.8.0",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "The Horse Designer: make your own horse from 23 breeds"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.7.3",
+      "date": "2026-11-05",
+      "file": null,
+      "notes_for_harry": [
+        "Harry's Yard: the stables, school and arenas, with all 17 horses"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.7.2",
+      "date": "2026-11-05",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.7.1",
+      "date": "2026-11-05",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.7",
+      "date": "2026-11-05",
+      "file": null,
+      "notes_for_harry": [
+        "Harry's Yard, built like the real riding centre"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.6.1",
+      "date": "2026-11-05",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-11-05",
+      "file": null,
+      "notes_for_harry": [
+        "The first version: horses, coats and tack"
+      ],
+      "fixed": []
     }
   ]
 }
