@@ -38,7 +38,7 @@ function prevPanel(){
     const tags = (i===0?`<span class="vtag2">Latest</span>`:"") + (r.version===iv?`<span class="vtag2 have">You've got this</span>`:"");
     return `<div class="relcard"><div class="relhead"><b>${esc(r.version)}</b><span>${esc(relDate(r.date))}</span>${tags}</div>
       ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fx?`<ul class="relfixes">${fx}</ul>`:""}
-      ${r.file?`<a class="tile mm relget" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
+      ${r.file?`<a class="tile mm relget" data-ver="${esc(r.version)}" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
   };
   const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
@@ -57,7 +57,7 @@ function releasePanel(){
   return `<div class="homeover" data-close="rel"><div class="inner savedlist relpanel"><div class="listlabel">${isNew?"What's new in":"You've got"} ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
     <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download it":"Download it again"}</a>
     <p class="relhow">When it has downloaded, tap it and choose Minecraft. Your world and horses stay safe.</p>
-    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:(fbAllowedVer(r.version)?`<button class="tile mm fbbtn" data-fb="ver:${esc(r.version)}">Something not right in this version?</button>`:"")}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
+    ${isNew?"":(fbAllowedVer(r.version)?`<button class="tile mm fbbtn" data-fb="ver:${esc(r.version)}">Something not right in this version?</button>`:"")}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
 }
 function reportState(r){
   if (!r.sent) return ["draft","Not sent yet. Tap to finish"];

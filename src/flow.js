@@ -519,7 +519,7 @@ function wire(){
   $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
   $("prevver") && ($("prevver").onclick=()=>{ showPrev=true; render(); });
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
-  $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
+  document.querySelectorAll(".relget[data-ver]").forEach(a=>a.addEventListener("click",()=>{ const v=a.dataset.ver; setTimeout(()=>{ setInstalled(v); render(); }, 1500); }));
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
   document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else if(el.dataset.close==="track") closeTrack(); else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
