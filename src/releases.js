@@ -31,10 +31,11 @@ function releasePanel(){
   return `<div class="homeover" data-close="rel"><div class="inner savedlist relpanel"><div class="listlabel">${isNew?"What's new in":"You've got"} ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
     <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download it":"Download it again"}</a>
     <p class="relhow">When it has downloaded, tap it and choose Minecraft. Your world and horses stay safe.</p>
-    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:""}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
+    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:(fbAllowedVer(r.version)?`<button class="tile mm fbbtn" data-fb="ver:${esc(r.version)}">Something not right in this version?</button>`:"")}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
 }
 function reportState(r){
   if (!r.sent) return ["draft","Not sent yet. Tap to finish"];
+  if (fixedIn(code(r)) && (r.followups||[]).some(f=>f.release===fixedIn(code(r)))) return ["wip","Daddy's looking again"];
   if (fixedIn(code(r))) return ["fixed",`Fixed in ${fixedIn(code(r))}!`];
   const st = statusOf(code(r)); if (st) return ["wip", st];
   return ["sent","Sent to Daddy"];
@@ -70,3 +71,68 @@ function builderNotes(){
   return N;
 }
 loadReleases();
+
+/* ---------- "Not quite right?": feedback on a release, sent as a follow-up to the original request ----------
+   Follow-ups do not count towards the one-report-a-day limit (they finish work already chosen),
+   but each request (or version) can get one follow-up per release. */
+const FB_CHOICES = ["It still happens","It only half works","It works, but not how I wanted","Now something else is broken","Something else"];
+const FB_VER = "hbt_fb_versions";
+var fbFor = null, fbPick = null, fbNote = "", fbState = null; // fbState: null | "sending" | "sent" | "failed"
+function fbVersions(){ try { return JSON.parse(localStorage.getItem(FB_VER)||"[]"); } catch(e){ return []; } }
+function fbAllowed(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.followups||[]).some(f=>f.release===v); }
+function fbAllowedVer(v){ return !fbVersions().includes(v); }
+function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; }
+function closeFeedback(){ fbFor = null; fbPick = null; fbNote = ""; fbState = null; }
+function fbPanel(){
+  if (!fbFor) return "";
+  const r = fbFor.startsWith("ver:") ? null : loadAll()[fbFor], ver = r ? fixedIn(code(r)) : fbFor.slice(4);
+  if (fbState === "sent") return `<div class="homeover" data-close="fb"><div class="inner savedlist"><div class="listlabel">Sent to Daddy</div>
+    <p class="relhow" style="font-size:19px">Thanks Harry. Daddy will look at this first, before anything new.</p><button class="tile mm closeover" data-close="fb">Close</button></div></div>`;
+  return `<div class="homeover" data-close="fb"><div class="inner savedlist"><div class="listlabel">${r?`What's not right with ${esc(fbTitle(r))}?`:`What's not right in ${esc(ver)}?`}</div>
+    ${FB_CHOICES.map((c,i)=>`<button class="tile mm${fbPick===i?" primary":""}" data-fbc="${i}">${esc(c)}</button>`).join("")}
+    ${fbPick!==null?`<textarea id="fbmsg" class="fbmsg" rows="2" placeholder="Tell Daddy more. You can skip this.">${esc(fbNote)}</textarea>
+    ${fbState==="failed"?`<p class="relhow">It couldn't reach Daddy just now. Try again in a bit.</p>`:""}
+    <button class="tile mm primary" id="fbsend"${fbState==="sending"?" disabled":""}>${fbState==="sending"?"Sending…":"Send to Daddy"}</button>`:""}
+    <button class="tile mm closeover" data-close="fb">Close</button></div></div>`;
+}
+function wireFeedback(){
+  document.querySelectorAll("[data-fb]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); closeFeedback(); fbFor=b.dataset.fb; render(); });
+  document.querySelectorAll("[data-fbc]").forEach(b=>b.onclick=()=>{ fbPick=+b.dataset.fbc; render(); });
+  const m=document.getElementById("fbmsg"); if (m) m.oninput=()=>{ fbNote=m.value; };
+  const s=document.getElementById("fbsend"); if (s) s.onclick=sendFollowup;
+}
+function followupText(r, ver, fcode){
+  const choice = FB_CHOICES[fbPick], note = fbNote.trim();
+  const L = [`[Harry's Beta Testing] FOLLOW-UP · ${r?`report ${fcode}`:`version ${ver}`} · release ${ver}`, ""];
+  if (r){
+    L.push(`This is a follow-up to report ${fcode}, which releases.json marks as fixed in ${ver}. Harry says it didn't work the way he hoped.`);
+    L.push(`Original request: ${KINDS[r.kind]?.word||r.kind} about ${fbTitle(r)}`, `Original words: ${r.text||"(none)"}`);
+  } else L.push(`Harry says something in release ${ver} didn't work the way he hoped. It isn't tied to one of his requests.`);
+  L.push(`What's not right: ${choice}`, `Harry's words: ${note||"(none)"}`);
+  L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro`);
+  L.push("", "For the builder:",
+    r ? `- Treat as a follow-up, not a new report: find the original email by "${fcode}", reopen it, and do it before new reports. It does not use Harry's daily report.`
+      : `- Treat as a follow-up on release ${ver}: check every change in that release's notes, and do it before new reports. It does not use Harry's daily report.`,
+    choice==="Something else" && !note ? "- Harry didn't say what: ask Phill." : "",
+    choice==="Now something else is broken" ? "- Something else broke after this release: check for a regression in the files that release changed." : "",
+    `- Done when: ${r?`the original request works on the version Harry has`:`the release works as its notes say`}, and the reply says what changed.`);
+  return L.filter(x=>x!=="").join("\n");
+}
+async function sendFollowup(){
+  const r = fbFor.startsWith("ver:") ? null : loadAll()[fbFor], ver = r ? fixedIn(code(r)) : fbFor.slice(4);
+  const fcode = r ? code(r) : "HBT-V" + String(Date.now()).slice(-3);
+  const m=document.getElementById("fbmsg"); if (m) fbNote=m.value;
+  const text = followupText(r, ver, fcode);
+  fbState = "sending"; render();
+  let ok = false;
+  try {
+    const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({key:SEND_KEY, code:fcode, kind:r?.kind||"broken", said:`Follow-up on ${ver}: ${FB_CHOICES[fbPick]}`, text, shot:null})});
+    ok = !!(await res.json()).ok;
+  } catch(e){}
+  if (!ok && navigator.share){ try { await navigator.share({text}); ok = true; } catch(e){} }
+  if (!ok){ fbState = "failed"; render(); return; }
+  if (r){ const all = loadAll(); const rec = all[r.id]; if (rec){ rec.followups = [...(rec.followups||[]), {release:ver, at:Date.now(), choice:FB_CHOICES[fbPick]}]; try { localStorage.setItem(STORE, JSON.stringify(all)); } catch(e){} } }
+  else { try { localStorage.setItem(FB_VER, JSON.stringify([...fbVersions(), ver])); } catch(e){} }
+  fbState = "sent"; render();
+}

@@ -1,7 +1,7 @@
 <title>Harry's Stable Mod</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&family=Jersey+15&display=swap">
 <style>
 /* Layout: blocky game-menu look. Dirt-tile backdrop (drawn at runtime), stone bevelled buttons, light-grey inventory panels, pixel type. One deliberate dark look in every theme. */
 :root{
@@ -11,6 +11,7 @@
   --broken:#A8332B; --better:#B8860B; --idea:#2E5FA8; --ok:#3F8E2E; --gold:#FFFF55;
   --line:#000000; --card:#C6C6C6; --bg2:#8B8B8B; --leather:#8A4B2A;
   --pix:"Pixelify Sans","VT323","Courier New",monospace;
+  --head:"Jersey 15","Pixelify Sans",monospace;
   --mono:"VT323","Courier New",monospace;
   --display:var(--pix); --body:var(--pix);
   color-scheme:dark;
@@ -37,7 +38,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .grown{font-size:16px;padding:10px 14px;background:#4E4E4E;box-shadow:inset 2px 2px 0 #777,inset -2px -3px 0 #2A2A2A}
 
 .q{display:flex;align-items:center;gap:12px}
-.q h1{font:600 clamp(28px,3.8vw,42px)/1.15 var(--pix);margin:0;text-shadow:3px 3px 0 var(--shade);text-wrap:balance}
+.q h1{font:400 clamp(34px,4.6vw,52px)/1.05 var(--head);letter-spacing:.02em;margin:0;text-shadow:3px 3px 0 var(--shade);text-wrap:balance}
 .hint{font-size:20px;color:var(--muted);margin:4px 0 0;text-shadow:2px 2px 0 #000}
 .say{flex:none;border:none;background:none;font-size:32px;cursor:pointer;padding:6px;color:var(--muted);display:grid}
 
@@ -57,7 +58,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .horse .coin{width:56px;height:56px;display:grid;place-items:center;font:600 28px var(--pix);color:#fff;border:3px solid #000;
   box-shadow:inset 3px 3px 0 rgba(255,255,255,.35),inset -3px -3px 0 rgba(0,0,0,.35);text-shadow:2px 2px 0 rgba(0,0,0,.7)}
 .typetile{background:#4E4E4E!important;box-shadow:inset 2px 2px 0 #777,inset -2px -3px 0 #2A2A2A!important}
-.row-label{font:600 28px var(--pix);margin:8px 0 -10px;text-shadow:3px 3px 0 var(--shade)}
+.row-label{font:400 34px var(--head);letter-spacing:.02em;margin:8px 0 -10px;text-shadow:3px 3px 0 var(--shade)}
 
 .go{align-self:center;font-size:28px;font-weight:600;padding:16px 46px;min-width:240px}
 .go[disabled]{opacity:.45;cursor:default;outline:none}
@@ -69,7 +70,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .panel,.story,.editor,.namebox{background:var(--panel);color:var(--panel-ink);border:3px solid var(--line);border-radius:0;text-shadow:none;
   box-shadow:inset 4px 4px 0 var(--panel-hi),inset -4px -4px 0 var(--panel-lo)}
 .panel{padding:28px 24px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;min-width:0}
-.panel h2{font:600 28px var(--pix);margin:0}
+.panel h2{font:400 34px var(--head);margin:0;letter-spacing:.02em}
 .extras{display:grid;grid-template-columns:minmax(0,560px);justify-content:center;gap:20px}
 .slot{width:100%;max-width:420px;aspect-ratio:4/3;background:#8B8B8B;border:0;box-shadow:inset 3px 3px 0 #373737,inset -3px -3px 0 #fff;display:grid;place-items:center;overflow:hidden;position:relative}
 .slot img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
@@ -117,14 +118,14 @@ body{background:#4E7A35}
 .title-screen{min-height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;gap:22px;position:relative;padding-top:24px}
 .corner{position:absolute;top:0;right:0}
 .logo{position:relative;text-align:center;margin-top:clamp(28px,9vh,110px)}
-.logo .l1,.logo .l2{font-family:"Silkscreen",var(--pix);font-weight:700;color:#D8D8D8;line-height:.95;letter-spacing:.02em;
+.logo .l1,.logo .l2{font-family:var(--head);font-weight:400;color:#E4E4E4;line-height:.9;letter-spacing:.04em;
   text-shadow:0 2px 0 #A0A0A0,0 4px 0 #8A8A8A,0 6px 0 #6E6E6E,0 8px 0 #555,0 10px 0 #3A3A3A,0 12px 0 #222,
     -3px 0 0 #000,3px 0 0 #000,0 -3px 0 #000,0 14px 0 #000,-3px 12px 0 #000,3px 12px 0 #000}
 .logo .l1{font-size:clamp(30px,4.5vw,52px)}
 .logo .l2{font-size:clamp(40px,8vw,96px);text-transform:uppercase}
 .logo .lw{position:relative;display:inline-block}
-.logo .badge{position:absolute;top:0;right:0;transform:rotate(6deg);font-family:"Silkscreen",var(--pix);font-weight:700;
-  font-size:clamp(12px,1.7vw,20px);line-height:1;text-transform:uppercase;letter-spacing:.04em;color:#2B1F16;
+.logo .badge{position:absolute;top:0;right:0;transform:rotate(6deg);font-family:var(--head);font-weight:400;
+  font-size:clamp(18px,2.6vw,30px);line-height:1;text-transform:uppercase;letter-spacing:.04em;color:#2B1F16;
   background:#F2C230;border:3px solid #000;box-shadow:inset 0 -3px 0 #B8891A,inset 0 3px 0 #FFE07A,3px 3px 0 rgba(0,0,0,.5);
   padding:.35em .55em .3em;white-space:nowrap;pointer-events:none}
 .splash{position:absolute;right:-6%;bottom:-6px;color:#FFFF00;font:600 clamp(18px,2.4vw,28px) var(--pix);text-shadow:3px 3px 0 #3F3F00;transform:rotate(-17deg);white-space:nowrap;animation:splash .5s ease-in-out infinite alternate;transform-origin:center}
@@ -204,8 +205,8 @@ body.home .foot{padding-top:0}
 .homeover{position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
 .homeover .inner{width:min(560px,100%);max-height:84dvh;overflow:auto;box-sizing:border-box;background:#2B2B2B;border:3px solid #000;padding:14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
 .tile.mm.closeover{background:#4E4E4E;box-shadow:inset 3px 3px 0 #777,inset -3px -4px 0 #2A2A2A;flex:none}
-body.home .logo .l1{font-size:min(4.5vw,6dvh,52px)}
-body.home .logo .l2{font-size:min(8vw,11dvh,96px)}
+body.home .logo .l1{font-size:min(6vw,7dvh,64px)}
+body.home .logo .l2{font-size:min(11vw,13dvh,124px)}
 body.home .tile.mm{min-height:clamp(44px,7.4dvh,62px);padding-block:6px}
 body.home .menu{gap:clamp(6px,1.4dvh,12px)}
 body.home .ask{font-size:min(2.4vw,3.2dvh,26px)}
@@ -229,6 +230,13 @@ body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(1
 body.home .today{margin-top:auto;margin-bottom:clamp(6px,1.4dvh,12px)}
 body.home .today + .menu{margin-top:0}
 body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
+/* lists: drafts, previous requests, follow-ups */
+.listlabel{font:400 34px/1 var(--head);letter-spacing:.02em;color:#fff;text-shadow:3px 3px 0 #000}
+.menurow{display:flex;gap:inherit;width:100%}
+.menurow .tile.mm{flex:1;min-width:0;padding-inline:6px;white-space:nowrap;font-size:min(20px,2.6vw)}
+.rrow{display:flex;flex-direction:column;gap:4px}
+.tile.mm.fbbtn{min-height:44px;font-size:18px;background:#7A4A12;box-shadow:inset 3px 3px 0 #A86A24,inset -3px -4px 0 #4A2C08}
+.fbmsg{width:100%;box-sizing:border-box;font:500 20px var(--pix);padding:10px 12px;border:3px solid #000;background:#F4F4F4;color:#222;resize:none}
 /* iOS share sheet and Messages stay iOS-looking: they are the iPad's own screens */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20;font-family:-apple-system,system-ui,sans-serif;text-shadow:none}
 .sheet{width:min(560px,100%);background:#F2F2F7;color:#111;border-radius:22px 22px 0 0;padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}

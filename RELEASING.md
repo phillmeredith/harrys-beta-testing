@@ -28,3 +28,11 @@ The app reads `releases.json` from this site. The newest release must come first
 3. Commit to `main`, then run `git push origin main` and `git push origin main:gh-pages`. Pages serves the `gh-pages` branch.
 
 The app shows a gold "New version X is ready!" button on the title screen. It opens Harry's notes and a Download button. On the iPad, Safari downloads the file; Harry taps it and picks Minecraft.
+
+## Follow-ups ("Not quite right?")
+
+When a request is marked fixed (its code is in a release's `fixed`), Harry can send one follow-up per request per release from Previous requests. He can also send one per version from the version panel.
+
+- The email subject contains `Follow-up on <version>:` and the body starts with `FOLLOW-UP`. It reuses the original code (version-level ones use `HBT-Vnnn`).
+- Follow-ups do not use Harry's one-a-day report. Handle them before new reports.
+- Once a follow-up is sent, the app shows "Daddy's looking again" until a newer release lists the code in `fixed` again (or in `status`).

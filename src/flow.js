@@ -1,8 +1,8 @@
 const VERSION = "4.0.6";
 const KINDS = {
-  broken:{label:"Something's broken", sub:"It went wrong", word:"Bug report"},
-  better:{label:"Make it better", sub:"It works, but…", word:"Make it better"},
-  idea:{label:"New idea", sub:"Something new!", word:"New idea"}
+  broken:{label:"Report bug", sub:"It went wrong", word:"Bug report"},
+  better:{label:"Improve a feature", sub:"It works, but…", word:"Improve a feature"},
+  idea:{label:"Build something new", sub:"Something new!", word:"Build something new"}
 };
 const PER = 7; // tiles per screen before grouping, leaving room for one extra tile
 const snake = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"");
@@ -255,15 +255,17 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>${fbAllowed(r)?`<button class="tile mm fbbtn" data-fb="${r.id}">Not quite right?</button>`:""}</div>`; };
     app.innerHTML = `<div class="title-screen">
-      <div class="logo"><div class="lw"><div class="l1">Harry's</div><div class="l2">Stable Mod</div><span class="badge">Beta Testing</span></div></div>
+      <div class="logo"><div class="lw"><div class="l1">Harry's</div><div class="l2">Stable Mod</div><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${releaseTile()}${releasePanel()}
-        ${all.length?`<button class="tile mm" id="savedbtn">My reports (${all.length})</button>`:""}
-        ${showSaved && all.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">My reports</div>${[...drafts,...sent].map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Drafts (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
+        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Drafts</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
     </div>`;
@@ -500,7 +502,9 @@ function wire(){
   $("send") && ($("send").onclick=shareSheet);
   $("again") && ($("again").onclick=()=>{reset();render();});
   $("resend") && ($("resend").onclick=()=>{ S.step=steps().indexOf("review"); render(); });
-  $("savedbtn") && ($("savedbtn").onclick=()=>{ showSaved=!showSaved; render(); });
+  $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
+  $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
+  wireFeedback();
   document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
@@ -511,8 +515,8 @@ function wire(){
   $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
-  $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved=true; render(); });
-  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else showRelease=false; render(); });
+  $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
     el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();

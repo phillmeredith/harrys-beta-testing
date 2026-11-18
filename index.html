@@ -14,7 +14,7 @@
 <title>Harry's Stable Mod</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&family=Jersey+15&display=swap">
 <style>
 /* Layout: blocky game-menu look. Dirt-tile backdrop (drawn at runtime), stone bevelled buttons, light-grey inventory panels, pixel type. One deliberate dark look in every theme. */
 :root{
@@ -24,6 +24,7 @@
   --broken:#A8332B; --better:#B8860B; --idea:#2E5FA8; --ok:#3F8E2E; --gold:#FFFF55;
   --line:#000000; --card:#C6C6C6; --bg2:#8B8B8B; --leather:#8A4B2A;
   --pix:"Pixelify Sans","VT323","Courier New",monospace;
+  --head:"Jersey 15","Pixelify Sans",monospace;
   --mono:"VT323","Courier New",monospace;
   --display:var(--pix); --body:var(--pix);
   color-scheme:dark;
@@ -50,7 +51,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .grown{font-size:16px;padding:10px 14px;background:#4E4E4E;box-shadow:inset 2px 2px 0 #777,inset -2px -3px 0 #2A2A2A}
 
 .q{display:flex;align-items:center;gap:12px}
-.q h1{font:600 clamp(28px,3.8vw,42px)/1.15 var(--pix);margin:0;text-shadow:3px 3px 0 var(--shade);text-wrap:balance}
+.q h1{font:400 clamp(34px,4.6vw,52px)/1.05 var(--head);letter-spacing:.02em;margin:0;text-shadow:3px 3px 0 var(--shade);text-wrap:balance}
 .hint{font-size:20px;color:var(--muted);margin:4px 0 0;text-shadow:2px 2px 0 #000}
 .say{flex:none;border:none;background:none;font-size:32px;cursor:pointer;padding:6px;color:var(--muted);display:grid}
 
@@ -70,7 +71,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .horse .coin{width:56px;height:56px;display:grid;place-items:center;font:600 28px var(--pix);color:#fff;border:3px solid #000;
   box-shadow:inset 3px 3px 0 rgba(255,255,255,.35),inset -3px -3px 0 rgba(0,0,0,.35);text-shadow:2px 2px 0 rgba(0,0,0,.7)}
 .typetile{background:#4E4E4E!important;box-shadow:inset 2px 2px 0 #777,inset -2px -3px 0 #2A2A2A!important}
-.row-label{font:600 28px var(--pix);margin:8px 0 -10px;text-shadow:3px 3px 0 var(--shade)}
+.row-label{font:400 34px var(--head);letter-spacing:.02em;margin:8px 0 -10px;text-shadow:3px 3px 0 var(--shade)}
 
 .go{align-self:center;font-size:28px;font-weight:600;padding:16px 46px;min-width:240px}
 .go[disabled]{opacity:.45;cursor:default;outline:none}
@@ -82,7 +83,7 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 .panel,.story,.editor,.namebox{background:var(--panel);color:var(--panel-ink);border:3px solid var(--line);border-radius:0;text-shadow:none;
   box-shadow:inset 4px 4px 0 var(--panel-hi),inset -4px -4px 0 var(--panel-lo)}
 .panel{padding:28px 24px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;min-width:0}
-.panel h2{font:600 28px var(--pix);margin:0}
+.panel h2{font:400 34px var(--head);margin:0;letter-spacing:.02em}
 .extras{display:grid;grid-template-columns:minmax(0,560px);justify-content:center;gap:20px}
 .slot{width:100%;max-width:420px;aspect-ratio:4/3;background:#8B8B8B;border:0;box-shadow:inset 3px 3px 0 #373737,inset -3px -3px 0 #fff;display:grid;place-items:center;overflow:hidden;position:relative}
 .slot img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
@@ -130,14 +131,14 @@ body{background:#4E7A35}
 .title-screen{min-height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;gap:22px;position:relative;padding-top:24px}
 .corner{position:absolute;top:0;right:0}
 .logo{position:relative;text-align:center;margin-top:clamp(28px,9vh,110px)}
-.logo .l1,.logo .l2{font-family:"Silkscreen",var(--pix);font-weight:700;color:#D8D8D8;line-height:.95;letter-spacing:.02em;
+.logo .l1,.logo .l2{font-family:var(--head);font-weight:400;color:#E4E4E4;line-height:.9;letter-spacing:.04em;
   text-shadow:0 2px 0 #A0A0A0,0 4px 0 #8A8A8A,0 6px 0 #6E6E6E,0 8px 0 #555,0 10px 0 #3A3A3A,0 12px 0 #222,
     -3px 0 0 #000,3px 0 0 #000,0 -3px 0 #000,0 14px 0 #000,-3px 12px 0 #000,3px 12px 0 #000}
 .logo .l1{font-size:clamp(30px,4.5vw,52px)}
 .logo .l2{font-size:clamp(40px,8vw,96px);text-transform:uppercase}
 .logo .lw{position:relative;display:inline-block}
-.logo .badge{position:absolute;top:0;right:0;transform:rotate(6deg);font-family:"Silkscreen",var(--pix);font-weight:700;
-  font-size:clamp(12px,1.7vw,20px);line-height:1;text-transform:uppercase;letter-spacing:.04em;color:#2B1F16;
+.logo .badge{position:absolute;top:0;right:0;transform:rotate(6deg);font-family:var(--head);font-weight:400;
+  font-size:clamp(18px,2.6vw,30px);line-height:1;text-transform:uppercase;letter-spacing:.04em;color:#2B1F16;
   background:#F2C230;border:3px solid #000;box-shadow:inset 0 -3px 0 #B8891A,inset 0 3px 0 #FFE07A,3px 3px 0 rgba(0,0,0,.5);
   padding:.35em .55em .3em;white-space:nowrap;pointer-events:none}
 .splash{position:absolute;right:-6%;bottom:-6px;color:#FFFF00;font:600 clamp(18px,2.4vw,28px) var(--pix);text-shadow:3px 3px 0 #3F3F00;transform:rotate(-17deg);white-space:nowrap;animation:splash .5s ease-in-out infinite alternate;transform-origin:center}
@@ -217,8 +218,8 @@ body.home .foot{padding-top:0}
 .homeover{position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
 .homeover .inner{width:min(560px,100%);max-height:84dvh;overflow:auto;box-sizing:border-box;background:#2B2B2B;border:3px solid #000;padding:14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
 .tile.mm.closeover{background:#4E4E4E;box-shadow:inset 3px 3px 0 #777,inset -3px -4px 0 #2A2A2A;flex:none}
-body.home .logo .l1{font-size:min(4.5vw,6dvh,52px)}
-body.home .logo .l2{font-size:min(8vw,11dvh,96px)}
+body.home .logo .l1{font-size:min(6vw,7dvh,64px)}
+body.home .logo .l2{font-size:min(11vw,13dvh,124px)}
 body.home .tile.mm{min-height:clamp(44px,7.4dvh,62px);padding-block:6px}
 body.home .menu{gap:clamp(6px,1.4dvh,12px)}
 body.home .ask{font-size:min(2.4vw,3.2dvh,26px)}
@@ -242,6 +243,13 @@ body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(1
 body.home .today{margin-top:auto;margin-bottom:clamp(6px,1.4dvh,12px)}
 body.home .today + .menu{margin-top:0}
 body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
+/* lists: drafts, previous requests, follow-ups */
+.listlabel{font:400 34px/1 var(--head);letter-spacing:.02em;color:#fff;text-shadow:3px 3px 0 #000}
+.menurow{display:flex;gap:inherit;width:100%}
+.menurow .tile.mm{flex:1;min-width:0;padding-inline:6px;white-space:nowrap;font-size:min(20px,2.6vw)}
+.rrow{display:flex;flex-direction:column;gap:4px}
+.tile.mm.fbbtn{min-height:44px;font-size:18px;background:#7A4A12;box-shadow:inset 3px 3px 0 #A86A24,inset -3px -4px 0 #4A2C08}
+.fbmsg{width:100%;box-sizing:border-box;font:500 20px var(--pix);padding:10px 12px;border:3px solid #000;background:#F4F4F4;color:#222;resize:none}
 /* iOS share sheet and Messages stay iOS-looking: they are the iPad's own screens */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20;font-family:-apple-system,system-ui,sans-serif;text-shadow:none}
 .sheet{width:min(560px,100%);background:#F2F2F7;color:#111;border-radius:22px 22px 0 0;padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
@@ -380,9 +388,9 @@ const MC_TREE = {
 };
 const VERSION = "4.0.6";
 const KINDS = {
-  broken:{label:"Something's broken", sub:"It went wrong", word:"Bug report"},
-  better:{label:"Make it better", sub:"It works, but…", word:"Make it better"},
-  idea:{label:"New idea", sub:"Something new!", word:"New idea"}
+  broken:{label:"Report bug", sub:"It went wrong", word:"Bug report"},
+  better:{label:"Improve a feature", sub:"It works, but…", word:"Improve a feature"},
+  idea:{label:"Build something new", sub:"Something new!", word:"Build something new"}
 };
 const PER = 7; // tiles per screen before grouping, leaving room for one extra tile
 const snake = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"");
@@ -635,15 +643,17 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>${fbAllowed(r)?`<button class="tile mm fbbtn" data-fb="${r.id}">Not quite right?</button>`:""}</div>`; };
     app.innerHTML = `<div class="title-screen">
-      <div class="logo"><div class="lw"><div class="l1">Harry's</div><div class="l2">Stable Mod</div><span class="badge">Beta Testing</span></div></div>
+      <div class="logo"><div class="lw"><div class="l1">Harry's</div><div class="l2">Stable Mod</div><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${releaseTile()}${releasePanel()}
-        ${all.length?`<button class="tile mm" id="savedbtn">My reports (${all.length})</button>`:""}
-        ${showSaved && all.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">My reports</div>${[...drafts,...sent].map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Drafts (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
+        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Drafts</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
     </div>`;
@@ -880,7 +890,9 @@ function wire(){
   $("send") && ($("send").onclick=shareSheet);
   $("again") && ($("again").onclick=()=>{reset();render();});
   $("resend") && ($("resend").onclick=()=>{ S.step=steps().indexOf("review"); render(); });
-  $("savedbtn") && ($("savedbtn").onclick=()=>{ showSaved=!showSaved; render(); });
+  $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
+  $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
+  wireFeedback();
   document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
@@ -891,8 +903,8 @@ function wire(){
   $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
-  $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved=true; render(); });
-  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else showRelease=false; render(); });
+  $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
     el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
@@ -1094,10 +1106,11 @@ function releasePanel(){
   return `<div class="homeover" data-close="rel"><div class="inner savedlist relpanel"><div class="listlabel">${isNew?"What's new in":"You've got"} ${esc(r.version)}</div>${notes?`<ul class="relnotes">${notes}</ul>`:""}
     <a class="tile mm primary" id="getver" href="${esc(r.file)}" download style="text-decoration:none">${isNew?"Download it":"Download it again"}</a>
     <p class="relhow">When it has downloaded, tap it and choose Minecraft. Your world and horses stay safe.</p>
-    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:""}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
+    ${isNew?`<button class="tile mm" id="gotver">I've got it now</button>`:(fbAllowedVer(r.version)?`<button class="tile mm fbbtn" data-fb="ver:${esc(r.version)}">Something not right in this version?</button>`:"")}<button class="tile mm closeover" data-close="rel">Close</button></div></div>`;
 }
 function reportState(r){
   if (!r.sent) return ["draft","Not sent yet. Tap to finish"];
+  if (fixedIn(code(r)) && (r.followups||[]).some(f=>f.release===fixedIn(code(r)))) return ["wip","Daddy's looking again"];
   if (fixedIn(code(r))) return ["fixed",`Fixed in ${fixedIn(code(r))}!`];
   const st = statusOf(code(r)); if (st) return ["wip", st];
   return ["sent","Sent to Daddy"];
@@ -1133,6 +1146,71 @@ function builderNotes(){
   return N;
 }
 loadReleases();
+
+/* ---------- "Not quite right?": feedback on a release, sent as a follow-up to the original request ----------
+   Follow-ups do not count towards the one-report-a-day limit (they finish work already chosen),
+   but each request (or version) can get one follow-up per release. */
+const FB_CHOICES = ["It still happens","It only half works","It works, but not how I wanted","Now something else is broken","Something else"];
+const FB_VER = "hbt_fb_versions";
+var fbFor = null, fbPick = null, fbNote = "", fbState = null; // fbState: null | "sending" | "sent" | "failed"
+function fbVersions(){ try { return JSON.parse(localStorage.getItem(FB_VER)||"[]"); } catch(e){ return []; } }
+function fbAllowed(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.followups||[]).some(f=>f.release===v); }
+function fbAllowedVer(v){ return !fbVersions().includes(v); }
+function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; }
+function closeFeedback(){ fbFor = null; fbPick = null; fbNote = ""; fbState = null; }
+function fbPanel(){
+  if (!fbFor) return "";
+  const r = fbFor.startsWith("ver:") ? null : loadAll()[fbFor], ver = r ? fixedIn(code(r)) : fbFor.slice(4);
+  if (fbState === "sent") return `<div class="homeover" data-close="fb"><div class="inner savedlist"><div class="listlabel">Sent to Daddy</div>
+    <p class="relhow" style="font-size:19px">Thanks Harry. Daddy will look at this first, before anything new.</p><button class="tile mm closeover" data-close="fb">Close</button></div></div>`;
+  return `<div class="homeover" data-close="fb"><div class="inner savedlist"><div class="listlabel">${r?`What's not right with ${esc(fbTitle(r))}?`:`What's not right in ${esc(ver)}?`}</div>
+    ${FB_CHOICES.map((c,i)=>`<button class="tile mm${fbPick===i?" primary":""}" data-fbc="${i}">${esc(c)}</button>`).join("")}
+    ${fbPick!==null?`<textarea id="fbmsg" class="fbmsg" rows="2" placeholder="Tell Daddy more. You can skip this.">${esc(fbNote)}</textarea>
+    ${fbState==="failed"?`<p class="relhow">It couldn't reach Daddy just now. Try again in a bit.</p>`:""}
+    <button class="tile mm primary" id="fbsend"${fbState==="sending"?" disabled":""}>${fbState==="sending"?"Sending…":"Send to Daddy"}</button>`:""}
+    <button class="tile mm closeover" data-close="fb">Close</button></div></div>`;
+}
+function wireFeedback(){
+  document.querySelectorAll("[data-fb]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); closeFeedback(); fbFor=b.dataset.fb; render(); });
+  document.querySelectorAll("[data-fbc]").forEach(b=>b.onclick=()=>{ fbPick=+b.dataset.fbc; render(); });
+  const m=document.getElementById("fbmsg"); if (m) m.oninput=()=>{ fbNote=m.value; };
+  const s=document.getElementById("fbsend"); if (s) s.onclick=sendFollowup;
+}
+function followupText(r, ver, fcode){
+  const choice = FB_CHOICES[fbPick], note = fbNote.trim();
+  const L = [`[Harry's Beta Testing] FOLLOW-UP · ${r?`report ${fcode}`:`version ${ver}`} · release ${ver}`, ""];
+  if (r){
+    L.push(`This is a follow-up to report ${fcode}, which releases.json marks as fixed in ${ver}. Harry says it didn't work the way he hoped.`);
+    L.push(`Original request: ${KINDS[r.kind]?.word||r.kind} about ${fbTitle(r)}`, `Original words: ${r.text||"(none)"}`);
+  } else L.push(`Harry says something in release ${ver} didn't work the way he hoped. It isn't tied to one of his requests.`);
+  L.push(`What's not right: ${choice}`, `Harry's words: ${note||"(none)"}`);
+  L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro`);
+  L.push("", "For the builder:",
+    r ? `- Treat as a follow-up, not a new report: find the original email by "${fcode}", reopen it, and do it before new reports. It does not use Harry's daily report.`
+      : `- Treat as a follow-up on release ${ver}: check every change in that release's notes, and do it before new reports. It does not use Harry's daily report.`,
+    choice==="Something else" && !note ? "- Harry didn't say what: ask Phill." : "",
+    choice==="Now something else is broken" ? "- Something else broke after this release: check for a regression in the files that release changed." : "",
+    `- Done when: ${r?`the original request works on the version Harry has`:`the release works as its notes say`}, and the reply says what changed.`);
+  return L.filter(x=>x!=="").join("\n");
+}
+async function sendFollowup(){
+  const r = fbFor.startsWith("ver:") ? null : loadAll()[fbFor], ver = r ? fixedIn(code(r)) : fbFor.slice(4);
+  const fcode = r ? code(r) : "HBT-V" + String(Date.now()).slice(-3);
+  const m=document.getElementById("fbmsg"); if (m) fbNote=m.value;
+  const text = followupText(r, ver, fcode);
+  fbState = "sending"; render();
+  let ok = false;
+  try {
+    const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({key:SEND_KEY, code:fcode, kind:r?.kind||"broken", said:`Follow-up on ${ver}: ${FB_CHOICES[fbPick]}`, text, shot:null})});
+    ok = !!(await res.json()).ok;
+  } catch(e){}
+  if (!ok && navigator.share){ try { await navigator.share({text}); ok = true; } catch(e){} }
+  if (!ok){ fbState = "failed"; render(); return; }
+  if (r){ const all = loadAll(); const rec = all[r.id]; if (rec){ rec.followups = [...(rec.followups||[]), {release:ver, at:Date.now(), choice:FB_CHOICES[fbPick]}]; try { localStorage.setItem(STORE, JSON.stringify(all)); } catch(e){} } }
+  else { try { localStorage.setItem(FB_VER, JSON.stringify([...fbVersions(), ver])); } catch(e){} }
+  fbState = "sent"; render();
+}
 
 /* ---------- Real send: the iPad's own share sheet (replaces the mockup sheet above) ---------- */
 function dataURLtoFile(u, name){
