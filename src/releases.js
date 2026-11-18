@@ -26,20 +26,29 @@ function releaseTile(){
 }
 var showPrev = false;
 function relDate(d){ if (!d) return ""; const t = new Date(d+"T12:00:00"); return isNaN(t) ? "" : t.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+function tsDate(t){ return t ? new Date(t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : ""; }
 function prevPanel(){
   if (!showPrev || !REL) return "";
   const iv = installedVersion(), list = REL.releases || [];
+  const reps = Object.values(loadAll()).filter(r=>r.sent && r.kind).sort((a,b)=>b.sent-a.sent);
+  const byCode = {}; reps.forEach(r=>{ byCode[code(r)] = r; });
   const card = (r,i) => {
     const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
-    const fixed = (r.fixed||[]).length ? `<p class="relfixed">Fixed your reports: ${(r.fixed||[]).map(esc).join(", ")}</p>` : "";
+    const fx = (r.fixed||[]).map(c=>{ const rep = byCode[c]; return `<li><span class="fbh">Found by Harry</span> ${rep?`${esc(fbTitle(rep))} <small>reported ${esc(tsDate(rep.sent))} · ${esc(c)}</small>`:`<small>${esc(c)}</small>`}</li>`; }).join("");
     const tags = (i===0?`<span class="vtag2">Latest</span>`:"") + (r.version===iv?`<span class="vtag2 have">You've got this</span>`:"");
     return `<div class="relcard"><div class="relhead"><b>${esc(r.version)}</b><span>${esc(relDate(r.date))}</span>${tags}</div>
-      ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fixed}
+      ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fx?`<ul class="relfixes">${fx}</ul>`:""}
       ${r.file?`<a class="tile mm relget" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
   };
-  return `<div class="homeover" data-close="prev"><div class="inner savedlist prevpanel"><div class="listlabel">All versions</div>
-    <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
-    ${list.map(card).join("")}<button class="tile mm closeover" data-close="prev">Close</button></div></div>`;
+  const rep = r => { const st = reportState(r); return `<div class="repcard"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
+  return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
+    <div class="prevcol"><div class="listlabel">All versions</div>
+      <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
+      ${list.map(card).join("")}</div>
+    <div class="prevcol"><div class="listlabel">Harry's reports</div>
+      <p class="relhow">Everything Harry has sent to Daddy, newest first.</p>
+      ${reps.length?reps.map(rep).join(""):`<p class="relhow">Nothing sent yet. When Harry sends a report it shows up here with its date.</p>`}</div>
+    <button class="tile mm closeover prevclose" data-close="prev">Close</button></div></div>`;
 }
 function releasePanel(){
   const r = latestRelease(); if (!r || !showRelease) return "";
