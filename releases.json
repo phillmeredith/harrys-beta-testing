@@ -1,6 +1,16 @@
 {
-  "latest": "4.0.6",
+  "latest": "4.0.7",
   "releases": [
+    {
+      "version": "4.0.7",
+      "date": "2026-11-18",
+      "file": "releases/HarrysEquestrian_v4.0.7.mcaddon",
+      "notes_for_harry": [
+        "If your horse is too hungry or thirsty to go faster, it tells you what to give it",
+        "A good meal and two buckets of water make your horse strong again straight away"
+      ],
+      "fixed": []
+    },
     {
       "version": "4.0.6",
       "date": "2026-11-14",
