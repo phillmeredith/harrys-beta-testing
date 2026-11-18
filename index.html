@@ -245,7 +245,17 @@ body.home .today + .menu{margin-top:0}
 body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
 body.home .menu > [data-v="idea"]{margin-bottom:clamp(10px,3.2dvh,34px)}
 body.home .menu > .menurow{margin-bottom:clamp(10px,3.2dvh,34px)}
-.vtag{font-size:.75em;opacity:.9;margin-left:.4em}
+/* home buttons: closer to the real title screen. Flat grey stone, thin black border, 2px bevel, light text with a hard shadow */
+body.home .menu .tile.mm{background:#6F6F6F linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.06));border:2px solid #000;
+  box-shadow:inset 2px 2px 0 #A6A6A6,inset -2px -3px 0 #4A4A4A;color:#EDEDED;text-shadow:2px 2px 0 #383838;font-weight:500;letter-spacing:.02em}
+body.home .menu .tile.mm:hover{outline:2px solid #fff;outline-offset:-2px}
+body.home .menu .tile.mm:active{background:#5E5E5E;box-shadow:inset 2px 2px 0 #4A4A4A,inset -2px -2px 0 #8A8A8A}
+body.home .menu .tile.mm.latestver,body.home .menu .tile.mm.newver{font-size:min(26px,3.4vw);min-height:clamp(44px,7.4dvh,62px)}
+body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
+body.home .menu > .tile.mm{font-size:min(26px,3.4vw)}
+.vtag{position:absolute;top:-14px;right:-12px;font:500 17px/1 var(--pix);color:#fff;text-shadow:2px 2px 0 #1E5A12;background:#4CC23A;border:2px solid #1E5A12;
+  box-shadow:inset 2px 2px 0 #7EE06A,inset -2px -2px 0 #2E8A22;padding:4px 7px;transform:rotate(-4deg);pointer-events:none}
+.vtag::after{content:"";position:absolute;left:8px;bottom:-9px;border:5px solid transparent;border-top:6px solid #1E5A12;border-left:6px solid #1E5A12}
 /* lists: drafts, previous requests, follow-ups */
 .listlabel{font:400 34px/1 var(--head);letter-spacing:.02em;color:#fff;text-shadow:3px 3px 0 #000}
 .menurow{display:flex;gap:inherit;width:100%}
@@ -1099,7 +1109,7 @@ function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
   const r = latestRelease(); if (!r) return "";
   return newRelease()
-    ? `<button class="tile mm primary newver" id="newver">Download latest version <span class="vtag">New: ${esc(r.version)}</span></button>`
+    ? `<button class="tile mm newver" id="newver">Download latest version<span class="vtag">New</span></button>`
     : `<button class="tile mm latestver" id="newver">Download latest version</button>`;
 }
 function releasePanel(){
