@@ -7,7 +7,7 @@ function dataURLtoFile(u, name){
 }
 function markSent(){ S.sent = Date.now(); persist(); S.step = "done"; render(); }
 /* Daddy's inbox: a Google Apps Script web app that emails the report to Phill's Gmail, labelled. Empty = use the share sheet. */
-const SEND_URL = "https://script.google.com/macros/s/AKfycbwBffMumMoI-XmtIphJ2w4hcSFcgP6zrOc9TzRPrSQg3a-u8lhRPNHlHnoeg_JyU23K/exec";
+const SEND_URL = "https://script.google.com/macros/s/AKfycbzUwWVGavH2MlAY6p40WTfmvUSwSrDdN9du_wO-Dd0DBizeoLlQ-2ttRGQnuLhK-6Mv/exec";
 const SEND_KEY = "hbt-7Qm2xR9vK4";
 async function sendToInbox(text){
   const btn = document.getElementById("send"); if (btn){ btn.disabled = true; btn.textContent = "Sending…"; }
