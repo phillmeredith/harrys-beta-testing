@@ -240,10 +240,10 @@ body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,
 body.home .menu > .lastkind{margin-bottom:clamp(10px,3.2dvh,34px)}
 body.home .menu > .menurow{margin-bottom:clamp(10px,3.2dvh,34px)}
 /* home buttons: closer to the real title screen. Flat grey stone, thin black border, 2px bevel, light text with a hard shadow */
-body.home .menu .tile.mm{background:#6F6F6F linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.06));border:2px solid #000;
+body.home .menu .tile.mm,body.home .player .tile.mm{background:#6F6F6F linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.06));border:2px solid #000;
   box-shadow:inset 2px 2px 0 #A6A6A6,inset -2px -3px 0 #4A4A4A;color:#EDEDED;text-shadow:2px 2px 0 #383838;font-weight:500;letter-spacing:.02em}
-body.home .menu .tile.mm:hover{outline:2px solid #fff;outline-offset:-2px}
-body.home .menu .tile.mm:active{background:#5E5E5E;box-shadow:inset 2px 2px 0 #4A4A4A,inset -2px -2px 0 #8A8A8A}
+body.home .menu .tile.mm:hover,body.home .player .tile.mm:hover{outline:2px solid #fff;outline-offset:-2px}
+body.home .menu .tile.mm:active,body.home .player .tile.mm:active{background:#5E5E5E;box-shadow:inset 2px 2px 0 #4A4A4A,inset -2px -2px 0 #8A8A8A}
 body.home .menu .tile.mm.latestver,body.home .menu .tile.mm.newver{font-size:min(26px,3.4vw);min-height:clamp(44px,7.4dvh,62px)}
 body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
 body.home .menu > .tile.mm{font-size:min(26px,3.4vw)}
@@ -416,6 +416,27 @@ body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
 body.home .menu > .relmain{margin-bottom:clamp(12px,3.4dvh,36px)}
 body.home .menu > .menurow{margin-bottom:0}
 body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
+
+/* home-screen player (skin maker) */
+body:not(.home) .player{display:none}
+.player{position:absolute;left:calc(100% + clamp(24px,5vw,110px));bottom:0;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.2dvh,14px);z-index:2;--px:clamp(5px,.88dvh,12px)}
+.player .nametag{font-family:var(--pix);color:#fff;background:rgba(40,52,74,.78);padding:2px 12px 3px;font-size:clamp(16px,2.2vw,28px);line-height:1.2;letter-spacing:.5px}
+.pstage{width:calc(var(--px)*16);height:calc(var(--px)*33);perspective:calc(var(--px)*160);filter:drop-shadow(0 calc(var(--px)*1) calc(var(--px)*1.5) rgba(0,0,0,.45))}
+.pfig{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-6deg) rotateY(-28deg);animation:pidle 7s ease-in-out infinite}
+@keyframes pidle{0%,100%{transform:rotateX(-6deg) rotateY(-28deg)}50%{transform:rotateX(-6deg) rotateY(-16deg)}}
+.pb{position:absolute;transform-style:preserve-3d}
+.pf{position:absolute;left:0;top:0;background-image:var(--skin);background-size:calc(var(--px)*64) calc(var(--px)*64);image-rendering:pixelated;image-rendering:crisp-edges;backface-visibility:hidden}
+.pf.right,.pf.left,.pf.back{filter:brightness(.78)}.pf.top{filter:brightness(1.08)}.pf.bottom{filter:brightness(.6)}
+.phead{transform-origin:50% 100%;animation:plook 5s ease-in-out infinite}
+@keyframes plook{0%,100%{transform:rotateY(0) rotateX(0)}30%{transform:rotateY(14deg) rotateX(-4deg)}65%{transform:rotateY(-10deg) rotateX(3deg)}}
+.parm{transform-origin:50% calc(var(--px)*2)}
+.parm.r{animation:pswing 4s ease-in-out infinite}.parm.l{animation:pswing 4s ease-in-out infinite reverse}
+@keyframes pswing{0%,100%{transform:rotateX(4deg) rotateZ(2deg)}50%{transform:rotateX(-4deg) rotateZ(1deg)}}
+.parm.l{animation-name:pswingl}@keyframes pswingl{0%,100%{transform:rotateX(-4deg) rotateZ(-2deg)}50%{transform:rotateX(4deg) rotateZ(-1deg)}}
+body.home .player .tile.mm.skinbtn{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff;font-size:min(20px,2.6vw);min-width:calc(var(--px)*19);min-height:clamp(40px,6.4dvh,56px);padding:0 16px;box-sizing:border-box;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.pfig,.phead,.parm{animation:none!important}}
+/* portrait: the menu fills the middle, so the player sits lower and smaller */
+@media (max-aspect-ratio:1/1){.player{left:auto;right:0;bottom:calc(100% + clamp(10px,2dvh,28px));--px:clamp(4px,.52dvh,8px)}}
 </style>
 
 <div class="app" id="app"></div>

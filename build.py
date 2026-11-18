@@ -2,7 +2,7 @@ import json, os
 from PIL import Image, ImageDraw
 out='.'; os.makedirs(out, exist_ok=True)
 h=open('src/head.part').read(); mp=open('src/map.part').read()
-js=open('src/designer.js').read()+'const MOD = '+open('src/mod.json').read()+';\n'+open('src/mc.js').read()+open('src/flow.js').read()+open('src/maths.js').read()+open('src/releases.js').read()+open('src/real.js').read()
+js=open('src/designer.js').read()+'const MOD = '+open('src/mod.json').read()+';\n'+open('src/mc.js').read()+open('src/flow.js').read()+open('src/skins.js').read()+open('src/maths.js').read()+open('src/releases.js').read()+open('src/real.js').read()
 pre='''<!doctype html>
 <html lang="en-GB"><head>
 <meta charset="utf-8">

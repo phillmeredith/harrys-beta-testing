@@ -253,10 +253,10 @@ body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,
 body.home .menu > .lastkind{margin-bottom:clamp(10px,3.2dvh,34px)}
 body.home .menu > .menurow{margin-bottom:clamp(10px,3.2dvh,34px)}
 /* home buttons: closer to the real title screen. Flat grey stone, thin black border, 2px bevel, light text with a hard shadow */
-body.home .menu .tile.mm{background:#6F6F6F linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.06));border:2px solid #000;
+body.home .menu .tile.mm,body.home .player .tile.mm{background:#6F6F6F linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.06));border:2px solid #000;
   box-shadow:inset 2px 2px 0 #A6A6A6,inset -2px -3px 0 #4A4A4A;color:#EDEDED;text-shadow:2px 2px 0 #383838;font-weight:500;letter-spacing:.02em}
-body.home .menu .tile.mm:hover{outline:2px solid #fff;outline-offset:-2px}
-body.home .menu .tile.mm:active{background:#5E5E5E;box-shadow:inset 2px 2px 0 #4A4A4A,inset -2px -2px 0 #8A8A8A}
+body.home .menu .tile.mm:hover,body.home .player .tile.mm:hover{outline:2px solid #fff;outline-offset:-2px}
+body.home .menu .tile.mm:active,body.home .player .tile.mm:active{background:#5E5E5E;box-shadow:inset 2px 2px 0 #4A4A4A,inset -2px -2px 0 #8A8A8A}
 body.home .menu .tile.mm.latestver,body.home .menu .tile.mm.newver{font-size:min(26px,3.4vw);min-height:clamp(44px,7.4dvh,62px)}
 body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
 body.home .menu > .tile.mm{font-size:min(26px,3.4vw)}
@@ -429,6 +429,27 @@ body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
 body.home .menu > .relmain{margin-bottom:clamp(12px,3.4dvh,36px)}
 body.home .menu > .menurow{margin-bottom:0}
 body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
+
+/* home-screen player (skin maker) */
+body:not(.home) .player{display:none}
+.player{position:absolute;left:calc(100% + clamp(24px,5vw,110px));bottom:0;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.2dvh,14px);z-index:2;--px:clamp(5px,.88dvh,12px)}
+.player .nametag{font-family:var(--pix);color:#fff;background:rgba(40,52,74,.78);padding:2px 12px 3px;font-size:clamp(16px,2.2vw,28px);line-height:1.2;letter-spacing:.5px}
+.pstage{width:calc(var(--px)*16);height:calc(var(--px)*33);perspective:calc(var(--px)*160);filter:drop-shadow(0 calc(var(--px)*1) calc(var(--px)*1.5) rgba(0,0,0,.45))}
+.pfig{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-6deg) rotateY(-28deg);animation:pidle 7s ease-in-out infinite}
+@keyframes pidle{0%,100%{transform:rotateX(-6deg) rotateY(-28deg)}50%{transform:rotateX(-6deg) rotateY(-16deg)}}
+.pb{position:absolute;transform-style:preserve-3d}
+.pf{position:absolute;left:0;top:0;background-image:var(--skin);background-size:calc(var(--px)*64) calc(var(--px)*64);image-rendering:pixelated;image-rendering:crisp-edges;backface-visibility:hidden}
+.pf.right,.pf.left,.pf.back{filter:brightness(.78)}.pf.top{filter:brightness(1.08)}.pf.bottom{filter:brightness(.6)}
+.phead{transform-origin:50% 100%;animation:plook 5s ease-in-out infinite}
+@keyframes plook{0%,100%{transform:rotateY(0) rotateX(0)}30%{transform:rotateY(14deg) rotateX(-4deg)}65%{transform:rotateY(-10deg) rotateX(3deg)}}
+.parm{transform-origin:50% calc(var(--px)*2)}
+.parm.r{animation:pswing 4s ease-in-out infinite}.parm.l{animation:pswing 4s ease-in-out infinite reverse}
+@keyframes pswing{0%,100%{transform:rotateX(4deg) rotateZ(2deg)}50%{transform:rotateX(-4deg) rotateZ(1deg)}}
+.parm.l{animation-name:pswingl}@keyframes pswingl{0%,100%{transform:rotateX(-4deg) rotateZ(-2deg)}50%{transform:rotateX(4deg) rotateZ(-1deg)}}
+body.home .player .tile.mm.skinbtn{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#fff;font-size:min(20px,2.6vw);min-width:calc(var(--px)*19);min-height:clamp(40px,6.4dvh,56px);padding:0 16px;box-sizing:border-box;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.pfig,.phead,.parm{animation:none!important}}
+/* portrait: the menu fills the middle, so the player sits lower and smaller */
+@media (max-aspect-ratio:1/1){.player{left:auto;right:0;bottom:calc(100% + clamp(10px,2dvh,28px));--px:clamp(4px,.52dvh,8px)}}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -653,7 +674,7 @@ const IC = { back: ico('<path d="M15 5l-7 7 7 7"/>'), up: ico('<path d="M12 19V5
 let S, drawer = false, showSaved = false, saveWarn = false;
 const PART_KEYS = ["thing","like","where","change","detail","what","doing","holding","tapped","words","often","when","onlyif"];
 function blankPart(){ return {thing:null, like:null, likeMode:null, where:null, change:null, detail:null, what:null, doing:null, holding:null, tapped:null, words:null, version:null, often:null, when:null, onlyif:null, pk:{path:[],page:0}}; }
-function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
+function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, app:null, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
 const code = (s=S) => "HBT-" + s.id.slice(-4);
 
 const STORE = "fixit_reports_v1";
@@ -698,8 +719,11 @@ reset();
 
 /* ---------- Steps ---------- */
 function steps(){
-  const s = ["kind","thing"];
-  if (S.kind === "broken"){ s.push("what","doing","holding","tapped","words","often"); if (!installedVersion()) s.push("version"); }
+  const s = ["kind"];
+  if (S.kind === "broken") s.push("app");
+  s.push("thing");
+  if (S.kind === "broken" && isSkins()) s.push("what","doing","tapped","words","often");
+  else if (S.kind === "broken"){ s.push("what","doing","holding","tapped","words","often"); if (!installedVersion()) s.push("version"); }
   else {
     if (S.thing?.isNew) s.push("like","where");
     s.push("change");
@@ -711,7 +735,7 @@ function steps(){
 }
 const cur = () => S.step === "done" ? "done" : steps()[S.step];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ORDER = ["kind","thing","like","where","change","detail","what","doing","holding","tapped","words","often","version","when","onlyif","shot"];
+const ORDER = ["kind","app","thing","like","where","change","detail","what","doing","holding","tapped","words","often","version","when","onlyif","shot"];
 function clearAfter(key){
   ORDER.slice(ORDER.indexOf(key)+1).forEach(k=>{ S[k] = k==="shot" ? false : null; });
   if (key==="kind") S.parts = [];
@@ -720,6 +744,7 @@ function clearAfter(key){
 
 // Which tree each picker step walks
 function pickerRoot(st){
+  if (st==="thing" && isSkins()) return {k: [...SKIN_TREE, SKIN_UNSURE]};
   if (st==="thing") return {k: S.kind==="idea" ? ROOT(true, false) : [...MOD_TREE, UNSURE]}; // reports are always about the mod, so skip the "in my mod" choice (Phill, 2026-11-18)
   if (st==="holding") return {k: HOLD_TREE()};
   if (st==="like") return {k: S.likeMode==="mod" ? MOD_TREE : fromObj(MC_TREE,"mc:","other")};
@@ -755,7 +780,7 @@ function subj(p=S){ const t=p.thing; if(!t) return "it"; if(t.vague) return "som
 const brokenObj = () => BROKEN.find(w=>w.id===S.what);
 
 const QUESTIONS = {
-  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
+  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" && isSkins() ? "What went wrong in the skin maker?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
   like:  () => S.likeMode ? "Which one is it like?" : `Is ${subj()} like something that already exists?`,
   change:() => S.pk.path.length ? "Which one?" : S.kind==="idea" ? `What should ${subj()} be like or do?` : `What should change about ${subj()}?`,
   holding:() => S.pk.path.length ? "Which one?" : "What was in your hand?",
@@ -775,11 +800,12 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
+        ${playerHTML()}
         ${releaseTile()}
         <div class="menurow">${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${k==="broken"?"Report a bug":esc(v.label)}</button>`).join("")}<button class="tile mm" id="draftsbtn">Draft reports (${drafts.length})</button></div>
         <div class="menurow"><button class="tile mm" id="featbtn">Features</button><button class="tile mm" id="prevver">Previous versions${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button></div>
@@ -814,9 +840,12 @@ function render(){
     q = S.thing?.vague ? "What happened?" : `What happened to ${S.thing?.l}?`;
     const ok = BROKEN_FOR[S.thing?.tp] || BROKEN_FOR.other;
     body = `<div class="grid">${BROKEN.filter(w=>ok.includes(w.id)).map(w=>tile({v:w.id,label:w.label,sel:S.what===w.id})).join("")}</div>`;
+  } else if (st === "app"){
+    q = "Where is the bug?";
+    body = `<div class="grid big2">${APPS.map(a=>tile({v:a.v,label:a.label,sub:a.sub,sel:S.app===a.v.slice(4)})).join("")}</div>`;
   } else if (st === "tapped"){
     q = "What did you do just before it happened?";
-    body = `<div class="grid">${TAPPED.map(l=>tile({v:l,label:l,sel:S.tapped===l})).join("")}</div>`;
+    body = `<div class="grid">${(isSkins()?SKIN_TAPPED:TAPPED).map(l=>tile({v:l,label:l,sel:S.tapped===l})).join("")}</div>`;
   } else if (st === "words"){
     q = "Did any words come up on the screen?";
     body = `<div class="grid big">${WORDS.map(l=>tile({v:l,label:l,sel:S.words===l})).join("")}</div>`;
@@ -829,7 +858,7 @@ function render(){
     body = `<div class="grid">${WHERE_NEW.map(l=>tile({v:l,label:l,sel:S.where===l})).join("")}</div><button class="go quiet" id="next">Skip</button>`;
   } else if (st === "doing"){
     q = "What were you doing?";
-    body = `<div class="grid">${DOING.map(l=>tile({v:l,label:l,sel:S.doing===l})).join("")}</div>`;
+    body = `<div class="grid">${(isSkins()?SKIN_DOING:DOING).map(l=>tile({v:l,label:l,sel:S.doing===l})).join("")}</div>`;
   } else if (st === "often"){
     q = "Did it happen more than once?";
     body = `<div class="grid">${OFTEN.map(l=>tile({v:l,label:l,sel:S.often===l})).join("")}</div><button class="go quiet" id="next">Skip</button>`;
@@ -865,7 +894,7 @@ function render(){
         <div class="btns left"><button class="go quiet small" id="save">Save</button><button class="go quiet small" id="undoall" ${S.text===S.base?"disabled":""}>Undo all my changes</button></div>
         <details class="hist" ${S.histOpen?"open":""} id="hist"><summary>My changes (<span id="vcount">${S.versions.length}</span>)</summary><ol id="vlist">${historyHTML()}</ol></details>
       </section>
-      ${S.kind==="broken"?`<div class="laura"><span>Were you playing with Laura?</span><div class="btns"><button class="tile mm yn ${S.laura?"sel":""}" id="laurayes">Yes</button><button class="tile mm yn ${S.laura?"":"sel"}" id="laurano">No</button></div></div>`:""}
+      ${S.kind==="broken"&&!isSkins()?`<div class="laura"><span>Were you playing with Laura?</span><div class="btns"><button class="tile mm yn ${S.laura?"sel":""}" id="laurayes">Yes</button><button class="tile mm yn ${S.laura?"":"sel"}" id="laurano">No</button></div></div>`:""}
       <div class="btns"><button class="go quiet" id="fix">Change my taps</button>${sentToday() && !S.sent ? `<button class="go" id="later">Save it for tomorrow</button></div><p class="hint" style="text-align:center;margin:0">You've already sent one today. This one will be in "Not sent yet" for tomorrow.</p>` : `<button class="go" id="send">Send to Daddy</button></div>`}`;
   } else if (st === "done"){
     app.innerHTML = head + `<div class="done"><div class="toast"><div class="ic">✓</div><div><b>Report sent!</b><span>Thank you, Harry</span></div></div>
@@ -899,7 +928,7 @@ function partSentence(p){
 function sentence(){
   if (S.kind==="broken"){
     const w = brokenObj(); if (!w) return "";
-    let s = S.thing?.vague ? `Something went wrong: ${lc(w.label)}` : `${S.thing?.l}: ${lc(w.label)}`;
+    let s = S.thing?.vague ? `Something went wrong${isSkins()?" in the skin maker":""}: ${lc(w.label)}` : `${isSkins()?"Skin maker, ":""}${S.thing?.l}: ${lc(w.label)}`;
     if (S.doing && S.doing!=="Don't know") s += ` when I was ${lc(S.doing).replace("in the horse guide","in the Horse Guide")}`;
     if (S.holding && !S.holding.vague) s += S.holding.id==="hand:empty" ? " with nothing in my hand" : ` holding ${S.holding.l}`;
     if (S.tapped && S.tapped!=="Don't know") s += `. Just before, I ${lc(S.tapped).replace(/^tapped/,"tapped").replace(/^just walking or riding/,"was just walking or riding").replace(/^got on or off/,"got on or off")}`;
@@ -914,9 +943,10 @@ const trailOf = t => t ? `${t.l}${t.id?` (id ${t.id})`:""}${t.trail?` [${t.trail
 function prompt(){
   if (!S.kind) return "(Harry hasn't picked anything yet.)";
   const when = S.sent || Date.now(), d = new Date(when), L = [];
-  L.push(`[Harry's Beta Testing] ${KINDS[S.kind].word} · report ${code()}`);
+  L.push(`[Harry's Beta Testing] ${isSkins()?"Skin maker bug report":KINDS[S.kind].word} · report ${code()}`);
   L.push(`Harry said: "${(S.text ?? sentence()) || "…"}"`, "");
-  L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
+  if (isSkins()) L.push(`App: Skin maker (${SKINS_URL}) · iPad Pro · NOT the add-on`);
+  else L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
   L.push(`Sent: ${d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}, ${d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`);
   if (S.kind==="broken"){
     const w = brokenObj();
@@ -928,7 +958,7 @@ function prompt(){
     if (S.words) L.push(`Words on screen: ${S.words}${S.words==="Yes, words came up" ? (S.shot?" (see screenshot)":" (no screenshot; check Harry's sentence, otherwise ask)") : ""}`);
     if (S.often) L.push(`How often: ${S.often}`);
     if (w){ L.push("", "Steps (from Harry's taps):",
-      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
+      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : isSkins() ? "Using the skin maker" : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
       `2. ${S.tapped && S.tapped!=="Don't know" ? S.tapped : "(what he did just before is unknown)"}`,
       `3. ${S.thing?.l||"It"}: ${w.act}`, `Expected: ${w.exp}.`, `Actual: ${w.act}.`); }
   } else {
@@ -945,7 +975,8 @@ function prompt(){
   }
   const bn = builderNotes(); if (bn.length) L.push("", "For the builder:", ...bn.map(x=>"- "+x));
   L.push(S.shot ? `Screenshot: 1 attached to this message (report ${code()}). If it's missing, ask Phill for it.` : "Screenshot: none", "");
-  if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
+  if (S.kind==="broken" && isSkins()) L.push("This is about the skin maker website (skins.phillm.dev), not Harry's Equestrian. Don't change or release the .mcaddon for it. Hold it for Phill: reproduce it on skins.phillm.dev on an iPad-sized screen, fix it in the skin maker's own code, and tell Phill what changed.");
+  else if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
   else if (S.kind==="better") L.push("Please suggest how to make this change (tap-only, no fail states), say what it would take, and add it to the feature plan.");
   else L.push("Please turn this into a feature idea for the plan (tap-only, no fail states), say what it would take, and ask Phill before building it.");
   return L.join("\n");
@@ -971,6 +1002,7 @@ function pick(v){
     if (v==="lk:none"){ if(S.like) clearAfter("like"); S.like=null; S.likeMode=false; return advance(); }
     S.likeMode = v==="lk:mod" ? "mod" : "mc"; S.pk={path:[],page:0}; return render();
   }
+  if (st==="app"){ const a=v.slice(4); if(S.app!==a) clearAfter("app"); S.app=a; if(a==="skins") S.laura=false; return advance(); }
   if (st==="what"){ if(S.what!==v) clearAfter("what"); S.what=v; return advance(); }
   if (st==="doing"){ if(S.doing!==v) clearAfter("doing"); S.doing=v; return advance(); }
   if (st==="tapped"){ if(S.tapped!==v) clearAfter("tapped"); S.tapped=v; return advance(); }
@@ -1027,7 +1059,7 @@ function wire(){
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
   wireFeedback();
   wireTrack(); wireFeat();
-  document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
+  document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(S.kind==="broken" && !S.app){ S.app="mod"; if(typeof S.step==="number" && S.step>=1) S.step++; } if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
   $("words") && ($("words").onclick=()=>{ S.amtWords=true; S.pk={path:[],page:0}; render(); });
@@ -1108,6 +1140,84 @@ function messages(){
 
 (function(){ const el=document.createElement("div"); el.id="pano"; el.setAttribute("aria-hidden","true"); el.style.backgroundImage="url(" + MAP + ")"; document.body.prepend(el); })();
 render();
+/* ---------- Skin maker (skins.phillm.dev): report choices + home-screen player ---------- */
+const SKINS_URL = "https://skins.phillm.dev/";
+const isSkins = (s=S) => s.app === "skins";
+const APPS = [
+  {v:"app:mod", label:"My mod", sub:"Harry's Equestrian"},
+  {v:"app:skins", label:"Skin maker", sub:"skins.phillm.dev"}
+];
+const SKIN_TREE = [
+  {l:"Drawing and painting", tp:"skin", k: leaves(["Pencil","Eraser","Paint bucket","Picking a colour","Copying a colour from the skin","Brush size","Undo and redo","Drawing on both sides at once"], "skin:draw:", "skin")},
+  {l:"The 3D model", tp:"skin", k: leaves(["Turning it round","Zooming in and out","Showing or hiding parts","The outer layer (hat and jacket)","Making it walk or pose"], "skin:model:", "skin")},
+  {l:"Parts of the skin", tp:"skin", k: leaves(["Head","Face","Body","Arms","Legs","Hat layer","Jacket and sleeves layer"], "skin:part:", "skin")},
+  {l:"Starting a skin", tp:"skin", k: leaves(["A new blank skin","A ready-made skin","Opening a skin I made","Opening a picture"], "skin:start:", "skin")},
+  {l:"Saving and my skins", tp:"skin", k: leaves(["Saving","My saved skins","Renaming a skin","Deleting a skin"], "skin:save:", "skin")},
+  {l:"Getting it into Minecraft", tp:"skin", k: leaves(["Downloading the skin","Putting it on in Minecraft","Thin arms or wide arms","It looks different in the game"], "skin:mc:", "skin")},
+  {l:"The page itself", tp:"skin", k: leaves(["Opening the page","Buttons","Menus","Words on the page","It's slow"], "skin:page:", "skin")}
+];
+const SKIN_UNSURE = {l:"I'm not sure", id:"skin:unsure", tp:"skin", vague:true};
+const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Opening a skin","Saving","Downloading","Putting it in Minecraft","Don't know"];
+const SKIN_TAPPED = ["Tapped on the skin","Pressed a button","Picked a tool","Dragged to turn it","Pinched to zoom","Pressed undo","Pressed save or download","Don't know"];
+BROKEN.push(
+  {id:"skin_colour",label:"Wrong colour",exp:"it paints the colour I picked",act:"it painted the wrong colour"},
+  {id:"skin_wontopen",label:"Wouldn't open",exp:"the page or skin opens",act:"the page or skin would not open"},
+  {id:"skin_lost",label:"Lost my skin",exp:"my skin is saved and still there",act:"the skin or my drawing went missing"},
+  {id:"skin_ingame",label:"Wrong in Minecraft",exp:"the skin looks the same in Minecraft as in the skin maker",act:"it looked different or didn't work in Minecraft"},
+  {id:"skin_frozen",label:"Page froze or closed",exp:"the page keeps working",act:"the skin maker froze or closed"});
+BROKEN_FOR.other = ["vanished","stuck","looks","nothing","wrongthing","lost","crash","sound"];
+BROKEN_FOR.skin = ["looks","skin_colour","nothing","wrongthing","skin_wontopen","skin_lost","skin_ingame","skin_frozen"];
+
+/* A blocky player for the home screen, drawn from a 64x64 skin in the standard layout
+   (so a real skin PNG can be dropped in later). Original rider design, not Steve. */
+function makeRiderSkin(){
+  const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d");
+  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  const shade = (hex, k) => { const n = parseInt(hex.slice(1),16); const f = v => Math.max(0,Math.min(255,Math.round(v*k))); return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`; };
+  const fill = (x,y,w,h,col,j=.08) => { for(let i=0;i<w;i++) for(let k=0;k<h;k++){ g.fillStyle = shade(col, 1 - j + rnd()*j*2); g.fillRect(x+i,y+k,1,1); } };
+  const box = (u,v,w,h,d,col) => { fill(u+d,v,w,d,col); fill(u+d+w,v,w,d,col); fill(u,v+d,2*(w+d),h,col); };
+  const SK="#C68E62", HAIR="#5A3720", JACKET="#24406E", COLLAR="#E9E4D8", JOD="#E4D6B5", BOOT="#1E1A18";
+  // head
+  box(0,0,8,8,8,SK); fill(8,0,8,8,HAIR); fill(24,8,8,8,HAIR); fill(0,8,8,3,HAIR); fill(16,8,8,3,HAIR); fill(0,11,2,2,HAIR); fill(22,11,2,2,HAIR);
+  fill(8,8,8,2,HAIR); fill(8,10,1,1,HAIR); fill(15,10,1,1,HAIR);
+  g.fillStyle="#FFFFFF"; g.fillRect(9,12,2,1); g.fillRect(13,12,2,1); g.fillStyle="#3D6FB8"; g.fillRect(10,12,1,1); g.fillRect(13,12,1,1);
+  fill(11,14,2,1,"#A0604A",.03);
+  // body (jacket with white collar and buttons)
+  box(16,16,8,12,4,JACKET); fill(23,20,2,2,COLLAR,.03); fill(22,20,1,1,COLLAR,.03); fill(25,20,1,1,COLLAR,.03); fill(24,22,1,10,"#1B3156",.03);
+  g.fillStyle="#D8B45A"; g.fillRect(23,24,1,1); g.fillRect(23,27,1,1);
+  // arms: sleeves + hands
+  box(40,16,4,12,4,JACKET); fill(40,30,16,2,SK); fill(48,16,4,4,SK);
+  box(32,48,4,12,4,JACKET); fill(32,62,16,2,SK); fill(40,48,4,4,SK);
+  // legs: jodhpurs + tall boots
+  box(0,16,4,12,4,JOD); fill(0,25,16,7,BOOT); fill(8,16,4,4,BOOT);
+  box(16,48,4,12,4,JOD); fill(16,57,16,7,BOOT); fill(24,48,4,4,BOOT);
+  return c.toDataURL();
+}
+let RIDER_SKIN = null;
+function playerHTML(){
+  if (!RIDER_SKIN) RIDER_SKIN = makeRiderSkin();
+  const P = (cls, u, v, w, h, d, x, y) => {
+    const f = (name, fu, fv, fw, fh, tr, pos) => `<i class="pf ${name}" style="width:calc(var(--px)*${fw});height:calc(var(--px)*${fh});${pos||""}background-position:calc(var(--px)*${-fu}) calc(var(--px)*${-fv});transform:${tr}"></i>`;
+    const W = `calc(var(--px)*${w})`, H = `calc(var(--px)*${h})`, D2 = `calc(var(--px)*${d/2})`;
+    return `<div class="pb ${cls}" style="width:${W};height:${H};left:calc(var(--px)*${x});top:calc(var(--px)*${y})">
+      ${f("front", u+d, v+d, w, h, `translateZ(${D2})`)}
+      ${f("back", u+2*d+w, v+d, w, h, `rotateY(180deg) translateZ(${D2})`)}
+      ${f("right", u, v+d, d, h, `rotateY(-90deg) translateZ(calc(var(--px)*${w/2}))`, `left:calc(var(--px)*${(w-d)/2});`)}
+      ${f("left", u+d+w, v+d, d, h, `rotateY(90deg) translateZ(calc(var(--px)*${w/2}))`, `left:calc(var(--px)*${(w-d)/2});`)}
+      ${f("top", u+d, v, w, d, `rotateX(90deg) translateZ(calc(var(--px)*${h/2}))`, `top:calc(var(--px)*${(h-d)/2});`)}
+      ${f("bottom", u+d+w, v, w, d, `rotateX(-90deg) translateZ(calc(var(--px)*${h/2}))`, `top:calc(var(--px)*${(h-d)/2});`)}
+    </div>`;
+  };
+  return `<div class="player" aria-hidden="false">
+    <div class="nametag">Harry</div>
+    <div class="pstage" style="--skin:url(${RIDER_SKIN})"><div class="pfig">
+      ${P("phead",0,0,8,8,8,4,0)}${P("pbody",16,16,8,12,4,4,8)}
+      ${P("parm r",40,16,4,12,4,0,8)}${P("parm l",32,48,4,12,4,12,8)}
+      ${P("pleg r",0,16,4,12,4,4,20)}${P("pleg l",16,48,4,12,4,8,20)}
+    </div></div>
+    <a class="tile mm skinbtn" href="${SKINS_URL}" target="_blank" rel="noopener">Create skin</a>
+  </div>`;
+}
 
 /* ---------- Maths, woven in. Never a gate: every maths bit can be skipped and nothing is marked wrong. ---------- */
 const TIMESW = {"Bigger":"times bigger","Smaller":"times smaller","Faster":"times faster","Slower":"times slower","Jumps higher":"times higher","Louder":"times louder","Quieter":"times quieter","Easier to see":"times easier to see","Happens more often":"times as often","Happens less often":"times less often","Lasts longer":"times as long","Wears out slower":"times slower to wear out","Gives more coins or XP":"times as many coins or XP"};
@@ -1269,7 +1379,7 @@ function prevPanel(){
       ${hl.length?`<ul class="relnotes">${hl.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:""}
       ${g.items.length===1 ? ((first.fixed||[]).length||first.file ? rowHTML(first) : "") : `<details${gi===0?" open":""}><summary>${gi===0?"Every version in this update":`See all ${g.items.length} versions`}</summary><div class="relvers">${g.items.map(rowHTML).join("")}</div></details>`}</div>`;
   };
-  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
+  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
       <p class="relhow">Each big update has a name. Open one to see every version in it.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
@@ -1305,10 +1415,10 @@ function builderNotes(){
   const N = [];
   if (S.kind === "broken"){
     if (S.thing?.vague) N.push("Harry wasn't sure what it was about: use the screenshot and his sentence, otherwise ask Phill.");
-    if (!installedVersion() && (!S.version || S.version==="?")) N.push("Version unknown: assume the latest release, and say so in the reply.");
+    if (!isSkins() && !installedVersion() && (!S.version || S.version==="?")) N.push("Version unknown: assume the latest release, and say so in the reply.");
     if (S.words==="Yes, words came up" && !S.shot) N.push("Words came up on screen but there is no screenshot: the exact text may be in Harry's sentence. If not, ask Phill to get it.");
     if (S.doing==="Don't know" || S.tapped==="Don't know") N.push("Steps are partly unknown: try the obvious routes on the test server first.");
-    const w = BROKEN.find(b=>b.id===S.what); if (w) N.push(`Done when: following the same steps${S.laura?" in a LAN game":""}, ${w.exp}${S.thing&&!S.thing.vague?` (${S.thing.l})`:""}. Add a check to the per-item test.`);
+    const w = BROKEN.find(b=>b.id===S.what); if (w) N.push(`Done when: following the same steps${isSkins()?" on skins.phillm.dev":S.laura?" in a LAN game":""}, ${w.exp}${S.thing&&!S.thing.vague?` (${S.thing.l})`:""}.${isSkins()?"":" Add a check to the per-item test."}`);
   } else {
     [...S.parts, S].forEach((p,i)=>{
       if (!p.change) return;
@@ -1337,7 +1447,7 @@ var fbFor = null, fbPick = null, fbNote = "", fbState = null; // fbState: null |
 function fbVersions(){ try { return JSON.parse(localStorage.getItem(FB_VER)||"[]"); } catch(e){ return []; } }
 function fbAllowed(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.followups||[]).some(f=>f.release===v); }
 function fbAllowedVer(v){ return !fbVersions().includes(v); }
-function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; }
+function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; }
 function closeFeedback(){ fbFor = null; fbPick = null; fbNote = ""; fbState = null; }
 function fbPanel(){
   if (!fbFor) return "";

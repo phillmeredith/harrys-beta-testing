@@ -137,7 +137,7 @@ const IC = { back: ico('<path d="M15 5l-7 7 7 7"/>'), up: ico('<path d="M12 19V5
 let S, drawer = false, showSaved = false, saveWarn = false;
 const PART_KEYS = ["thing","like","where","change","detail","what","doing","holding","tapped","words","often","when","onlyif"];
 function blankPart(){ return {thing:null, like:null, likeMode:null, where:null, change:null, detail:null, what:null, doing:null, holding:null, tapped:null, words:null, version:null, often:null, when:null, onlyif:null, pk:{path:[],page:0}}; }
-function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
+function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, app:null, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
 const code = (s=S) => "HBT-" + s.id.slice(-4);
 
 const STORE = "fixit_reports_v1";
@@ -182,8 +182,11 @@ reset();
 
 /* ---------- Steps ---------- */
 function steps(){
-  const s = ["kind","thing"];
-  if (S.kind === "broken"){ s.push("what","doing","holding","tapped","words","often"); if (!installedVersion()) s.push("version"); }
+  const s = ["kind"];
+  if (S.kind === "broken") s.push("app");
+  s.push("thing");
+  if (S.kind === "broken" && isSkins()) s.push("what","doing","tapped","words","often");
+  else if (S.kind === "broken"){ s.push("what","doing","holding","tapped","words","often"); if (!installedVersion()) s.push("version"); }
   else {
     if (S.thing?.isNew) s.push("like","where");
     s.push("change");
@@ -195,7 +198,7 @@ function steps(){
 }
 const cur = () => S.step === "done" ? "done" : steps()[S.step];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ORDER = ["kind","thing","like","where","change","detail","what","doing","holding","tapped","words","often","version","when","onlyif","shot"];
+const ORDER = ["kind","app","thing","like","where","change","detail","what","doing","holding","tapped","words","often","version","when","onlyif","shot"];
 function clearAfter(key){
   ORDER.slice(ORDER.indexOf(key)+1).forEach(k=>{ S[k] = k==="shot" ? false : null; });
   if (key==="kind") S.parts = [];
@@ -204,6 +207,7 @@ function clearAfter(key){
 
 // Which tree each picker step walks
 function pickerRoot(st){
+  if (st==="thing" && isSkins()) return {k: [...SKIN_TREE, SKIN_UNSURE]};
   if (st==="thing") return {k: S.kind==="idea" ? ROOT(true, false) : [...MOD_TREE, UNSURE]}; // reports are always about the mod, so skip the "in my mod" choice (Phill, 2026-11-18)
   if (st==="holding") return {k: HOLD_TREE()};
   if (st==="like") return {k: S.likeMode==="mod" ? MOD_TREE : fromObj(MC_TREE,"mc:","other")};
@@ -239,7 +243,7 @@ function subj(p=S){ const t=p.thing; if(!t) return "it"; if(t.vague) return "som
 const brokenObj = () => BROKEN.find(w=>w.id===S.what);
 
 const QUESTIONS = {
-  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
+  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" && isSkins() ? "What went wrong in the skin maker?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
   like:  () => S.likeMode ? "Which one is it like?" : `Is ${subj()} like something that already exists?`,
   change:() => S.pk.path.length ? "Which one?" : S.kind==="idea" ? `What should ${subj()} be like or do?` : `What should change about ${subj()}?`,
   holding:() => S.pk.path.length ? "Which one?" : "What was in your hand?",
@@ -259,11 +263,12 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
+        ${playerHTML()}
         ${releaseTile()}
         <div class="menurow">${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${k==="broken"?"Report a bug":esc(v.label)}</button>`).join("")}<button class="tile mm" id="draftsbtn">Draft reports (${drafts.length})</button></div>
         <div class="menurow"><button class="tile mm" id="featbtn">Features</button><button class="tile mm" id="prevver">Previous versions${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button></div>
@@ -298,9 +303,12 @@ function render(){
     q = S.thing?.vague ? "What happened?" : `What happened to ${S.thing?.l}?`;
     const ok = BROKEN_FOR[S.thing?.tp] || BROKEN_FOR.other;
     body = `<div class="grid">${BROKEN.filter(w=>ok.includes(w.id)).map(w=>tile({v:w.id,label:w.label,sel:S.what===w.id})).join("")}</div>`;
+  } else if (st === "app"){
+    q = "Where is the bug?";
+    body = `<div class="grid big2">${APPS.map(a=>tile({v:a.v,label:a.label,sub:a.sub,sel:S.app===a.v.slice(4)})).join("")}</div>`;
   } else if (st === "tapped"){
     q = "What did you do just before it happened?";
-    body = `<div class="grid">${TAPPED.map(l=>tile({v:l,label:l,sel:S.tapped===l})).join("")}</div>`;
+    body = `<div class="grid">${(isSkins()?SKIN_TAPPED:TAPPED).map(l=>tile({v:l,label:l,sel:S.tapped===l})).join("")}</div>`;
   } else if (st === "words"){
     q = "Did any words come up on the screen?";
     body = `<div class="grid big">${WORDS.map(l=>tile({v:l,label:l,sel:S.words===l})).join("")}</div>`;
@@ -313,7 +321,7 @@ function render(){
     body = `<div class="grid">${WHERE_NEW.map(l=>tile({v:l,label:l,sel:S.where===l})).join("")}</div><button class="go quiet" id="next">Skip</button>`;
   } else if (st === "doing"){
     q = "What were you doing?";
-    body = `<div class="grid">${DOING.map(l=>tile({v:l,label:l,sel:S.doing===l})).join("")}</div>`;
+    body = `<div class="grid">${(isSkins()?SKIN_DOING:DOING).map(l=>tile({v:l,label:l,sel:S.doing===l})).join("")}</div>`;
   } else if (st === "often"){
     q = "Did it happen more than once?";
     body = `<div class="grid">${OFTEN.map(l=>tile({v:l,label:l,sel:S.often===l})).join("")}</div><button class="go quiet" id="next">Skip</button>`;
@@ -349,7 +357,7 @@ function render(){
         <div class="btns left"><button class="go quiet small" id="save">Save</button><button class="go quiet small" id="undoall" ${S.text===S.base?"disabled":""}>Undo all my changes</button></div>
         <details class="hist" ${S.histOpen?"open":""} id="hist"><summary>My changes (<span id="vcount">${S.versions.length}</span>)</summary><ol id="vlist">${historyHTML()}</ol></details>
       </section>
-      ${S.kind==="broken"?`<div class="laura"><span>Were you playing with Laura?</span><div class="btns"><button class="tile mm yn ${S.laura?"sel":""}" id="laurayes">Yes</button><button class="tile mm yn ${S.laura?"":"sel"}" id="laurano">No</button></div></div>`:""}
+      ${S.kind==="broken"&&!isSkins()?`<div class="laura"><span>Were you playing with Laura?</span><div class="btns"><button class="tile mm yn ${S.laura?"sel":""}" id="laurayes">Yes</button><button class="tile mm yn ${S.laura?"":"sel"}" id="laurano">No</button></div></div>`:""}
       <div class="btns"><button class="go quiet" id="fix">Change my taps</button>${sentToday() && !S.sent ? `<button class="go" id="later">Save it for tomorrow</button></div><p class="hint" style="text-align:center;margin:0">You've already sent one today. This one will be in "Not sent yet" for tomorrow.</p>` : `<button class="go" id="send">Send to Daddy</button></div>`}`;
   } else if (st === "done"){
     app.innerHTML = head + `<div class="done"><div class="toast"><div class="ic">✓</div><div><b>Report sent!</b><span>Thank you, Harry</span></div></div>
@@ -383,7 +391,7 @@ function partSentence(p){
 function sentence(){
   if (S.kind==="broken"){
     const w = brokenObj(); if (!w) return "";
-    let s = S.thing?.vague ? `Something went wrong: ${lc(w.label)}` : `${S.thing?.l}: ${lc(w.label)}`;
+    let s = S.thing?.vague ? `Something went wrong${isSkins()?" in the skin maker":""}: ${lc(w.label)}` : `${isSkins()?"Skin maker, ":""}${S.thing?.l}: ${lc(w.label)}`;
     if (S.doing && S.doing!=="Don't know") s += ` when I was ${lc(S.doing).replace("in the horse guide","in the Horse Guide")}`;
     if (S.holding && !S.holding.vague) s += S.holding.id==="hand:empty" ? " with nothing in my hand" : ` holding ${S.holding.l}`;
     if (S.tapped && S.tapped!=="Don't know") s += `. Just before, I ${lc(S.tapped).replace(/^tapped/,"tapped").replace(/^just walking or riding/,"was just walking or riding").replace(/^got on or off/,"got on or off")}`;
@@ -398,9 +406,10 @@ const trailOf = t => t ? `${t.l}${t.id?` (id ${t.id})`:""}${t.trail?` [${t.trail
 function prompt(){
   if (!S.kind) return "(Harry hasn't picked anything yet.)";
   const when = S.sent || Date.now(), d = new Date(when), L = [];
-  L.push(`[Harry's Beta Testing] ${KINDS[S.kind].word} · report ${code()}`);
+  L.push(`[Harry's Beta Testing] ${isSkins()?"Skin maker bug report":KINDS[S.kind].word} · report ${code()}`);
   L.push(`Harry said: "${(S.text ?? sentence()) || "…"}"`, "");
-  L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
+  if (isSkins()) L.push(`App: Skin maker (${SKINS_URL}) · iPad Pro · NOT the add-on`);
+  else L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
   L.push(`Sent: ${d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}, ${d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`);
   if (S.kind==="broken"){
     const w = brokenObj();
@@ -412,7 +421,7 @@ function prompt(){
     if (S.words) L.push(`Words on screen: ${S.words}${S.words==="Yes, words came up" ? (S.shot?" (see screenshot)":" (no screenshot; check Harry's sentence, otherwise ask)") : ""}`);
     if (S.often) L.push(`How often: ${S.often}`);
     if (w){ L.push("", "Steps (from Harry's taps):",
-      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
+      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : isSkins() ? "Using the skin maker" : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
       `2. ${S.tapped && S.tapped!=="Don't know" ? S.tapped : "(what he did just before is unknown)"}`,
       `3. ${S.thing?.l||"It"}: ${w.act}`, `Expected: ${w.exp}.`, `Actual: ${w.act}.`); }
   } else {
@@ -429,7 +438,8 @@ function prompt(){
   }
   const bn = builderNotes(); if (bn.length) L.push("", "For the builder:", ...bn.map(x=>"- "+x));
   L.push(S.shot ? `Screenshot: 1 attached to this message (report ${code()}). If it's missing, ask Phill for it.` : "Screenshot: none", "");
-  if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
+  if (S.kind==="broken" && isSkins()) L.push("This is about the skin maker website (skins.phillm.dev), not Harry's Equestrian. Don't change or release the .mcaddon for it. Hold it for Phill: reproduce it on skins.phillm.dev on an iPad-sized screen, fix it in the skin maker's own code, and tell Phill what changed.");
+  else if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
   else if (S.kind==="better") L.push("Please suggest how to make this change (tap-only, no fail states), say what it would take, and add it to the feature plan.");
   else L.push("Please turn this into a feature idea for the plan (tap-only, no fail states), say what it would take, and ask Phill before building it.");
   return L.join("\n");
@@ -455,6 +465,7 @@ function pick(v){
     if (v==="lk:none"){ if(S.like) clearAfter("like"); S.like=null; S.likeMode=false; return advance(); }
     S.likeMode = v==="lk:mod" ? "mod" : "mc"; S.pk={path:[],page:0}; return render();
   }
+  if (st==="app"){ const a=v.slice(4); if(S.app!==a) clearAfter("app"); S.app=a; if(a==="skins") S.laura=false; return advance(); }
   if (st==="what"){ if(S.what!==v) clearAfter("what"); S.what=v; return advance(); }
   if (st==="doing"){ if(S.doing!==v) clearAfter("doing"); S.doing=v; return advance(); }
   if (st==="tapped"){ if(S.tapped!==v) clearAfter("tapped"); S.tapped=v; return advance(); }
@@ -511,7 +522,7 @@ function wire(){
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
   wireFeedback();
   wireTrack(); wireFeat();
-  document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
+  document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(S.kind==="broken" && !S.app){ S.app="mod"; if(typeof S.step==="number" && S.step>=1) S.step++; } if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
   $("words") && ($("words").onclick=()=>{ S.amtWords=true; S.pk={path:[],page:0}; render(); });

@@ -58,7 +58,7 @@ function prevPanel(){
       ${hl.length?`<ul class="relnotes">${hl.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:""}
       ${g.items.length===1 ? ((first.fixed||[]).length||first.file ? rowHTML(first) : "") : `<details${gi===0?" open":""}><summary>${gi===0?"Every version in this update":`See all ${g.items.length} versions`}</summary><div class="relvers">${g.items.map(rowHTML).join("")}</div></details>`}</div>`;
   };
-  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
+  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
       <p class="relhow">Each big update has a name. Open one to see every version in it.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
@@ -94,10 +94,10 @@ function builderNotes(){
   const N = [];
   if (S.kind === "broken"){
     if (S.thing?.vague) N.push("Harry wasn't sure what it was about: use the screenshot and his sentence, otherwise ask Phill.");
-    if (!installedVersion() && (!S.version || S.version==="?")) N.push("Version unknown: assume the latest release, and say so in the reply.");
+    if (!isSkins() && !installedVersion() && (!S.version || S.version==="?")) N.push("Version unknown: assume the latest release, and say so in the reply.");
     if (S.words==="Yes, words came up" && !S.shot) N.push("Words came up on screen but there is no screenshot: the exact text may be in Harry's sentence. If not, ask Phill to get it.");
     if (S.doing==="Don't know" || S.tapped==="Don't know") N.push("Steps are partly unknown: try the obvious routes on the test server first.");
-    const w = BROKEN.find(b=>b.id===S.what); if (w) N.push(`Done when: following the same steps${S.laura?" in a LAN game":""}, ${w.exp}${S.thing&&!S.thing.vague?` (${S.thing.l})`:""}. Add a check to the per-item test.`);
+    const w = BROKEN.find(b=>b.id===S.what); if (w) N.push(`Done when: following the same steps${isSkins()?" on skins.phillm.dev":S.laura?" in a LAN game":""}, ${w.exp}${S.thing&&!S.thing.vague?` (${S.thing.l})`:""}.${isSkins()?"":" Add a check to the per-item test."}`);
   } else {
     [...S.parts, S].forEach((p,i)=>{
       if (!p.change) return;
@@ -126,7 +126,7 @@ var fbFor = null, fbPick = null, fbNote = "", fbState = null; // fbState: null |
 function fbVersions(){ try { return JSON.parse(localStorage.getItem(FB_VER)||"[]"); } catch(e){ return []; } }
 function fbAllowed(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.followups||[]).some(f=>f.release===v); }
 function fbAllowedVer(v){ return !fbVersions().includes(v); }
-function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; }
+function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; }
 function closeFeedback(){ fbFor = null; fbPick = null; fbNote = ""; fbState = null; }
 function fbPanel(){
   if (!fbFor) return "";
