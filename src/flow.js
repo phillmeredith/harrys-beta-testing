@@ -258,7 +258,6 @@ function render(){
     const row = r => { const st = reportState(r); return `<button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="l1">Harry's</div><div class="l2">Beta Testing</div></div>
-      <div class="ask">What do you want to report to Daddy?</div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
@@ -266,7 +265,7 @@ function render(){
         ${all.length?`<button class="tile mm" id="savedbtn">My reports (${all.length})</button>`:""}
         ${showSaved && all.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">My reports</div>${[...drafts,...sent].map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
       </div>
-      <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span>Made for Harry</span></div>
+      <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
     </div>`;
     wire(); if (drawer) openDrawer(); return;
   }
