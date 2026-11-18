@@ -267,3 +267,52 @@ function wireTrack(){
   const n = $("trknote"); if (n) n.oninput=()=>{ trackNote=n.value; };
   $("trksendmore") && ($("trksendmore").onclick=sendMore);
 }
+
+/* ---------- Mod features: a store-style gallery of what's in the mod ---------- */
+const FEATURES = [
+  {id:"yard", img:"yard", title:"Harry's Yard", tag:"Your own riding centre", upd:"1.7", pts:["Built like the real riding centre, ready when you load the world","Stables, paddocks, a car park and the jump field","Everything is reachable by tapping, with no commands"]},
+  {id:"stables", img:"stables", title:"Stables and arenas", tag:"Indoor school and outdoor arena", upd:"1.7", pts:["A stable block with a stall for every horse","An indoor school and an outdoor arena with poles and cones","Mess spreads to empty stalls if nobody mucks out"]},
+  {id:"horses", img:"horses", title:"The yard horses", tag:"17 horses from the real yard", upd:"1.9", pts:["Every horse from the real yard, with matching coats","Each one has its own personality and a passport","Calm mode for gentle riding"]},
+  {id:"designer", img:"herd", title:"Horse Designer", tag:"Make your own horse", upd:"1.8", pts:["23 breeds to choose from","Coat colours, patterns, manes and tails","Face and leg markings"]},
+  {id:"foals", img:"foals", title:"Foals and twins", tag:"Foals that grow up", upd:"4.0", pts:["Foals grow up over time, even when you're far away","Sometimes twins are born","Lead a foal, and when you let go it walks back to its mum"]},
+  {id:"tack", img:"tack", title:"Tack and gear", tag:"Saddles, bridles and armour", upd:"3.0", pts:["English and western tack","Racks to keep it tidy","Copper, iron, gold, diamond and netherite armour"]},
+  {id:"shows", img:"shows", title:"Shows and rosettes", tag:"Jump, bend and race", upd:"2.0", pts:["Clear round, bending poles and barrel racing","Every rider gets a rosette","Rosettes go in the Hall of Fame"]},
+  {id:"course", img:"course", title:"Jumping", tag:"Hold to jump higher", upd:"3.0", pts:["Hold jump for a higher jump, up to 6 blocks","Jump standards that sort themselves when stacked","Your horse gets better the more it jumps"]},
+  {id:"trips", img:"trips", title:"Hacks and horsebox trips", tag:"Go to the beach and the forest", upd:"2.0", pts:["Marked hacks around the yard","Load up the horsebox for a day out","Trips to the beach and the forest"]},
+  {id:"yardday", img:"yardday", title:"Yard Day", tag:"Look after the yard", upd:"1.10", pts:["A Jobs Board with jobs to do","Turn out and Goodnight Horses","Fran the Farrier visits, and the Paddock Feeder keeps hay topped up"]},
+  {id:"flying", img:"flying", title:"Galaxy coats and flying", tag:"Horses that fly", upd:"4.0", pts:["A Fly! button in the horse menu","A checklist shows what your horse still needs to fly","Galaxy and surprise coats"]},
+  {id:"hobby", img:"hobby", title:"Hobby horses", tag:"Ride a hobby horse", upd:"3.0", pts:["A whole set of hobby horses to collect","Each one looks like a horse from the yard","Hold it and gallop around"]},
+  {id:"guide", img:"guide", title:"The Horse Guide", tag:"Everything with a tap", upd:"1.6", pts:["Every part of the mod is in the Horse Guide","The Horse Book has 52 horse cards","You never need to type a command"]}
+];
+var showFeat = false, featPick = null, featHero = 0;
+function featImg(f){ return `features/${f.img}.jpg`; }
+function featPanel(){
+  if (!showFeat) return "";
+  const names = Object.assign({}, UPDATE_NAMES, REL?.update_names||{});
+  if (featPick){
+    const f = FEATURES.find(x=>x.id===featPick);
+    return `<div class="homeover" data-close="feat"><div class="inner featpanel featdetail">
+      <img class="feathero" src="${featImg(f)}" alt="">
+      <div class="featbody"><div class="relhead"><b>${esc(f.title)}</b><span class="vtag2">Came in ${esc(f.upd)}${names[f.upd]?` ${esc(names[f.upd])}`:""}</span></div>
+        <ul class="relnotes">${f.pts.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div>
+      <div class="row2"><button class="tile mm" id="featback">Back to all features</button><button class="tile mm fbbtn" id="featbug">Something wrong? Report bug</button></div>
+      <button class="tile mm closeover" data-close="feat">Close</button></div></div>`;
+  }
+  const h = FEATURES[featHero % FEATURES.length];
+  return `<div class="homeover" data-close="feat"><div class="inner featpanel">
+    <div class="listlabel">Mod features</div>
+    <div class="herowrap"><button class="heroimg" data-feat="${h.id}" style="background-image:url('${featImg(h)}')"><span class="herocap"><b>${esc(h.title)}</b><small>${esc(h.tag)}</small></span></button>
+      <button class="heroarrow l" id="heroprev" aria-label="Previous">&lsaquo;</button><button class="heroarrow r" id="heronext" aria-label="Next">&rsaquo;</button></div>
+    <div class="herodots">${FEATURES.map((f,i)=>`<span class="${i===featHero%FEATURES.length?"on":""}"></span>`).join("")}</div>
+    <div class="featgrid">${FEATURES.map(f=>`<button class="feattile" data-feat="${f.id}"><img src="${featImg(f)}" alt="" loading="lazy"><b>${esc(f.title)}</b><small>${esc(f.tag)}</small></button>`).join("")}</div>
+    <button class="tile mm closeover" data-close="feat">Close</button></div></div>`;
+}
+function wireFeat(){
+  const $ = id => document.getElementById(id);
+  $("featbtn") && ($("featbtn").onclick=()=>{ showFeat=true; featPick=null; render(); });
+  document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{ featPick=b.dataset.feat; render(); document.querySelector(".featpanel")?.scrollTo(0,0); });
+  $("heroprev") && ($("heroprev").onclick=()=>{ featHero=(featHero+FEATURES.length-1)%FEATURES.length; render(); });
+  $("heronext") && ($("heronext").onclick=()=>{ featHero=(featHero+1)%FEATURES.length; render(); });
+  $("featback") && ($("featback").onclick=()=>{ featPick=null; render(); });
+  $("featbug") && ($("featbug").onclick=()=>{ showFeat=false; featPick=null; document.querySelector('[data-v="broken"]')?.click(); });
+}

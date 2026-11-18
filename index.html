@@ -400,6 +400,30 @@ body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
 .relvers{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .relver{border-left:4px solid #555;padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:6px}
 .relver .relnotes{font-size:17px}
+
+/* mod features gallery */
+.homeover .inner.featpanel{width:min(1100px,100%);max-height:92dvh;gap:14px;padding:18px}
+.herowrap{position:relative}
+.heroimg{display:block;width:100%;aspect-ratio:16/8;max-height:44dvh;background-size:cover;background-position:center;border:3px solid #000;cursor:pointer;position:relative;padding:0}
+.herocap{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(transparent,rgba(0,0,0,.8));text-align:left;display:flex;flex-direction:column;gap:4px;color:#fff;font-family:var(--pix)}
+.herocap b{font:400 clamp(30px,4vw,44px)/1 var(--head);text-shadow:3px 3px 0 #000}
+.herocap small{font-size:18px;text-shadow:2px 2px 0 #000}
+.heroarrow{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:64px;font:400 40px/1 var(--pix);color:#fff;background:rgba(0,0,0,.55);border:3px solid #000;cursor:pointer}
+.heroarrow.l{left:10px}.heroarrow.r{right:10px}
+.herodots{display:flex;gap:6px;justify-content:center}
+.herodots span{width:12px;height:12px;background:#555;border:2px solid #000}
+.herodots span.on{background:var(--gold)}
+.featgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.feattile{display:flex;flex-direction:column;gap:4px;text-align:left;background:#1f1f1f;border:3px solid #000;box-shadow:inset 2px 2px 0 #444;padding:0 0 10px;cursor:pointer;color:#fff;font-family:var(--pix)}
+.feattile img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;border-bottom:3px solid #000;margin-bottom:6px}
+.feattile b{font-size:19px;font-weight:500;padding:0 10px;text-shadow:2px 2px 0 #000}
+.feattile small{font-size:14px;color:#cfcfcf;padding:0 10px}
+.feattile:hover{outline:3px solid #fff;outline-offset:-6px}
+.feathero{width:100%;aspect-ratio:16/9;object-fit:cover;border:3px solid #000;display:block}
+.featbody{display:flex;flex-direction:column;gap:10px}
+.featdetail .relhead b{font:400 38px/1 var(--head)}
+.featdetail .relnotes{font-size:20px}
+.featdetail .row2 .tile.mm{min-height:56px;font-size:19px}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -751,12 +775,12 @@ function render(){
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
-        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v],i,a)=>`<button class="tile mm ${k==="broken"?"primary":""} ${i===a.length-1?"lastkind":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
+        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}<button class="tile mm lastkind" id="featbtn">Mod features</button>
         ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button>`:""}</div>`:""}
         ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${releaseTile()}${releasePanel()}${prevPanel()}
-        ${trackPanel()}${fbPanel()}
+        ${featPanel()}${trackPanel()}${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
     </div>`;
@@ -996,7 +1020,7 @@ function wire(){
   $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
   wireFeedback();
-  wireTrack();
+  wireTrack(); wireFeat();
   document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
@@ -1009,7 +1033,7 @@ function wire(){
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   document.querySelectorAll(".relget[data-ver]").forEach(a=>a.addEventListener("click",()=>{ const v=a.dataset.ver; setTimeout(()=>{ setInstalled(v); render(); }, 1500); }));
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
-  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else if(el.dataset.close==="track") closeTrack(); else showRelease=false; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else if(el.dataset.close==="track") closeTrack(); else if(el.dataset.close==="feat"){ showFeat=false; featPick=null; } else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
     el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
@@ -1446,6 +1470,55 @@ function wireTrack(){
   $("trkcancel") && ($("trkcancel").onclick=()=>{ trackMore=false; trackState=null; render(); });
   const n = $("trknote"); if (n) n.oninput=()=>{ trackNote=n.value; };
   $("trksendmore") && ($("trksendmore").onclick=sendMore);
+}
+
+/* ---------- Mod features: a store-style gallery of what's in the mod ---------- */
+const FEATURES = [
+  {id:"yard", img:"yard", title:"Harry's Yard", tag:"Your own riding centre", upd:"1.7", pts:["Built like the real riding centre, ready when you load the world","Stables, paddocks, a car park and the jump field","Everything is reachable by tapping, with no commands"]},
+  {id:"stables", img:"stables", title:"Stables and arenas", tag:"Indoor school and outdoor arena", upd:"1.7", pts:["A stable block with a stall for every horse","An indoor school and an outdoor arena with poles and cones","Mess spreads to empty stalls if nobody mucks out"]},
+  {id:"horses", img:"horses", title:"The yard horses", tag:"17 horses from the real yard", upd:"1.9", pts:["Every horse from the real yard, with matching coats","Each one has its own personality and a passport","Calm mode for gentle riding"]},
+  {id:"designer", img:"herd", title:"Horse Designer", tag:"Make your own horse", upd:"1.8", pts:["23 breeds to choose from","Coat colours, patterns, manes and tails","Face and leg markings"]},
+  {id:"foals", img:"foals", title:"Foals and twins", tag:"Foals that grow up", upd:"4.0", pts:["Foals grow up over time, even when you're far away","Sometimes twins are born","Lead a foal, and when you let go it walks back to its mum"]},
+  {id:"tack", img:"tack", title:"Tack and gear", tag:"Saddles, bridles and armour", upd:"3.0", pts:["English and western tack","Racks to keep it tidy","Copper, iron, gold, diamond and netherite armour"]},
+  {id:"shows", img:"shows", title:"Shows and rosettes", tag:"Jump, bend and race", upd:"2.0", pts:["Clear round, bending poles and barrel racing","Every rider gets a rosette","Rosettes go in the Hall of Fame"]},
+  {id:"course", img:"course", title:"Jumping", tag:"Hold to jump higher", upd:"3.0", pts:["Hold jump for a higher jump, up to 6 blocks","Jump standards that sort themselves when stacked","Your horse gets better the more it jumps"]},
+  {id:"trips", img:"trips", title:"Hacks and horsebox trips", tag:"Go to the beach and the forest", upd:"2.0", pts:["Marked hacks around the yard","Load up the horsebox for a day out","Trips to the beach and the forest"]},
+  {id:"yardday", img:"yardday", title:"Yard Day", tag:"Look after the yard", upd:"1.10", pts:["A Jobs Board with jobs to do","Turn out and Goodnight Horses","Fran the Farrier visits, and the Paddock Feeder keeps hay topped up"]},
+  {id:"flying", img:"flying", title:"Galaxy coats and flying", tag:"Horses that fly", upd:"4.0", pts:["A Fly! button in the horse menu","A checklist shows what your horse still needs to fly","Galaxy and surprise coats"]},
+  {id:"hobby", img:"hobby", title:"Hobby horses", tag:"Ride a hobby horse", upd:"3.0", pts:["A whole set of hobby horses to collect","Each one looks like a horse from the yard","Hold it and gallop around"]},
+  {id:"guide", img:"guide", title:"The Horse Guide", tag:"Everything with a tap", upd:"1.6", pts:["Every part of the mod is in the Horse Guide","The Horse Book has 52 horse cards","You never need to type a command"]}
+];
+var showFeat = false, featPick = null, featHero = 0;
+function featImg(f){ return `features/${f.img}.jpg`; }
+function featPanel(){
+  if (!showFeat) return "";
+  const names = Object.assign({}, UPDATE_NAMES, REL?.update_names||{});
+  if (featPick){
+    const f = FEATURES.find(x=>x.id===featPick);
+    return `<div class="homeover" data-close="feat"><div class="inner featpanel featdetail">
+      <img class="feathero" src="${featImg(f)}" alt="">
+      <div class="featbody"><div class="relhead"><b>${esc(f.title)}</b><span class="vtag2">Came in ${esc(f.upd)}${names[f.upd]?` ${esc(names[f.upd])}`:""}</span></div>
+        <ul class="relnotes">${f.pts.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div>
+      <div class="row2"><button class="tile mm" id="featback">Back to all features</button><button class="tile mm fbbtn" id="featbug">Something wrong? Report bug</button></div>
+      <button class="tile mm closeover" data-close="feat">Close</button></div></div>`;
+  }
+  const h = FEATURES[featHero % FEATURES.length];
+  return `<div class="homeover" data-close="feat"><div class="inner featpanel">
+    <div class="listlabel">Mod features</div>
+    <div class="herowrap"><button class="heroimg" data-feat="${h.id}" style="background-image:url('${featImg(h)}')"><span class="herocap"><b>${esc(h.title)}</b><small>${esc(h.tag)}</small></span></button>
+      <button class="heroarrow l" id="heroprev" aria-label="Previous">&lsaquo;</button><button class="heroarrow r" id="heronext" aria-label="Next">&rsaquo;</button></div>
+    <div class="herodots">${FEATURES.map((f,i)=>`<span class="${i===featHero%FEATURES.length?"on":""}"></span>`).join("")}</div>
+    <div class="featgrid">${FEATURES.map(f=>`<button class="feattile" data-feat="${f.id}"><img src="${featImg(f)}" alt="" loading="lazy"><b>${esc(f.title)}</b><small>${esc(f.tag)}</small></button>`).join("")}</div>
+    <button class="tile mm closeover" data-close="feat">Close</button></div></div>`;
+}
+function wireFeat(){
+  const $ = id => document.getElementById(id);
+  $("featbtn") && ($("featbtn").onclick=()=>{ showFeat=true; featPick=null; render(); });
+  document.querySelectorAll("[data-feat]").forEach(b=>b.onclick=()=>{ featPick=b.dataset.feat; render(); document.querySelector(".featpanel")?.scrollTo(0,0); });
+  $("heroprev") && ($("heroprev").onclick=()=>{ featHero=(featHero+FEATURES.length-1)%FEATURES.length; render(); });
+  $("heronext") && ($("heronext").onclick=()=>{ featHero=(featHero+1)%FEATURES.length; render(); });
+  $("featback") && ($("featback").onclick=()=>{ featPick=null; render(); });
+  $("featbug") && ($("featbug").onclick=()=>{ showFeat=false; featPick=null; document.querySelector('[data-v="broken"]')?.click(); });
 }
 
 /* ---------- Real send: the iPad's own share sheet (replaces the mockup sheet above) ---------- */

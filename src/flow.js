@@ -264,12 +264,12 @@ function render(){
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
-        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v],i,a)=>`<button class="tile mm ${k==="broken"?"primary":""} ${i===a.length-1?"lastkind":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
+        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}<button class="tile mm lastkind" id="featbtn">Mod features</button>
         ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button>`:""}</div>`:""}
         ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${releaseTile()}${releasePanel()}${prevPanel()}
-        ${trackPanel()}${fbPanel()}
+        ${featPanel()}${trackPanel()}${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
     </div>`;
@@ -509,7 +509,7 @@ function wire(){
   $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
   wireFeedback();
-  wireTrack();
+  wireTrack(); wireFeat();
   document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
@@ -522,7 +522,7 @@ function wire(){
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   document.querySelectorAll(".relget[data-ver]").forEach(a=>a.addEventListener("click",()=>{ const v=a.dataset.ver; setTimeout(()=>{ setInstalled(v); render(); }, 1500); }));
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
-  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else if(el.dataset.close==="track") closeTrack(); else showRelease=false; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else if(el.dataset.close==="track") closeTrack(); else if(el.dataset.close==="feat"){ showFeat=false; featPick=null; } else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
     el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
