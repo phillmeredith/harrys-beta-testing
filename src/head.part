@@ -230,6 +230,9 @@ body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(1
 body.home .today{margin-top:auto;margin-bottom:clamp(6px,1.4dvh,12px)}
 body.home .today + .menu{margin-top:0}
 body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
+body.home .menu > [data-v="idea"]{margin-bottom:clamp(10px,3.2dvh,34px)}
+body.home .menu > .menurow{margin-bottom:clamp(10px,3.2dvh,34px)}
+.vtag{font-size:.75em;opacity:.9;margin-left:.4em}
 /* lists: drafts, previous requests, follow-ups */
 .listlabel{font:400 34px/1 var(--head);letter-spacing:.02em;color:#fff;text-shadow:3px 3px 0 #000}
 .menurow{display:flex;gap:inherit;width:100%}

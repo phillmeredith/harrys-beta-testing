@@ -21,8 +21,8 @@ function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
   const r = latestRelease(); if (!r) return "";
   return newRelease()
-    ? `<button class="tile mm primary newver" id="newver">New version ${esc(r.version)} is ready!</button>`
-    : `<button class="tile mm latestver" id="newver">Latest version ${esc(r.version)}</button>`;
+    ? `<button class="tile mm primary newver" id="newver">Download latest version <span class="vtag">New: ${esc(r.version)}</span></button>`
+    : `<button class="tile mm latestver" id="newver">Download latest version</button>`;
 }
 function releasePanel(){
   const r = latestRelease(); if (!r || !showRelease) return "";

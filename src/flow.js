@@ -261,10 +261,10 @@ function render(){
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
-        ${releaseTile()}${releasePanel()}
-        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Drafts (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
-        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Drafts</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
+        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${releaseTile()}${releasePanel()}
         ${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>

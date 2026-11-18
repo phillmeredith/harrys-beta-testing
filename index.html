@@ -243,6 +243,9 @@ body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(1
 body.home .today{margin-top:auto;margin-bottom:clamp(6px,1.4dvh,12px)}
 body.home .today + .menu{margin-top:0}
 body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
+body.home .menu > [data-v="idea"]{margin-bottom:clamp(10px,3.2dvh,34px)}
+body.home .menu > .menurow{margin-bottom:clamp(10px,3.2dvh,34px)}
+.vtag{font-size:.75em;opacity:.9;margin-left:.4em}
 /* lists: drafts, previous requests, follow-ups */
 .listlabel{font:400 34px/1 var(--head);letter-spacing:.02em;color:#fff;text-shadow:3px 3px 0 #000}
 .menurow{display:flex;gap:inherit;width:100%}
@@ -649,10 +652,10 @@ function render(){
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
-        ${releaseTile()}${releasePanel()}
-        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Drafts (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
-        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Drafts</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
+        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${releaseTile()}${releasePanel()}
         ${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
@@ -1096,8 +1099,8 @@ function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
   const r = latestRelease(); if (!r) return "";
   return newRelease()
-    ? `<button class="tile mm primary newver" id="newver">New version ${esc(r.version)} is ready!</button>`
-    : `<button class="tile mm latestver" id="newver">Latest version ${esc(r.version)}</button>`;
+    ? `<button class="tile mm primary newver" id="newver">Download latest version <span class="vtag">New: ${esc(r.version)}</span></button>`
+    : `<button class="tile mm latestver" id="newver">Download latest version</button>`;
 }
 function releasePanel(){
   const r = latestRelease(); if (!r || !showRelease) return "";
