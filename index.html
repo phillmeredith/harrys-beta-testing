@@ -229,6 +229,12 @@ body.home .foot{font-size:min(17px,2.2dvh)}
 .st-draft{background:#4E4E4E}.st-sent{background:var(--idea)}.st-wip{background:var(--better)}.st-fixed{background:var(--ok)}
 .q h1,.logo{-webkit-touch-callout:none}
 @media (max-height:480px){ body.home .ask,body.home .logo .l1{display:none} body.home .tile.mm{min-height:38px;font-size:18px} }
+/* home layout: logo near the top, question + buttons centred in the space below, one centred footer line */
+body.home .title-screen{justify-content:flex-start}
+body.home .logo{margin-top:clamp(16px,9dvh,130px)}
+body.home .ask{margin-top:auto;margin-bottom:clamp(2px,0.6dvh,8px)}
+body.home .menu{margin-top:0;margin-bottom:auto}
+body.home .foot{justify-content:center;gap:22px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
 /* iOS share sheet and Messages stay iOS-looking: they are the iPad's own screens */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20;font-family:-apple-system,system-ui,sans-serif;text-shadow:none}
 .sheet{width:min(560px,100%);background:#F2F2F7;color:#111;border-radius:22px 22px 0 0;padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
