@@ -454,6 +454,8 @@ body.home .player .tile.mm.skinbtn{display:flex;align-items:center;justify-conte
 .typeit{display:flex;justify-content:center;margin-top:clamp(10px,2.4dvh,26px)}
 .typeit .go{font-size:18px}
 .freebox textarea{min-height:clamp(140px,26dvh,260px)}
+
+.paircode{letter-spacing:.5em;text-align:center;font-size:28px}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -1735,11 +1737,11 @@ function renderLock(){
   document.body.classList.add("home");
   const app = document.getElementById("app");
   const names = ["Harry's iPad","Daddy's device"];
-  const msg = {bad:"That code isn't right. Check it and try again.", locked:"Too many wrong codes today. Try again tomorrow.", offline:"Couldn't reach Daddy's inbox. Check the internet and try again."}[lockState] || "";
+  const msg = {bad:"That PIN isn't right. Check it and try again.", locked:"Too many wrong PINs today. Try again tomorrow.", offline:"Couldn't reach Daddy's inbox. Check the internet and try again."}[lockState] || "";
   const body = lockView==="setup"
     ? `<div class="lockpanel"><div class="listlabel">Set up this device</div>
-        <p class="relhow">Daddy only. Type the setup code and choose which device this is.</p>
-        <input id="paircode" class="paircode" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Setup code" value="${esc(lockCode)}">
+        <p class="relhow">Daddy only. Type the 6-digit PIN and choose which device this is.</p>
+        <input id="paircode" class="paircode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="6-digit PIN" aria-label="6-digit PIN" value="${esc(lockCode)}">
         <div class="row2">${names.map(n=>`<button class="tile mm${lockName===n?" primary":""}" data-pairname="${esc(n)}">${esc(n)}</button>`).join("")}</div>
         ${msg?`<p class="relhow">${esc(msg)}</p>`:""}
         <div class="row2"><button class="tile mm closeover" id="pairback">Back</button><button class="tile mm primary" id="pairgo"${lockState==="pairing"?" disabled":""}>${lockState==="pairing"?"Setting up…":"Set up"}</button></div></div>`
@@ -1752,7 +1754,7 @@ function renderLock(){
   const $ = id => document.getElementById(id);
   $("pairopen") && ($("pairopen").onclick=()=>{ lockView="setup"; lockState=null; render(); });
   $("pairback") && ($("pairback").onclick=()=>{ lockView="locked"; lockState=null; render(); });
-  const c = $("paircode"); if (c) c.oninput=()=>{ lockCode=c.value; };
+  const c = $("paircode"); if (c) c.oninput=()=>{ c.value=c.value.replace(/\D/g,"").slice(0,6); lockCode=c.value; };
   document.querySelectorAll("[data-pairname]").forEach(b=>b.onclick=()=>{ lockCode=$("paircode")?.value||lockCode; lockName=b.dataset.pairname; render(); });
   $("pairgo") && ($("pairgo").onclick=pairDevice);
 }

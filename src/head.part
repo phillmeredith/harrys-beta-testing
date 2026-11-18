@@ -441,6 +441,8 @@ body.home .player .tile.mm.skinbtn{display:flex;align-items:center;justify-conte
 .typeit{display:flex;justify-content:center;margin-top:clamp(10px,2.4dvh,26px)}
 .typeit .go{font-size:18px}
 .freebox textarea{min-height:clamp(140px,26dvh,260px)}
+
+.paircode{letter-spacing:.5em;text-align:center;font-size:28px}
 </style>
 
 <div class="app" id="app"></div>

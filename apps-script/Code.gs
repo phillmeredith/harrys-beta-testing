@@ -10,7 +10,7 @@
  * 3. Copy the Web app URL (ends in /exec) and send it to Claude.
  *
  * Device pairing (2026-11-18): only paired devices can send.
- * 4. Project Settings (gear) > Script properties > Add: PAIR_CODE = a word only you know.
+ * 4. Project Settings (gear) > Script properties > Add: PAIR_CODE = a 6-digit PIN only you know.
  * 5. On each device, open the app, tap "Set up this device", type that word and pick its name.
  *    Paired devices are kept in the DEVICES script property. Delete one there to unpair it.
  *    Change PAIR_CODE any time; already-paired devices keep working.
