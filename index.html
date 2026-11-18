@@ -358,6 +358,32 @@ body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
 .relhead .vtag2.have{background:#B8860B}
 .relfixed{margin:0;font-size:15px;color:var(--gold);text-shadow:2px 2px 0 #000}
 .tile.mm.relget{text-decoration:none;min-height:48px;font-size:19px;box-sizing:border-box;width:100%;align-self:stretch}
+
+/* report tracker */
+.homeover .inner.trackpanel{width:min(720px,100%);gap:14px;padding:18px}
+.trkhead{display:flex;gap:12px;align-items:stretch}
+.trkhead .rkind{width:18px}
+.trkhead small{font-size:15px;color:#cfcfcf}
+.trackpanel .listlabel{font-size:32px}
+.trkwords{margin:0;font-size:18px;color:#e9e9e9;background:#1f1f1f;border:2px solid #000;padding:10px 12px}
+.timeline{list-style:none;margin:0;padding:4px 0 0 0;display:flex;flex-direction:column}
+.tl{display:flex;gap:14px;position:relative;padding:0 0 16px 0}
+.tl::before{content:"";position:absolute;left:10px;top:22px;bottom:0;width:4px;background:#555}
+.tl:last-child::before{display:none}
+.tl.tl-done::before{background:var(--ok)}
+.tdot{flex:none;width:24px;height:24px;border:3px solid #000;background:#555;box-sizing:border-box;margin-top:1px}
+.tl.tl-done .tdot{background:var(--ok)}
+.tl.tl-now .tdot{background:var(--gold)}
+.tl b{display:block;font-size:20px;font-weight:500;text-shadow:2px 2px 0 #000}
+.tl small{display:block;font-size:15px;color:#cfcfcf;margin-top:2px}
+.tl.tl-next b{color:#bdbdbd}
+.relhow.big{font-size:20px}
+.row2{display:flex;gap:10px}.row2 > *{flex:1;min-width:0}
+.homeover .trackpanel .tile.mm.okbtn{background:var(--ok)!important;box-shadow:inset 3px 3px 0 #6FC25A,inset -3px -4px 0 #24561A!important}
+.trackpanel .row2 .tile.mm{font-size:20px;min-height:56px}
+.homeover .trackpanel .tile.mm.fbbtn{background:#7A4A12!important;box-shadow:inset 3px 3px 0 #A86A24,inset -3px -4px 0 #4A2C08!important}
+.tl > div{text-align:left}
+.repcard[data-track]{cursor:pointer}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -703,17 +729,17 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>${fbAllowed(r)?`<button class="tile mm fbbtn" data-fb="${r.id}">Not quite right?</button>`:""}</div>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v],i,a)=>`<button class="tile mm ${k==="broken"?"primary":""} ${i===a.length-1?"lastkind":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
-        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
+        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button>`:""}</div>`:""}
         ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${releaseTile()}${releasePanel()}${prevPanel()}
-        ${fbPanel()}
+        ${trackPanel()}${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
     </div>`;
@@ -953,6 +979,7 @@ function wire(){
   $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
   wireFeedback();
+  wireTrack();
   document.querySelectorAll("[data-resume]").forEach(b=>b.onclick=()=>{ const r=loadAll()[b.dataset.resume]; if(!r) return; S={...blankPart(), parts:[], ...r}; if(typeof S.step!=="number"||r.sent) S.step=steps().indexOf("review"); render(); });
   document.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>numOp(b.dataset.op));
   $("numdone") && ($("numdone").onclick=numDone);
@@ -965,7 +992,7 @@ function wire(){
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
-  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else showRelease=false; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else if(el.dataset.close==="track") closeTrack(); else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
     el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
@@ -1176,7 +1203,7 @@ function prevPanel(){
       ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fx?`<ul class="relfixes">${fx}</ul>`:""}
       ${r.file?`<a class="tile mm relget" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
   };
-  const rep = r => { const st = reportState(r); return `<div class="repcard"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
+  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
       <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
@@ -1197,6 +1224,7 @@ function releasePanel(){
 }
 function reportState(r){
   if (!r.sent) return ["draft","Not sent yet. Tap to finish"];
+  if (r.confirmed && r.confirmed.release===fixedIn(code(r))) return ["fixed","Harry says it's fixed"];
   if (fixedIn(code(r)) && (r.followups||[]).some(f=>f.release===fixedIn(code(r)))) return ["wip","Daddy's looking again"];
   if (fixedIn(code(r))) return ["fixed",`Fixed in ${fixedIn(code(r))}!`];
   const st = statusOf(code(r)); if (st) return ["wip", st];
@@ -1297,6 +1325,90 @@ async function sendFollowup(){
   if (r){ const all = loadAll(); const rec = all[r.id]; if (rec){ rec.followups = [...(rec.followups||[]), {release:ver, at:Date.now(), choice:FB_CHOICES[fbPick]}]; try { localStorage.setItem(STORE, JSON.stringify(all)); } catch(e){} } }
   else { try { localStorage.setItem(FB_VER, JSON.stringify([...fbVersions(), ver])); } catch(e){} }
   fbState = "sent"; render();
+}
+
+
+/* ---------- Report tracker: where a sent report is up to, and Harry's say on the fix ---------- */
+var trackFor = null, trackMore = false, trackNote = "", trackState = null; // trackState: null | "sending" | "failed" | "thanks" | "added"
+function relOf(v){ return (REL?.releases||[]).find(r=>r.version===v) || null; }
+function needsCheck(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.confirmed && r.confirmed.release===v) && !(r.followups||[]).some(f=>f.release===v); }
+function closeTrack(){ trackFor = null; trackMore = false; trackNote = ""; trackState = null; }
+function trackPanel(){
+  if (!trackFor) return "";
+  const r = loadAll()[trackFor]; if (!r) return "";
+  const c = code(r), v = fixedIn(c), st = statusOf(c), rel = v ? relOf(v) : null;
+  const ups = (r.followups||[]), adds = (r.added||[]), conf = r.confirmed && r.confirmed.release===v ? r.confirmed : null;
+  const step = (state, title, sub) => `<li class="tl tl-${state}"><span class="tdot"></span><div><b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:""}</div></li>`;
+  const L = [step("done","Sent to Daddy", tsDate(r.sent))];
+  adds.forEach(a=>L.push(step("done","Harry told Daddy more", `${tsDate(a.at)} · "${a.note}"`)));
+  if (v) L.push(step("done", st && !v ? st : "Daddy's looking at it", ""));
+  else L.push(step(st?"now":"next", st || "Daddy's looking at it", st ? "" : "Waiting for Daddy"));
+  L.push(step(v?"done":"next", v ? `Fixed in ${v}` : "Fixed in a new version", v ? relDate(rel?.date) : "Not yet"));
+  ups.forEach(f=>L.push(step("done", `Harry said: ${f.choice}`, `${tsDate(f.at)} · on ${f.release}`)));
+  if (ups.some(f=>f.release===v)) L.push(step("now","Daddy's looking again","He'll do this before anything new"));
+  else if (v) L.push(step(conf?"done":"now", conf ? "Harry checked: it's fixed" : "Harry checks it", conf ? tsDate(conf.at) : "Get the new version, then try it"));
+  let actions = "";
+  if (trackState==="thanks") actions = `<p class="relhow big">Thanks Harry. Daddy's been told it works.</p>`;
+  else if (trackState==="added") actions = `<p class="relhow big">Sent. Daddy will read it with your report.</p>`;
+  else if (trackMore) actions = `<textarea id="trknote" class="fbmsg" rows="3" placeholder="What else should Daddy know?">${esc(trackNote)}</textarea>
+      ${trackState==="failed"?`<p class="relhow">It couldn't reach Daddy just now. Try again in a bit.</p>`:""}
+      <div class="row2"><button class="tile mm" id="trkcancel">Back</button><button class="tile mm primary" id="trksendmore"${trackState==="sending"?" disabled":""}>${trackState==="sending"?"Sending…":"Send to Daddy"}</button></div>`;
+  else if (needsCheck(r)) actions = `<p class="relhow big">Is it fixed now?</p>
+      ${trackState==="failed"?`<p class="relhow">It couldn't reach Daddy just now. Try again in a bit.</p>`:""}
+      <div class="row2"><button class="tile mm okbtn" id="trkyes"${trackState==="sending"?" disabled":""}>Yes, it's fixed</button><button class="tile mm fbbtn" data-fb="${r.id}">No, not quite</button></div>`;
+  else if (!v) actions = `<button class="tile mm" id="trkmore">Tell Daddy more</button>`;
+  return `<div class="homeover" data-close="track"><div class="inner trackpanel">
+    <div class="trkhead"><span class="rkind k-${r.kind}"></span><div><div class="listlabel">${esc(fbTitle(r))}</div><small>${esc(KINDS[r.kind]?.word||"")} · ${esc(c)}</small></div></div>
+    ${r.text?`<p class="trkwords">"${esc(r.text)}"</p>`:""}
+    <ol class="timeline">${L.join("")}</ol>
+    ${actions}
+    <button class="tile mm closeover" data-close="track">Close</button></div></div>`;
+}
+async function postToDaddy(r, said, text){
+  let ok = false;
+  try {
+    const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({key:SEND_KEY, code:code(r), kind:r.kind, said, text, shot:null})});
+    ok = !!(await res.json()).ok;
+  } catch(e){}
+  if (!ok && navigator.share){ try { await navigator.share({text}); ok = true; } catch(e){} }
+  return ok;
+}
+function saveRec(id, fn){ const all = loadAll(); if (all[id]){ fn(all[id]); try { localStorage.setItem(STORE, JSON.stringify(all)); } catch(e){} } }
+async function confirmFixed(){
+  const r = loadAll()[trackFor]; if (!r) return; const c = code(r), v = fixedIn(c);
+  trackState = "sending"; render();
+  const text = [`[Harry's Beta Testing] CONFIRMED · report ${c} · release ${v}`, "",
+    `Harry checked report ${c} (${KINDS[r.kind]?.word||r.kind} about ${fbTitle(r)}) on ${v} and says it's fixed.`,
+    `Add-on: Harry's Equestrian ${versionText()} · iPad Pro`, "", "For the builder:",
+    `- Nothing to build. Mark report ${c} as confirmed by Harry and label this email Done. It does not use Harry's daily report.`].join("\n");
+  const ok = await postToDaddy(r, `Confirmed fixed in ${v}`, text);
+  if (!ok){ trackState = "failed"; render(); return; }
+  saveRec(r.id, rec=>{ rec.confirmed = {release:v, at:Date.now()}; });
+  trackState = "thanks"; render();
+}
+async function sendMore(){
+  const r = loadAll()[trackFor]; if (!r) return; const c = code(r);
+  const m = document.getElementById("trknote"); if (m) trackNote = m.value; const note = trackNote.trim(); if (!note) return;
+  trackState = "sending"; render();
+  const text = [`[Harry's Beta Testing] MORE INFO · report ${c}`, "",
+    `Harry added more to report ${c} (${KINDS[r.kind]?.word||r.kind} about ${fbTitle(r)}), which isn't fixed yet.`,
+    `Original words: ${r.text||"(none)"}`, `Harry's new words: ${note}`,
+    `Add-on: Harry's Equestrian ${versionText()} · iPad Pro`, "", "For the builder:",
+    `- Not a new report: find the original email by "${c}" and read this with it. It does not use Harry's daily report.`].join("\n");
+  const ok = await postToDaddy(r, `More info: ${note.slice(0,40)}`, text);
+  if (!ok){ trackState = "failed"; render(); return; }
+  saveRec(r.id, rec=>{ rec.added = [...(rec.added||[]), {at:Date.now(), note}]; });
+  trackMore = false; trackNote = ""; trackState = "added"; render();
+}
+function wireTrack(){
+  document.querySelectorAll("[data-track]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); closeTrack(); trackFor=b.dataset.track; render(); });
+  const $ = id => document.getElementById(id);
+  $("trkyes") && ($("trkyes").onclick=confirmFixed);
+  $("trkmore") && ($("trkmore").onclick=()=>{ trackMore=true; trackState=null; render(); });
+  $("trkcancel") && ($("trkcancel").onclick=()=>{ trackMore=false; trackState=null; render(); });
+  const n = $("trknote"); if (n) n.oninput=()=>{ trackNote=n.value; };
+  $("trksendmore") && ($("trksendmore").onclick=sendMore);
 }
 
 /* ---------- Real send: the iPad's own share sheet (replaces the mockup sheet above) ---------- */

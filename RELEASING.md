@@ -37,3 +37,9 @@ When a request is marked fixed (its code is in a release's `fixed`), Harry can s
 - The email subject contains `Follow-up on <version>:` and the body starts with `FOLLOW-UP`. It reuses the original code (version-level ones use `HBT-Vnnn`).
 - Follow-ups do not use Harry's one-a-day report. Handle them before new reports.
 - Once a follow-up is sent, the app shows "Daddy's looking again" until a newer release lists the code in `fixed` again (or in `status`).
+
+
+## Harry's tracker emails (from 2026-11-18)
+Harry can open any sent report to see where it's up to. Two new kinds of email come from it, and neither uses his daily report:
+- `[Harry's Beta Testing] CONFIRMED · report HBT-xxxx · release X`: Harry checked the fix and says it works. There's nothing to build. Label it Done.
+- `[Harry's Beta Testing] MORE INFO · report HBT-xxxx`: Harry added detail to a report that isn't fixed yet. Read it together with the original email for that code before building it.

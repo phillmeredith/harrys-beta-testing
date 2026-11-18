@@ -40,7 +40,7 @@ function prevPanel(){
       ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fx?`<ul class="relfixes">${fx}</ul>`:""}
       ${r.file?`<a class="tile mm relget" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
   };
-  const rep = r => { const st = reportState(r); return `<div class="repcard"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
+  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
       <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
@@ -61,6 +61,7 @@ function releasePanel(){
 }
 function reportState(r){
   if (!r.sent) return ["draft","Not sent yet. Tap to finish"];
+  if (r.confirmed && r.confirmed.release===fixedIn(code(r))) return ["fixed","Harry says it's fixed"];
   if (fixedIn(code(r)) && (r.followups||[]).some(f=>f.release===fixedIn(code(r)))) return ["wip","Daddy's looking again"];
   if (fixedIn(code(r))) return ["fixed",`Fixed in ${fixedIn(code(r))}!`];
   const st = statusOf(code(r)); if (st) return ["wip", st];
@@ -161,4 +162,88 @@ async function sendFollowup(){
   if (r){ const all = loadAll(); const rec = all[r.id]; if (rec){ rec.followups = [...(rec.followups||[]), {release:ver, at:Date.now(), choice:FB_CHOICES[fbPick]}]; try { localStorage.setItem(STORE, JSON.stringify(all)); } catch(e){} } }
   else { try { localStorage.setItem(FB_VER, JSON.stringify([...fbVersions(), ver])); } catch(e){} }
   fbState = "sent"; render();
+}
+
+
+/* ---------- Report tracker: where a sent report is up to, and Harry's say on the fix ---------- */
+var trackFor = null, trackMore = false, trackNote = "", trackState = null; // trackState: null | "sending" | "failed" | "thanks" | "added"
+function relOf(v){ return (REL?.releases||[]).find(r=>r.version===v) || null; }
+function needsCheck(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.confirmed && r.confirmed.release===v) && !(r.followups||[]).some(f=>f.release===v); }
+function closeTrack(){ trackFor = null; trackMore = false; trackNote = ""; trackState = null; }
+function trackPanel(){
+  if (!trackFor) return "";
+  const r = loadAll()[trackFor]; if (!r) return "";
+  const c = code(r), v = fixedIn(c), st = statusOf(c), rel = v ? relOf(v) : null;
+  const ups = (r.followups||[]), adds = (r.added||[]), conf = r.confirmed && r.confirmed.release===v ? r.confirmed : null;
+  const step = (state, title, sub) => `<li class="tl tl-${state}"><span class="tdot"></span><div><b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:""}</div></li>`;
+  const L = [step("done","Sent to Daddy", tsDate(r.sent))];
+  adds.forEach(a=>L.push(step("done","Harry told Daddy more", `${tsDate(a.at)} · "${a.note}"`)));
+  if (v) L.push(step("done", st && !v ? st : "Daddy's looking at it", ""));
+  else L.push(step(st?"now":"next", st || "Daddy's looking at it", st ? "" : "Waiting for Daddy"));
+  L.push(step(v?"done":"next", v ? `Fixed in ${v}` : "Fixed in a new version", v ? relDate(rel?.date) : "Not yet"));
+  ups.forEach(f=>L.push(step("done", `Harry said: ${f.choice}`, `${tsDate(f.at)} · on ${f.release}`)));
+  if (ups.some(f=>f.release===v)) L.push(step("now","Daddy's looking again","He'll do this before anything new"));
+  else if (v) L.push(step(conf?"done":"now", conf ? "Harry checked: it's fixed" : "Harry checks it", conf ? tsDate(conf.at) : "Get the new version, then try it"));
+  let actions = "";
+  if (trackState==="thanks") actions = `<p class="relhow big">Thanks Harry. Daddy's been told it works.</p>`;
+  else if (trackState==="added") actions = `<p class="relhow big">Sent. Daddy will read it with your report.</p>`;
+  else if (trackMore) actions = `<textarea id="trknote" class="fbmsg" rows="3" placeholder="What else should Daddy know?">${esc(trackNote)}</textarea>
+      ${trackState==="failed"?`<p class="relhow">It couldn't reach Daddy just now. Try again in a bit.</p>`:""}
+      <div class="row2"><button class="tile mm" id="trkcancel">Back</button><button class="tile mm primary" id="trksendmore"${trackState==="sending"?" disabled":""}>${trackState==="sending"?"Sending…":"Send to Daddy"}</button></div>`;
+  else if (needsCheck(r)) actions = `<p class="relhow big">Is it fixed now?</p>
+      ${trackState==="failed"?`<p class="relhow">It couldn't reach Daddy just now. Try again in a bit.</p>`:""}
+      <div class="row2"><button class="tile mm okbtn" id="trkyes"${trackState==="sending"?" disabled":""}>Yes, it's fixed</button><button class="tile mm fbbtn" data-fb="${r.id}">No, not quite</button></div>`;
+  else if (!v) actions = `<button class="tile mm" id="trkmore">Tell Daddy more</button>`;
+  return `<div class="homeover" data-close="track"><div class="inner trackpanel">
+    <div class="trkhead"><span class="rkind k-${r.kind}"></span><div><div class="listlabel">${esc(fbTitle(r))}</div><small>${esc(KINDS[r.kind]?.word||"")} · ${esc(c)}</small></div></div>
+    ${r.text?`<p class="trkwords">"${esc(r.text)}"</p>`:""}
+    <ol class="timeline">${L.join("")}</ol>
+    ${actions}
+    <button class="tile mm closeover" data-close="track">Close</button></div></div>`;
+}
+async function postToDaddy(r, said, text){
+  let ok = false;
+  try {
+    const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({key:SEND_KEY, code:code(r), kind:r.kind, said, text, shot:null})});
+    ok = !!(await res.json()).ok;
+  } catch(e){}
+  if (!ok && navigator.share){ try { await navigator.share({text}); ok = true; } catch(e){} }
+  return ok;
+}
+function saveRec(id, fn){ const all = loadAll(); if (all[id]){ fn(all[id]); try { localStorage.setItem(STORE, JSON.stringify(all)); } catch(e){} } }
+async function confirmFixed(){
+  const r = loadAll()[trackFor]; if (!r) return; const c = code(r), v = fixedIn(c);
+  trackState = "sending"; render();
+  const text = [`[Harry's Beta Testing] CONFIRMED · report ${c} · release ${v}`, "",
+    `Harry checked report ${c} (${KINDS[r.kind]?.word||r.kind} about ${fbTitle(r)}) on ${v} and says it's fixed.`,
+    `Add-on: Harry's Equestrian ${versionText()} · iPad Pro`, "", "For the builder:",
+    `- Nothing to build. Mark report ${c} as confirmed by Harry and label this email Done. It does not use Harry's daily report.`].join("\n");
+  const ok = await postToDaddy(r, `Confirmed fixed in ${v}`, text);
+  if (!ok){ trackState = "failed"; render(); return; }
+  saveRec(r.id, rec=>{ rec.confirmed = {release:v, at:Date.now()}; });
+  trackState = "thanks"; render();
+}
+async function sendMore(){
+  const r = loadAll()[trackFor]; if (!r) return; const c = code(r);
+  const m = document.getElementById("trknote"); if (m) trackNote = m.value; const note = trackNote.trim(); if (!note) return;
+  trackState = "sending"; render();
+  const text = [`[Harry's Beta Testing] MORE INFO · report ${c}`, "",
+    `Harry added more to report ${c} (${KINDS[r.kind]?.word||r.kind} about ${fbTitle(r)}), which isn't fixed yet.`,
+    `Original words: ${r.text||"(none)"}`, `Harry's new words: ${note}`,
+    `Add-on: Harry's Equestrian ${versionText()} · iPad Pro`, "", "For the builder:",
+    `- Not a new report: find the original email by "${c}" and read this with it. It does not use Harry's daily report.`].join("\n");
+  const ok = await postToDaddy(r, `More info: ${note.slice(0,40)}`, text);
+  if (!ok){ trackState = "failed"; render(); return; }
+  saveRec(r.id, rec=>{ rec.added = [...(rec.added||[]), {at:Date.now(), note}]; });
+  trackMore = false; trackNote = ""; trackState = "added"; render();
+}
+function wireTrack(){
+  document.querySelectorAll("[data-track]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); closeTrack(); trackFor=b.dataset.track; render(); });
+  const $ = id => document.getElementById(id);
+  $("trkyes") && ($("trkyes").onclick=confirmFixed);
+  $("trkmore") && ($("trkmore").onclick=()=>{ trackMore=true; trackState=null; render(); });
+  $("trkcancel") && ($("trkcancel").onclick=()=>{ trackMore=false; trackState=null; render(); });
+  const n = $("trknote"); if (n) n.oninput=()=>{ trackNote=n.value; };
+  $("trksendmore") && ($("trksendmore").onclick=sendMore);
 }
