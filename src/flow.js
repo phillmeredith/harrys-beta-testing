@@ -354,7 +354,7 @@ function render(){
   } else if (st === "done"){
     app.innerHTML = head + `<div class="done"><div class="toast"><div class="ic">✓</div><div><b>Report sent!</b><span>Thank you, Harry</span></div></div>
       <p>Daddy has your message. Claude will start fixing it.</p>
-      ${puzzleHTML()}
+      ${SHOW_PUZZLE?puzzleHTML():""}
       <button class="go" id="again">Tell Daddy something else</button>
       <button class="go quiet small" id="resend">Didn't go to Daddy? Send it again</button></div>`;
     wire(); return;

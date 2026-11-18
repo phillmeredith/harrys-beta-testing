@@ -64,6 +64,7 @@ function numDone(){
 
 /* A puzzle about his report, offered after sending. Optional, no score, no streaks, no "wrong". */
 const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const SHOW_PUZZLE = false; // hidden for now (Phill 2026-11-18); set true to bring the puzzle back
 function makePuzzle(){
   const t = S.thing && !S.thing.vague ? S.thing.l : null;
   const horse = t && S.thing.tp==="horse" ? t : HORSE_NAMES[rnd(0,HORSE_NAMES.length-1)];
