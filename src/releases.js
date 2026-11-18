@@ -154,8 +154,8 @@ async function sendFollowup(){
   let ok = false;
   try {
     const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body: JSON.stringify({key:SEND_KEY, code:fcode, kind:r?.kind||"broken", said:`Follow-up on ${ver}: ${FB_CHOICES[fbPick]}`, text, shot:null})});
-    ok = !!(await res.json()).ok;
+      body: JSON.stringify({key:SEND_KEY, device:deviceToken(), code:fcode, kind:r?.kind||"broken", said:`Follow-up on ${ver}: ${FB_CHOICES[fbPick]}`, text, shot:null})});
+    const j = await res.json(); noteDeviceError(j); ok = !!j.ok;
   } catch(e){}
   if (!ok && navigator.share){ try { await navigator.share({text}); ok = true; } catch(e){} }
   if (!ok){ fbState = "failed"; render(); return; }
@@ -205,8 +205,8 @@ async function postToDaddy(r, said, text){
   let ok = false;
   try {
     const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body: JSON.stringify({key:SEND_KEY, code:code(r), kind:r.kind, said, text, shot:null})});
-    ok = !!(await res.json()).ok;
+      body: JSON.stringify({key:SEND_KEY, device:deviceToken(), code:code(r), kind:r.kind, said, text, shot:null})});
+    const j = await res.json(); noteDeviceError(j); ok = !!j.ok;
   } catch(e){}
   if (!ok && navigator.share){ try { await navigator.share({text}); ok = true; } catch(e){} }
   return ok;

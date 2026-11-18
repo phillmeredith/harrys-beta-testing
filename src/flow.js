@@ -247,6 +247,7 @@ const QUESTIONS = {
 };
 
 function render(){
+  if (!deviceToken()) { renderLock(); return; }
   const app = document.getElementById("app"), st = cur();
   const head = `<div class="bar">
     <button class="round backbtn" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}<span>Back</span></button>

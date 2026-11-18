@@ -13,8 +13,8 @@ async function sendToInbox(text){
   const btn = document.getElementById("send"); if (btn){ btn.disabled = true; btn.textContent = "Sending…"; }
   try {
     const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body: JSON.stringify({key:SEND_KEY, code:code(), kind:S.kind, said:S.text, text, shot:S.shot||null})});
-    const j = await res.json();
+      body: JSON.stringify({key:SEND_KEY, device:deviceToken(), code:code(), kind:S.kind, said:S.text, text, shot:S.shot||null})});
+    const j = await res.json(); noteDeviceError(j);
     if (j.ok) return true;
   } catch(e){}
   if (btn){ btn.disabled = false; btn.textContent = "Send to Daddy"; }
@@ -51,3 +51,57 @@ function fallbackSend(text){
   document.getElementById("didsend").onclick = () => { L.innerHTML = ""; markSent(); };
 }
 if ("serviceWorker" in navigator && location.protocol === "https:") { navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+
+
+/* ---------- Device pairing: only paired devices (Harry's iPad, Daddy's device) can use the app and send ---------- */
+const DEVICE = "hbt_device";
+var lockView = "locked", lockCode = "", lockName = null, lockState = null; // lockState: null | "pairing" | "bad" | "locked" | "offline"
+function deviceInfo(){ try { return JSON.parse(localStorage.getItem(DEVICE)||"null"); } catch(e){ return null; } }
+function deviceToken(){ return deviceInfo()?.token || ""; }
+function forgetDevice(){ try { localStorage.removeItem(DEVICE); } catch(e){} }
+function noteDeviceError(j){ if (j && j.ok===false && j.error==="device"){ forgetDevice(); lockView="locked"; render(); } }
+function renderLock(){
+  document.body.classList.add("home");
+  const app = document.getElementById("app");
+  const names = ["Harry's iPad","Daddy's device"];
+  const msg = {bad:"That code isn't right. Check it and try again.", locked:"Too many wrong codes today. Try again tomorrow.", offline:"Couldn't reach Daddy's inbox. Check the internet and try again."}[lockState] || "";
+  const body = lockView==="setup"
+    ? `<div class="lockpanel"><div class="listlabel">Set up this device</div>
+        <p class="relhow">Daddy only. Type the setup code and choose which device this is.</p>
+        <input id="paircode" class="paircode" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Setup code" value="${esc(lockCode)}">
+        <div class="row2">${names.map(n=>`<button class="tile mm${lockName===n?" primary":""}" data-pairname="${esc(n)}">${esc(n)}</button>`).join("")}</div>
+        ${msg?`<p class="relhow">${esc(msg)}</p>`:""}
+        <div class="row2"><button class="tile mm closeover" id="pairback">Back</button><button class="tile mm primary" id="pairgo"${lockState==="pairing"?" disabled":""}>${lockState==="pairing"?"Setting up…":"Set up"}</button></div></div>`
+    : `<div class="lockpanel"><div class="listlabel">This app is set up for Harry's iPad</div>
+        <p class="relhow">It only works on devices Daddy has set up.</p>
+        <button class="tile mm" id="pairopen">Set up this device</button></div>`;
+  app.innerHTML = `<div class="title-screen lockscreen">
+      <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
+      ${body}</div>`;
+  const $ = id => document.getElementById(id);
+  $("pairopen") && ($("pairopen").onclick=()=>{ lockView="setup"; lockState=null; render(); });
+  $("pairback") && ($("pairback").onclick=()=>{ lockView="locked"; lockState=null; render(); });
+  const c = $("paircode"); if (c) c.oninput=()=>{ lockCode=c.value; };
+  document.querySelectorAll("[data-pairname]").forEach(b=>b.onclick=()=>{ lockCode=$("paircode")?.value||lockCode; lockName=b.dataset.pairname; render(); });
+  $("pairgo") && ($("pairgo").onclick=pairDevice);
+}
+async function pairDevice(){
+  const c = document.getElementById("paircode"); if (c) lockCode = c.value;
+  if (!lockCode.trim() || !lockName){ lockState = null; render(); return; }
+  lockState = "pairing"; render();
+  try {
+    const res = await fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({key:SEND_KEY, pair:lockCode.trim(), name:lockName})});
+    const j = await res.json();
+    if (j.ok && j.token){ try { localStorage.setItem(DEVICE, JSON.stringify({token:j.token, name:j.name, at:Date.now()})); } catch(e){}
+      lockView="locked"; lockCode=""; lockState=null; render(); return; }
+    lockState = j.error==="locked" ? "locked" : "bad";
+  } catch(e){ lockState = "offline"; }
+  render();
+}
+// On open, quietly check this device is still on Daddy's list (he can remove one in the Apps Script settings).
+(function checkDevice(){
+  const t = deviceToken(); if (!t || !SEND_URL || navigator.onLine === false) return;
+  fetch(SEND_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({key:SEND_KEY, device:t, check:1})})
+    .then(r=>r.json()).then(j=>{ if (j && j.ok===false && !j.error){ forgetDevice(); lockView="locked"; render(); } }).catch(()=>{});
+})();
