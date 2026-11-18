@@ -11,6 +11,439 @@
         "The Horse Guide's Flying page explains the order"
       ],
       "fixed": []
+    },
+    {
+      "version": "4.0.5",
+      "date": "2026-11-14",
+      "file": null,
+      "notes_for_harry": [
+        "Foals keep growing and mums keep counting down even when you're far away",
+        "The foal timer shows mares that are out of sight too"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "4.0.4",
+      "date": "2026-11-14",
+      "file": null,
+      "notes_for_harry": [
+        "A foal on a lead follows whoever is holding it",
+        "Only a foal's owner can lead it",
+        "When you let go, a foal walks back to its own mum"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "4.0.3",
+      "date": "2026-11-14",
+      "file": null,
+      "notes_for_harry": [
+        "You can lead foals now, even without tack"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "4.0.2",
+      "date": "2026-11-12",
+      "file": null,
+      "notes_for_harry": [
+        "The Paddock Feeder shows both halves now"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "4.0.1",
+      "date": "2026-11-12",
+      "file": null,
+      "notes_for_harry": [
+        "Foals are back to their proper coats"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "4.0.0",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "A big new version number!",
+        "Stack jump standards and they sort themselves: feet at the bottom, the top piece on top"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.39",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "Stack jump standards and they sort themselves, so you can get the fancy diagonal top"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.38",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "Foals' coats put back the way they were"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.37",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "Foals painted again to look more like their mums"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.36",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "Arena letters don't flicker any more",
+        "Foal coats painted with more detail"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.35",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "Foal coats painted with more detail"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.34",
+      "date": "2026-11-11",
+      "file": null,
+      "notes_for_harry": [
+        "Look up while flying forward to climb",
+        "Landing after a long glide doesn't hurt your horse",
+        "Flying into a wall makes your horse hover instead of falling",
+        "The saddle can't slip off in the air"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.33",
+      "date": "2026-11-10",
+      "file": null,
+      "notes_for_harry": [
+        "Letter boards in both arenas, with a button by each entrance to turn them on and off",
+        "Move letter boards or add more from the block menu",
+        "Show jumps look like the real ones, with proper posts and end pieces"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.32",
+      "date": "2026-11-10",
+      "file": null,
+      "notes_for_harry": [
+        "Tap forward 3 times quickly to take off on a winged horse",
+        "Tap back 3 times quickly to land"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.31",
+      "date": "2026-11-10",
+      "file": null,
+      "notes_for_harry": [
+        "Twins are born half the time",
+        "Every foal has its own baby coat, and some get a surprise coat",
+        "A Fly! button in the horse menu",
+        "Copper, iron, gold, diamond and netherite helmets, chestplates and leggings can be worn"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.30",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Horses lying down don't slide around",
+        "Whistled horses don't push against fences"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.29",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Horses take naps in the day too",
+        "The whistle won't call horses over fences",
+        "Horses can step up one block"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.28",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Horses step up one block by themselves"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.27",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Bedding only gets dirty when pee and poo is turned on"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.26",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Sometimes two foals are born at once: twins!"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.25",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.24",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Jumps get higher the longer you hold the jump button",
+        "The foal timer sits in the bottom-left corner on one line"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.23",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.22",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.21",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.20",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.19",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.18",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.17",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "A timer shows when a foal is coming"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.16",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Every item checked to make sure it does its job"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.15",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Play together over LAN with Laura"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.14",
+      "date": "2026-11-07",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.13",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.12",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Horses in the arena don't vanish home by mistake"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.11",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "A horse's care day now runs from 8 PM to 8 PM, so breakfast counts"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.10",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.9",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.8",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.7",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.6",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Hold the jump button until the bar fills for a big jump",
+        "Bigger jumps give more jump points"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.5",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Horses jump properly over show jumps"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.4",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Small fixes to make things work better"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.3",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Poo and mess land on the real floor of the stable"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.2",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Mess spreads to free spots in the stable"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.1",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Hobby horses look right when you ride them"
+      ],
+      "fixed": []
+    },
+    {
+      "version": "3.0.0",
+      "date": "2026-11-06",
+      "file": null,
+      "notes_for_harry": [
+        "Lots of new art: blocks, racks, rider poses, coat pictures, paintings of your horses and mood bubbles"
+      ],
+      "fixed": []
     }
   ]
 }
