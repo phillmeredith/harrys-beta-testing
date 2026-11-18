@@ -56,11 +56,12 @@ const NEW_GROUPS = [
   ["Sounds and screens", [["A new sound or music","other"],["A new page or button in the Horse Guide","guide"],["A new button or menu in the game","other"]]]
 ];
 const NEW_TREE = NEW_GROUPS.map(([g, items]) => ({l:g, tp:"other", k: items.map(([l,tp])=>({l, id:"new:"+snake(l.replace(/^A new /,"")), tp, isNew:true}))}));
+const UNSURE = {l:"I'm not sure", id:"unsure", tp:"other", vague:true};
 const ROOT = (withNew, withMc) => [
   {l:"Something in my mod", tp:"item", k: MOD_TREE},
   ...(withMc ? [{l:"Something in normal Minecraft", tp:"other", k: fromObj(MC_TREE, "mc:", "other")}] : []),
   ...(withNew ? [{l:"Something brand new", tp:"other", k: NEW_TREE}] : []),
-  {l:"I'm not sure", id:"unsure", tp:"other", vague:true}
+  UNSURE
 ];
 
 /* ---------- What should change ---------- */
@@ -203,7 +204,7 @@ function clearAfter(key){
 
 // Which tree each picker step walks
 function pickerRoot(st){
-  if (st==="thing") return {k: ROOT(S.kind==="idea", false)};
+  if (st==="thing") return {k: S.kind==="idea" ? ROOT(true, false) : [...MOD_TREE, UNSURE]}; // reports are always about the mod, so skip the "in my mod" choice (Phill, 2026-11-18)
   if (st==="holding") return {k: HOLD_TREE()};
   if (st==="like") return {k: S.likeMode==="mod" ? MOD_TREE : fromObj(MC_TREE,"mc:","other")};
   if (st==="change") return {k: CHANGES};
@@ -489,7 +490,7 @@ function wire(){
   $("next") && ($("next").onclick=advance);
   if ($("hname")){
     const inp=$("hname"), done=$("namedone");
-    const finish=()=>{ const v=inp.value.trim(); if(!v) return; const nv=v.replace(/^./,c=>c.toUpperCase()); const val={l:nv, id:"named:"+nv, tp:"horse", trail:["Something in my mod","Horses","My yard horses"]}; if(JSON.stringify(S.thing)!==JSON.stringify(val)) clearAfter("thing"); S.thing=val; S.typing=false; advance(); };
+    const finish=()=>{ const v=inp.value.trim(); if(!v) return; const nv=v.replace(/^./,c=>c.toUpperCase()); const val={l:nv, id:"named:"+nv, tp:"horse", trail:["Horses","My yard horses"]}; if(JSON.stringify(S.thing)!==JSON.stringify(val)) clearAfter("thing"); S.thing=val; S.typing=false; advance(); };
     inp.oninput=()=>{ done.disabled=!inp.value.trim(); };
     inp.onkeydown=e=>{ if(e.key==="Enter") finish(); };
     done.onclick=finish;
