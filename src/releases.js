@@ -20,9 +20,26 @@ function loadReleases(){
 function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
   const r = latestRelease(); if (!r) return "";
-  return newRelease()
-    ? `<button class="tile mm newver" id="newver">Download latest version<span class="vtag">New</span></button>`
-    : `<button class="tile mm latestver" id="newver">Download latest version</button>`;
+  return `<div class="menurow relrow">${newRelease()
+    ? `<button class="tile mm newver" id="newver">Download latest<span class="vtag">New</span></button>`
+    : `<button class="tile mm latestver" id="newver">Download latest</button>`}<button class="tile mm latestver" id="prevver">Previous versions</button></div>`;
+}
+var showPrev = false;
+function relDate(d){ if (!d) return ""; const t = new Date(d+"T12:00:00"); return isNaN(t) ? "" : t.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+function prevPanel(){
+  if (!showPrev || !REL) return "";
+  const iv = installedVersion(), list = REL.releases || [];
+  const card = (r,i) => {
+    const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
+    const fixed = (r.fixed||[]).length ? `<p class="relfixed">Fixed your reports: ${(r.fixed||[]).map(esc).join(", ")}</p>` : "";
+    const tags = (i===0?`<span class="vtag2">Latest</span>`:"") + (r.version===iv?`<span class="vtag2 have">You've got this</span>`:"");
+    return `<div class="relcard"><div class="relhead"><b>${esc(r.version)}</b><span>${esc(relDate(r.date))}</span>${tags}</div>
+      ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fixed}
+      ${r.file?`<a class="tile mm relget" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
+  };
+  return `<div class="homeover" data-close="prev"><div class="inner savedlist prevpanel"><div class="listlabel">All versions</div>
+    <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
+    ${list.map(card).join("")}<button class="tile mm closeover" data-close="prev">Close</button></div></div>`;
 }
 function releasePanel(){
   const r = latestRelease(); if (!r || !showRelease) return "";

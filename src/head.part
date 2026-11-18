@@ -319,6 +319,19 @@ body:not(.home) .q{padding-bottom:clamp(4px,1dvh,14px);border-bottom:3px solid r
 body:not(.home) .q > div{padding-bottom:clamp(12px,2dvh,22px)}
 body:not(.home) .grid{gap:clamp(14px,2.2vw,22px)}
 body:not(.home) .grid .tile{min-height:clamp(110px,14dvh,170px)}
+
+/* split download row + all-versions list */
+body.home .menu > .menurow.relrow{margin-bottom:0}
+body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
+.prevpanel{width:min(640px,100%)!important}
+.relcard{background:#1f1f1f;border:2px solid #000;box-shadow:inset 2px 2px 0 #444;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.relhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.relhead b{font:400 30px/1 var(--head);text-shadow:2px 2px 0 #000}
+.relhead span{font-size:15px;color:#cfcfcf}
+.relhead .vtag2{font-size:13px;color:#fff;background:#3f8f2d;border:2px solid #000;padding:2px 8px}
+.relhead .vtag2.have{background:#B8860B}
+.relfixed{margin:0;font-size:15px;color:var(--gold);text-shadow:2px 2px 0 #000}
+.tile.mm.relget{text-decoration:none;min-height:48px;font-size:19px;box-sizing:border-box;width:100%;align-self:stretch}
 </style>
 
 <div class="app" id="app"></div>

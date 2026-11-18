@@ -332,6 +332,19 @@ body:not(.home) .q{padding-bottom:clamp(4px,1dvh,14px);border-bottom:3px solid r
 body:not(.home) .q > div{padding-bottom:clamp(12px,2dvh,22px)}
 body:not(.home) .grid{gap:clamp(14px,2.2vw,22px)}
 body:not(.home) .grid .tile{min-height:clamp(110px,14dvh,170px)}
+
+/* split download row + all-versions list */
+body.home .menu > .menurow.relrow{margin-bottom:0}
+body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
+.prevpanel{width:min(640px,100%)!important}
+.relcard{background:#1f1f1f;border:2px solid #000;box-shadow:inset 2px 2px 0 #444;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.relhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.relhead b{font:400 30px/1 var(--head);text-shadow:2px 2px 0 #000}
+.relhead span{font-size:15px;color:#cfcfcf}
+.relhead .vtag2{font-size:13px;color:#fff;background:#3f8f2d;border:2px solid #000;padding:2px 8px}
+.relhead .vtag2.have{background:#B8860B}
+.relfixed{margin:0;font-size:15px;color:var(--gold);text-shadow:2px 2px 0 #000}
+.tile.mm.relget{text-decoration:none;min-height:48px;font-size:19px;box-sizing:border-box;width:100%;align-self:stretch}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -686,7 +699,7 @@ function render(){
         ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
         ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
-        ${releaseTile()}${releasePanel()}
+        ${releaseTile()}${releasePanel()}${prevPanel()}
         ${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>
@@ -935,10 +948,11 @@ function wire(){
   $("puzno") && ($("puzno").onclick=()=>{ S.puz=null; render(); });
   document.querySelectorAll("[data-ans]").forEach(b=>b.onclick=()=>{ if(S.puz && S.puz.picked===null){ S.puz.picked=+b.dataset.ans; render(); } });
   $("newver") && ($("newver").onclick=()=>{ showRelease=!showRelease; render(); });
+  $("prevver") && ($("prevver").onclick=()=>{ showPrev=true; render(); });
   $("getver") && ($("getver").onclick=()=>{ const r=newRelease(); setTimeout(()=>{ if(r){ setInstalled(r.version); showRelease=false; render(); } }, 1500); });
   $("gotver") && ($("gotver").onclick=()=>{ const r=newRelease(); if(r) setInstalled(r.version); showRelease=false; render(); });
   $("later") && ($("later").onclick=()=>{ clearTimeout(autoTimer); S.text=document.getElementById("msg")?.value ?? S.text; persist(); reset(); showSaved="drafts"; render(); });
-  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else showRelease=false; render(); });
+  document.querySelectorAll("[data-close]").forEach(el=>el.onclick=e=>{ if(e.target!==el) return; if(el.dataset.close==="saved") showSaved=false; else if(el.dataset.close==="fb") closeFeedback(); else if(el.dataset.close==="prev") showPrev=false; else showRelease=false; render(); });
   document.querySelectorAll(".logo,.q h1").forEach(el=>{ let t=null; const go=()=>{ t=setTimeout(()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); }, 1500); }; const stop=()=>clearTimeout(t);
     el.addEventListener("pointerdown",go); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,stop)); el.addEventListener("contextmenu",e=>e.preventDefault()); });
   if ($("msg")) wireEditor();
@@ -1129,9 +1143,26 @@ function loadReleases(){
 function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
   const r = latestRelease(); if (!r) return "";
-  return newRelease()
-    ? `<button class="tile mm newver" id="newver">Download latest version<span class="vtag">New</span></button>`
-    : `<button class="tile mm latestver" id="newver">Download latest version</button>`;
+  return `<div class="menurow relrow">${newRelease()
+    ? `<button class="tile mm newver" id="newver">Download latest<span class="vtag">New</span></button>`
+    : `<button class="tile mm latestver" id="newver">Download latest</button>`}<button class="tile mm latestver" id="prevver">Previous versions</button></div>`;
+}
+var showPrev = false;
+function relDate(d){ if (!d) return ""; const t = new Date(d+"T12:00:00"); return isNaN(t) ? "" : t.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+function prevPanel(){
+  if (!showPrev || !REL) return "";
+  const iv = installedVersion(), list = REL.releases || [];
+  const card = (r,i) => {
+    const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
+    const fixed = (r.fixed||[]).length ? `<p class="relfixed">Fixed your reports: ${(r.fixed||[]).map(esc).join(", ")}</p>` : "";
+    const tags = (i===0?`<span class="vtag2">Latest</span>`:"") + (r.version===iv?`<span class="vtag2 have">You've got this</span>`:"");
+    return `<div class="relcard"><div class="relhead"><b>${esc(r.version)}</b><span>${esc(relDate(r.date))}</span>${tags}</div>
+      ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fixed}
+      ${r.file?`<a class="tile mm relget" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
+  };
+  return `<div class="homeover" data-close="prev"><div class="inner savedlist prevpanel"><div class="listlabel">All versions</div>
+    <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
+    ${list.map(card).join("")}<button class="tile mm closeover" data-close="prev">Close</button></div></div>`;
 }
 function releasePanel(){
   const r = latestRelease(); if (!r || !showRelease) return "";

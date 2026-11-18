@@ -23,7 +23,8 @@ The app reads `releases.json` from this site. The newest release must come first
 
 - `fixed` lists the report codes from Harry's emails that this release fixes. His "My reports" list then shows "Fixed in 4.0.7".
 - `status` (optional) shows a short note on reports that aren't fixed yet.
-- Older entries can keep their `fixed` lists. Their `file` can point to a build that has since been removed.
+- Never delete old entries: the app's "Previous versions" page lists every entry in releases.json with its date, notes_for_harry and fixed codes, newest first. Each entry needs a `date` (YYYY-MM-DD).
+- When you remove an old build from `releases/`, set that entry's `file` to null so the app hides its Download button.
 
 3. Commit to `main`, then run `git push origin main` and `git push origin main:gh-pages`. Pages serves the `gh-pages` branch.
 
