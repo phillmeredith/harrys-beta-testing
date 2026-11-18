@@ -19,10 +19,8 @@ function loadReleases(){
 }
 function latestRelease(){ return REL?.releases?.[0] || null; }
 function releaseTile(){
-  const r = latestRelease(); if (!r) return "";
-  return `<div class="menurow relrow">${newRelease()
-    ? `<button class="tile mm newver" id="newver">Download latest<span class="vtag">New</span></button>`
-    : `<button class="tile mm latestver" id="newver">Download latest</button>`}<button class="tile mm latestver" id="prevver">Previous versions</button></div>`;
+  const r = latestRelease();
+  return r ? `<button class="tile mm ${newRelease()?"newver":"latestver"} relmain" id="newver">Download latest${newRelease()?`<span class="vtag">New</span>`:""}</button>` : "";
 }
 var showPrev = false;
 // Names for each big update (first two numbers of the version). releases.json "update_names" can add or change these.

@@ -264,11 +264,12 @@ function render(){
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
-        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}<button class="tile mm lastkind" id="featbtn">Features</button>
-        ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button>`:""}</div>`:""}
-        ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
+        ${releaseTile()}
+        <div class="menurow">${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${k==="broken"?"Report a bug":esc(v.label)}</button>`).join("")}<button class="tile mm" id="draftsbtn">Draft reports (${drafts.length})</button></div>
+        <div class="menurow"><button class="tile mm" id="featbtn">Features</button><button class="tile mm" id="prevver">Previous versions${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button></div>
+        ${showSaved==="drafts" ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft reports</div><p class="relhow">${drafts.length?"Not sent yet. Tap one to finish it.":"No drafts. When you start a report and don't send it, it waits here."}</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
-        ${releaseTile()}${releasePanel()}${prevPanel()}
+        ${releasePanel()}${prevPanel()}
         ${featPanel()}${trackPanel()}${fbPanel()}
       </div>
       <div class="foot"><span>Harry's Equestrian ${esc(installedVersion()||VERSION)}</span><span aria-hidden="true">·</span><span>Made for Harry</span></div>

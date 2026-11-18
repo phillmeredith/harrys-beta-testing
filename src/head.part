@@ -411,6 +411,11 @@ body.home .menu .relrow .tile.mm{font-size:min(20px,2.6vw)}
 .featdetail .relhead b{font:400 38px/1 var(--head)}
 .featdetail .relnotes{font-size:20px}
 .featdetail .row2 .tile.mm{min-height:56px;font-size:19px}
+
+/* home order: Download latest, gap, then two split rows */
+body.home .menu > .relmain{margin-bottom:clamp(12px,3.4dvh,36px)}
+body.home .menu > .menurow{margin-bottom:0}
+body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
 </style>
 
 <div class="app" id="app"></div>
