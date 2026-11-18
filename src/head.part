@@ -230,6 +230,7 @@ body.home .title-screen{justify-content:flex-start}
 /* logo sits exactly where the title is painted in the key art (bg cover, 50% 60%; title centre at y=197 of 941, png 937 wide x 154 tall) */
 body.home{--u:max(calc(100vw / 1672),calc(100dvh / 941));--lw:min(calc(var(--u) * 937),82vw)}
 body.home .logo .logoimg{width:var(--lw)}
+body.home .app{max-width:none}
 body.home .logo{margin-top:max(0px,calc((100dvh - var(--u) * 941) * .6 + var(--u) * 197 - var(--lw) * .0822 - max(10px,env(safe-area-inset-top,0px))))}
 body.home .ask{margin-top:auto;margin-bottom:clamp(2px,0.6dvh,8px)}
 body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(24px,6.5dvh,80px)}
