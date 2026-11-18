@@ -775,7 +775,7 @@ function render(){
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
-        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}<button class="tile mm lastkind" id="featbtn">Mod features</button>
+        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}<button class="tile mm lastkind" id="featbtn">Features</button>
         ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})${sent.some(needsCheck)?`<span class="vtag">Check</span>`:""}</button>`:""}</div>`:""}
         ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
@@ -1504,7 +1504,7 @@ function featPanel(){
   }
   const h = FEATURES[featHero % FEATURES.length];
   return `<div class="homeover" data-close="feat"><div class="inner featpanel">
-    <div class="listlabel">Mod features</div>
+    <div class="listlabel">Features</div>
     <div class="herowrap"><button class="heroimg" data-feat="${h.id}" style="background-image:url('${featImg(h)}')"><span class="herocap"><b>${esc(h.title)}</b><small>${esc(h.tag)}</small></span></button>
       <button class="heroarrow l" id="heroprev" aria-label="Previous">&lsaquo;</button><button class="heroarrow r" id="heronext" aria-label="Next">&rsaquo;</button></div>
     <div class="herodots">${FEATURES.map((f,i)=>`<span class="${i===featHero%FEATURES.length?"on":""}"></span>`).join("")}</div>

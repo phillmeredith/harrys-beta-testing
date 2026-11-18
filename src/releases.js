@@ -300,7 +300,7 @@ function featPanel(){
   }
   const h = FEATURES[featHero % FEATURES.length];
   return `<div class="homeover" data-close="feat"><div class="inner featpanel">
-    <div class="listlabel">Mod features</div>
+    <div class="listlabel">Features</div>
     <div class="herowrap"><button class="heroimg" data-feat="${h.id}" style="background-image:url('${featImg(h)}')"><span class="herocap"><b>${esc(h.title)}</b><small>${esc(h.tag)}</small></span></button>
       <button class="heroarrow l" id="heroprev" aria-label="Previous">&lsaquo;</button><button class="heroarrow r" id="heronext" aria-label="Next">&rsaquo;</button></div>
     <div class="herodots">${FEATURES.map((f,i)=>`<span class="${i===featHero%FEATURES.length?"on":""}"></span>`).join("")}</div>
