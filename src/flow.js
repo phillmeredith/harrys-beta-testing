@@ -1,4 +1,6 @@
 const VERSION = "4.0.6";
+// Hidden from the home screen for now (Phill, 2026-11-18). Empty the list to bring them back.
+const HIDDEN_KINDS = ["better","idea"];
 const KINDS = {
   broken:{label:"Report bug", sub:"It went wrong", word:"Bug report"},
   better:{label:"Improve a feature", sub:"It works, but…", word:"Improve a feature"},
@@ -260,7 +262,7 @@ function render(){
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
-        ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
+        ${Object.entries(KINDS).filter(([k])=>!HIDDEN_KINDS.includes(k)).map(([k,v],i,a)=>`<button class="tile mm ${k==="broken"?"primary":""} ${i===a.length-1?"lastkind":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}
         ${drafts.length||sent.length?`<div class="menurow">${drafts.length?`<button class="tile mm" id="draftsbtn">Draft tickets (${drafts.length})</button>`:""}${sent.length?`<button class="tile mm" id="sentbtn">Previous requests (${sent.length})</button>`:""}</div>`:""}
         ${showSaved==="drafts" && drafts.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Draft tickets</div><p class="relhow">Not sent yet. Tap one to finish it.</p>${drafts.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}
         ${showSaved==="sent" && sent.length ? `<div class="homeover" data-close="saved"><div class="inner savedlist"><div class="listlabel">Previous requests</div>${sent.map(row).join("")}<button class="tile mm closeover" data-close="saved">Close</button></div></div>`:""}

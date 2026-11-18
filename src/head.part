@@ -229,11 +229,11 @@ body.home .foot{font-size:min(17px,2.2dvh)}
 body.home .title-screen{justify-content:flex-start}
 body.home .logo{margin-top:clamp(16px,9dvh,130px)}
 body.home .ask{margin-top:auto;margin-bottom:clamp(2px,0.6dvh,8px)}
-body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(14px,4dvh,48px)}
+body.home .menu{margin-top:auto;margin-bottom:auto;position:relative;top:clamp(24px,6.5dvh,80px)}
 body.home .today{margin-top:auto;margin-bottom:clamp(6px,1.4dvh,12px)}
 body.home .today + .menu{margin-top:0}
 body.home .foot{justify-content:center;gap:12px;padding-bottom:clamp(6px,1.6dvh,18px);opacity:.85}
-body.home .menu > [data-v="idea"]{margin-bottom:clamp(10px,3.2dvh,34px)}
+body.home .menu > .lastkind{margin-bottom:clamp(10px,3.2dvh,34px)}
 body.home .menu > .menurow{margin-bottom:clamp(10px,3.2dvh,34px)}
 /* home buttons: closer to the real title screen. Flat grey stone, thin black border, 2px bevel, light text with a hard shadow */
 body.home .menu .tile.mm{background:#6F6F6F linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.06));border:2px solid #000;
