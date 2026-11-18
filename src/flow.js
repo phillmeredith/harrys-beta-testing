@@ -249,11 +249,11 @@ const QUESTIONS = {
 function render(){
   const app = document.getElementById("app"), st = cur();
   const head = `<div class="bar">
-    <button class="round" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}</button>
+    <button class="round backbtn" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}<span>Back</span></button>
     ${S.parts.length && !["kind","done"].includes(st) ? `<span class="partno">Part ${S.parts.length+1}</span>`:""}
     <div class="spacer"></div>
   </div>`;
-  let body = "", q = "";
+  let body = "", q = "", eyebrow = "";
   document.body.classList.toggle("home", st==="kind");
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
@@ -285,8 +285,8 @@ function render(){
         <p class="note">Tip: tap the microphone on the keyboard to say the name instead.</p></div>`;
     } else {
       const {list, trail} = pickerList(st), pg = pagedTiles(list), chosen = S[st==="like"?"like":st];
-      body = (trail.length?`<div class="trail">${trail.map(esc).join(" › ")}</div>`:"") +
-        `<div class="grid">${pg.items.map(([n,i])=>tile({v:"i"+i, label:n.l, sub:n.sub || (n.k && !n.chunk ? `${countLeaves(n)} to pick from` : ""), coin:n.coin, cls:(n.coin?"horse":"")+(n.k?" folder":""), sel: chosen && !n.k && chosen.l===n.l && chosen.id===n.id})).join("")}
+      eyebrow = trail.length?`<div class="trail">${trail.map(esc).join(" › ")}</div>`:"";
+      body = `<div class="grid">${pg.items.map(([n,i])=>tile({v:"i"+i, label:n.l, sub:n.sub || (n.k && !n.chunk ? `${countLeaves(n)} to pick from` : ""), coin:n.coin, cls:(n.coin?"horse":"")+(n.k?" folder":""), sel: chosen && !n.k && chosen.l===n.l && chosen.id===n.id})).join("")}
          ${pg.more?tile({v:"__more",label:"More",sub:"See the next page",cls:"folder"}):""}</div>`;
     }
   } else if (st === "like"){
@@ -357,7 +357,7 @@ function render(){
       <button class="go quiet small" id="resend">Didn't go to Daddy? Send it again</button></div>`;
     wire(); return;
   }
-  app.innerHTML = head + `<div class="q"><div><h1>${esc(q)}</h1></div></div>` + body;
+  app.innerHTML = head + `<div class="q"><div>${eyebrow}<h1>${esc(q)}</h1></div></div>` + body;
   wire();
   if (drawer) openDrawer();
 }

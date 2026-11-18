@@ -161,7 +161,7 @@ body{background:#4E7A35}
 @media (max-width:640px){ .splash{right:4px;bottom:-22px} .title-screen{padding-top:56px} .tile.mm{font-size:22px} .menu-row{flex-direction:column} }
 @media (prefers-reduced-motion:reduce){#pano,.splash{animation:none!important}}
 /* universal picker */
-.trail{font-size:18px;color:#fff;text-shadow:2px 2px 0 #000;margin:-14px 0 -8px;opacity:.9}
+.trail{font-size:18px;color:var(--gold);text-shadow:2px 2px 0 #000;margin:0 0 10px;letter-spacing:.02em}
 .partno{font:600 18px var(--pix);color:var(--gold);text-shadow:2px 2px 0 #000;background:rgba(0,0,0,.45);padding:6px 12px;border:2px solid #000}
 .soFar{background:var(--panel);color:var(--panel-ink);border:3px solid #000;box-shadow:inset 4px 4px 0 var(--panel-hi),inset -4px -4px 0 var(--panel-lo);padding:18px 22px}
 .soFar span{font:600 18px var(--pix);color:#555}
@@ -319,6 +319,16 @@ body.home .menu > .tile.mm{font-size:min(26px,3.4vw)}
   .story,.editor,.namebox{padding:20px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* step pages: roomier layout, labelled Back button */
+body:not(.home) .app{max-width:1000px;min-height:100dvh;box-sizing:border-box;justify-content:center;padding-bottom:max(env(safe-area-inset-bottom,0px),clamp(40px,8dvh,110px));gap:clamp(22px,3.4dvh,40px);padding-top:max(env(safe-area-inset-top,0px),clamp(28px,5dvh,64px))}
+body:not(.home) .bar{min-height:56px}
+.backbtn{width:auto;height:56px;display:inline-flex;align-items:center;gap:10px;padding:0 22px 0 16px;font-size:22px}
+.backbtn svg{width:24px;height:24px}
+body:not(.home) .q{padding-bottom:clamp(4px,1dvh,14px);border-bottom:3px solid rgba(0,0,0,.35);box-shadow:0 3px 0 rgba(255,255,255,.12)}
+body:not(.home) .q > div{padding-bottom:clamp(12px,2dvh,22px)}
+body:not(.home) .grid{gap:clamp(14px,2.2vw,22px)}
+body:not(.home) .grid .tile{min-height:clamp(110px,14dvh,170px)}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -655,11 +665,11 @@ const QUESTIONS = {
 function render(){
   const app = document.getElementById("app"), st = cur();
   const head = `<div class="bar">
-    <button class="round" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}</button>
+    <button class="round backbtn" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}<span>Back</span></button>
     ${S.parts.length && !["kind","done"].includes(st) ? `<span class="partno">Part ${S.parts.length+1}</span>`:""}
     <div class="spacer"></div>
   </div>`;
-  let body = "", q = "";
+  let body = "", q = "", eyebrow = "";
   document.body.classList.toggle("home", st==="kind");
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
@@ -691,8 +701,8 @@ function render(){
         <p class="note">Tip: tap the microphone on the keyboard to say the name instead.</p></div>`;
     } else {
       const {list, trail} = pickerList(st), pg = pagedTiles(list), chosen = S[st==="like"?"like":st];
-      body = (trail.length?`<div class="trail">${trail.map(esc).join(" › ")}</div>`:"") +
-        `<div class="grid">${pg.items.map(([n,i])=>tile({v:"i"+i, label:n.l, sub:n.sub || (n.k && !n.chunk ? `${countLeaves(n)} to pick from` : ""), coin:n.coin, cls:(n.coin?"horse":"")+(n.k?" folder":""), sel: chosen && !n.k && chosen.l===n.l && chosen.id===n.id})).join("")}
+      eyebrow = trail.length?`<div class="trail">${trail.map(esc).join(" › ")}</div>`:"";
+      body = `<div class="grid">${pg.items.map(([n,i])=>tile({v:"i"+i, label:n.l, sub:n.sub || (n.k && !n.chunk ? `${countLeaves(n)} to pick from` : ""), coin:n.coin, cls:(n.coin?"horse":"")+(n.k?" folder":""), sel: chosen && !n.k && chosen.l===n.l && chosen.id===n.id})).join("")}
          ${pg.more?tile({v:"__more",label:"More",sub:"See the next page",cls:"folder"}):""}</div>`;
     }
   } else if (st === "like"){
@@ -763,7 +773,7 @@ function render(){
       <button class="go quiet small" id="resend">Didn't go to Daddy? Send it again</button></div>`;
     wire(); return;
   }
-  app.innerHTML = head + `<div class="q"><div><h1>${esc(q)}</h1></div></div>` + body;
+  app.innerHTML = head + `<div class="q"><div>${eyebrow}<h1>${esc(q)}</h1></div></div>` + body;
   wire();
   if (drawer) openDrawer();
 }
