@@ -243,7 +243,7 @@ function subj(p=S){ const t=p.thing; if(!t) return "it"; if(t.vague) return "som
 const brokenObj = () => BROKEN.find(w=>w.id===S.what);
 
 const QUESTIONS = {
-  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" && isSkins() ? "What went wrong in the skin maker?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
+  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" && isSkins() ? "What went wrong in Skin Studio?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
   like:  () => S.likeMode ? "Which one is it like?" : `Is ${subj()} like something that already exists?`,
   change:() => S.pk.path.length ? "Which one?" : S.kind==="idea" ? `What should ${subj()} be like or do?` : `What should change about ${subj()}?`,
   holding:() => S.pk.path.length ? "Which one?" : "What was in your hand?",
@@ -263,7 +263,7 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong( in Skin Studio)?: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(r.app==="skins"?"Skin Studio bug":KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
@@ -391,7 +391,7 @@ function partSentence(p){
 function sentence(){
   if (S.kind==="broken"){
     const w = brokenObj(); if (!w) return "";
-    let s = S.thing?.vague ? `Something went wrong${isSkins()?" in the skin maker":""}: ${lc(w.label)}` : `${isSkins()?"Skin maker, ":""}${S.thing?.l}: ${lc(w.label)}`;
+    let s = S.thing?.vague ? `Something went wrong${isSkins()?" in Skin Studio":""}: ${lc(w.label)}` : `${isSkins()?"Skin Studio, ":""}${S.thing?.l}: ${lc(w.label)}`;
     if (S.doing && S.doing!=="Don't know") s += ` when I was ${lc(S.doing).replace("in the horse guide","in the Horse Guide")}`;
     if (S.holding && !S.holding.vague) s += S.holding.id==="hand:empty" ? " with nothing in my hand" : ` holding ${S.holding.l}`;
     if (S.tapped && S.tapped!=="Don't know") s += `. Just before, I ${lc(S.tapped).replace(/^tapped/,"tapped").replace(/^just walking or riding/,"was just walking or riding").replace(/^got on or off/,"got on or off")}`;
@@ -406,9 +406,9 @@ const trailOf = t => t ? `${t.l}${t.id?` (id ${t.id})`:""}${t.trail?` [${t.trail
 function prompt(){
   if (!S.kind) return "(Harry hasn't picked anything yet.)";
   const when = S.sent || Date.now(), d = new Date(when), L = [];
-  L.push(`[Harry's Beta Testing] ${isSkins()?"Skin maker bug report":KINDS[S.kind].word} · report ${code()}`);
+  L.push(`[Harry's Beta Testing] ${isSkins()?"Skin Studio bug report":KINDS[S.kind].word} · report ${code()}`);
   L.push(`Harry said: "${(S.text ?? sentence()) || "…"}"`, "");
-  if (isSkins()) L.push(`App: Skin maker (${SKINS_URL}) · iPad Pro · NOT the add-on`);
+  if (isSkins()) L.push(`App: Skin Studio (${SKINS_URL}) · iPad Pro · NOT the add-on`);
   else L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
   L.push(`Sent: ${d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}, ${d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`);
   if (S.kind==="broken"){
@@ -421,7 +421,7 @@ function prompt(){
     if (S.words) L.push(`Words on screen: ${S.words}${S.words==="Yes, words came up" ? (S.shot?" (see screenshot)":" (no screenshot; check Harry's sentence, otherwise ask)") : ""}`);
     if (S.often) L.push(`How often: ${S.often}`);
     if (w){ L.push("", "Steps (from Harry's taps):",
-      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : isSkins() ? "Using the skin maker" : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
+      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : isSkins() ? "Using Skin Studio" : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
       `2. ${S.tapped && S.tapped!=="Don't know" ? S.tapped : "(what he did just before is unknown)"}`,
       `3. ${S.thing?.l||"It"}: ${w.act}`, `Expected: ${w.exp}.`, `Actual: ${w.act}.`); }
   } else {
@@ -438,7 +438,7 @@ function prompt(){
   }
   const bn = builderNotes(); if (bn.length) L.push("", "For the builder:", ...bn.map(x=>"- "+x));
   L.push(S.shot ? `Screenshot: 1 attached to this message (report ${code()}). If it's missing, ask Phill for it.` : "Screenshot: none", "");
-  if (S.kind==="broken" && isSkins()) L.push("This is about the skin maker website (skins.phillm.dev), not Harry's Equestrian. Don't change or release the .mcaddon for it. Hold it for Phill: reproduce it on skins.phillm.dev on an iPad-sized screen, fix it in the skin maker's own code, and tell Phill what changed.");
+  if (S.kind==="broken" && isSkins()) L.push("This is about the Skin Studio website (skins.phillm.dev), not Harry's Equestrian. Don't change or release the .mcaddon for it. Hold it for Phill: reproduce it on skins.phillm.dev on an iPad-sized screen, fix it in Skin Studio's own code, and tell Phill what changed.");
   else if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
   else if (S.kind==="better") L.push("Please suggest how to make this change (tap-only, no fail states), say what it would take, and add it to the feature plan.");
   else L.push("Please turn this into a feature idea for the plan (tap-only, no fail states), say what it would take, and ask Phill before building it.");

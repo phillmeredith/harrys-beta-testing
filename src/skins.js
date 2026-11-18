@@ -1,28 +1,32 @@
-/* ---------- Skin maker (skins.phillm.dev): report choices + home-screen player ---------- */
+/* ---------- Skin Studio (skins.phillm.dev): report choices + home-screen player ---------- */
 const SKINS_URL = "https://skins.phillm.dev/";
 const isSkins = (s=S) => s.app === "skins";
 const APPS = [
   {v:"app:mod", label:"My mod", sub:"Harry's Equestrian"},
-  {v:"app:skins", label:"Skin maker", sub:"skins.phillm.dev"}
+  {v:"app:skins", label:"Skin Studio", sub:"Making skins"}
 ];
 const SKIN_TREE = [
+  {l:"Making a skin", tp:"skin", k:[
+    {l:"Human", sub:"Steve or Alex", tp:"skin", k: leaves(["Starting a human skin","Steve shape","Alex shape (thin arms)","Head and face","Body","Arms","Legs","Hat and jacket layer"], "skin:human:", "skin")},
+    {l:"Mob", tp:"skin", k: leaves(["Picking a mob","Painting the mob","How the mob looks"], "skin:mob:", "skin")},
+    {l:"Item", sub:"Swords, bows, tools", tp:"skin", k: leaves(["Picking an item","Painting the item","How the item looks"], "skin:item:", "skin")},
+    {l:"Block", sub:"Grass, stone, TNT", tp:"skin", k: leaves(["Picking a block","Painting the block","How the block looks"], "skin:block:", "skin")}]},
   {l:"Drawing and painting", tp:"skin", k: leaves(["Pencil","Eraser","Paint bucket","Picking a colour","Copying a colour from the skin","Brush size","Undo and redo","Drawing on both sides at once"], "skin:draw:", "skin")},
   {l:"The 3D model", tp:"skin", k: leaves(["Turning it round","Zooming in and out","Showing or hiding parts","The outer layer (hat and jacket)","Making it walk or pose"], "skin:model:", "skin")},
-  {l:"Parts of the skin", tp:"skin", k: leaves(["Head","Face","Body","Arms","Legs","Hat layer","Jacket and sleeves layer"], "skin:part:", "skin")},
-  {l:"Starting a skin", tp:"skin", k: leaves(["A new blank skin","A ready-made skin","Opening a skin I made","Opening a picture"], "skin:start:", "skin")},
-  {l:"Saving and my skins", tp:"skin", k: leaves(["Saving","My saved skins","Renaming a skin","Deleting a skin"], "skin:save:", "skin")},
+  {l:"Your skins", tp:"skin", k: leaves(["Saving a skin","The list of your skins","The All, Human, Mob, Item, Block buttons","Opening a skin I made","Renaming a skin","Deleting a skin"], "skin:yours:", "skin")},
+  {l:"The Library", tp:"skin", k: leaves(["Opening the Library","Finding a skin","Using a skin from the Library","Pictures not showing","It's slow"], "skin:library:", "skin")},
   {l:"Getting it into Minecraft", tp:"skin", k: leaves(["Downloading the skin","Putting it on in Minecraft","Thin arms or wide arms","It looks different in the game"], "skin:mc:", "skin")},
-  {l:"The page itself", tp:"skin", k: leaves(["Opening the page","Buttons","Menus","Words on the page","It's slow"], "skin:page:", "skin")}
+  {l:"The page itself", tp:"skin", k: leaves(["Opening the page","The Home button","Other buttons","Words on the page","It's slow"], "skin:page:", "skin")}
 ];
 const SKIN_UNSURE = {l:"I'm not sure", id:"skin:unsure", tp:"skin", vague:true};
-const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Opening a skin","Saving","Downloading","Putting it in Minecraft","Don't know"];
+const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Saving","Browsing the Library","Downloading","Putting it in Minecraft","Don't know"];
 const SKIN_TAPPED = ["Tapped on the skin","Pressed a button","Picked a tool","Dragged to turn it","Pinched to zoom","Pressed undo","Pressed save or download","Don't know"];
 BROKEN.push(
   {id:"skin_colour",label:"Wrong colour",exp:"it paints the colour I picked",act:"it painted the wrong colour"},
   {id:"skin_wontopen",label:"Wouldn't open",exp:"the page or skin opens",act:"the page or skin would not open"},
   {id:"skin_lost",label:"Lost my skin",exp:"my skin is saved and still there",act:"the skin or my drawing went missing"},
-  {id:"skin_ingame",label:"Wrong in Minecraft",exp:"the skin looks the same in Minecraft as in the skin maker",act:"it looked different or didn't work in Minecraft"},
-  {id:"skin_frozen",label:"Page froze or closed",exp:"the page keeps working",act:"the skin maker froze or closed"});
+  {id:"skin_ingame",label:"Wrong in Minecraft",exp:"the skin looks the same in Minecraft as in Skin Studio",act:"it looked different or didn't work in Minecraft"},
+  {id:"skin_frozen",label:"Page froze or closed",exp:"the page keeps working",act:"Skin Studio froze or closed"});
 BROKEN_FOR.other = ["vanished","stuck","looks","nothing","wrongthing","lost","crash","sound"];
 BROKEN_FOR.skin = ["looks","skin_colour","nothing","wrongthing","skin_wontopen","skin_lost","skin_ingame","skin_frozen"];
 

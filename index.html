@@ -780,7 +780,7 @@ function subj(p=S){ const t=p.thing; if(!t) return "it"; if(t.vague) return "som
 const brokenObj = () => BROKEN.find(w=>w.id===S.what);
 
 const QUESTIONS = {
-  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" && isSkins() ? "What went wrong in the skin maker?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
+  thing: () => S.pk.path.length ? "Which one?" : S.kind==="broken" && isSkins() ? "What went wrong in Skin Studio?" : S.kind==="broken" ? "What went wrong?" : S.kind==="better" ? "What do you want to make better?" : "What is your idea about?",
   like:  () => S.likeMode ? "Which one is it like?" : `Is ${subj()} like something that already exists?`,
   change:() => S.pk.path.length ? "Which one?" : S.kind==="idea" ? `What should ${subj()} be like or do?` : `What should change about ${subj()}?`,
   holding:() => S.pk.path.length ? "Which one?" : "What was in your hand?",
@@ -800,7 +800,7 @@ function render(){
   if (st === "kind"){
     const all = Object.values(loadAll()).filter(r=>r.id!==S.id && r.kind).sort((a,b)=>b.updated-a.updated);
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
-    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
+    const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" ${r.sent?`data-track="${r.id}"`:`data-resume="${r.id}"`}><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong( in Skin Studio)?: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(r.app==="skins"?"Skin Studio bug":KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button></div>`; };
     app.innerHTML = `<div class="title-screen">
       <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
@@ -928,7 +928,7 @@ function partSentence(p){
 function sentence(){
   if (S.kind==="broken"){
     const w = brokenObj(); if (!w) return "";
-    let s = S.thing?.vague ? `Something went wrong${isSkins()?" in the skin maker":""}: ${lc(w.label)}` : `${isSkins()?"Skin maker, ":""}${S.thing?.l}: ${lc(w.label)}`;
+    let s = S.thing?.vague ? `Something went wrong${isSkins()?" in Skin Studio":""}: ${lc(w.label)}` : `${isSkins()?"Skin Studio, ":""}${S.thing?.l}: ${lc(w.label)}`;
     if (S.doing && S.doing!=="Don't know") s += ` when I was ${lc(S.doing).replace("in the horse guide","in the Horse Guide")}`;
     if (S.holding && !S.holding.vague) s += S.holding.id==="hand:empty" ? " with nothing in my hand" : ` holding ${S.holding.l}`;
     if (S.tapped && S.tapped!=="Don't know") s += `. Just before, I ${lc(S.tapped).replace(/^tapped/,"tapped").replace(/^just walking or riding/,"was just walking or riding").replace(/^got on or off/,"got on or off")}`;
@@ -943,9 +943,9 @@ const trailOf = t => t ? `${t.l}${t.id?` (id ${t.id})`:""}${t.trail?` [${t.trail
 function prompt(){
   if (!S.kind) return "(Harry hasn't picked anything yet.)";
   const when = S.sent || Date.now(), d = new Date(when), L = [];
-  L.push(`[Harry's Beta Testing] ${isSkins()?"Skin maker bug report":KINDS[S.kind].word} · report ${code()}`);
+  L.push(`[Harry's Beta Testing] ${isSkins()?"Skin Studio bug report":KINDS[S.kind].word} · report ${code()}`);
   L.push(`Harry said: "${(S.text ?? sentence()) || "…"}"`, "");
-  if (isSkins()) L.push(`App: Skin maker (${SKINS_URL}) · iPad Pro · NOT the add-on`);
+  if (isSkins()) L.push(`App: Skin Studio (${SKINS_URL}) · iPad Pro · NOT the add-on`);
   else L.push(`Add-on: Harry's Equestrian ${versionText()} · iPad Pro · ${S.laura?"LAN game with Laura":"single player"}`);
   L.push(`Sent: ${d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}, ${d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`);
   if (S.kind==="broken"){
@@ -958,7 +958,7 @@ function prompt(){
     if (S.words) L.push(`Words on screen: ${S.words}${S.words==="Yes, words came up" ? (S.shot?" (see screenshot)":" (no screenshot; check Harry's sentence, otherwise ask)") : ""}`);
     if (S.often) L.push(`How often: ${S.often}`);
     if (w){ L.push("", "Steps (from Harry's taps):",
-      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : isSkins() ? "Using the skin maker" : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
+      `1. ${S.laura?"In a LAN game with Laura, ":""}${S.laura ? (S.doing && S.doing!=="Don't know" ? S.doing.toLowerCase() : "playing normally") : (S.doing && S.doing!=="Don't know" ? S.doing : isSkins() ? "Using Skin Studio" : "Playing normally")}${S.thing && !S.thing.vague?` with ${S.thing.l}`:""}${S.holding && S.holding.id!=="hand:empty" && !S.holding.vague ? `, holding ${S.holding.l}`:""}`,
       `2. ${S.tapped && S.tapped!=="Don't know" ? S.tapped : "(what he did just before is unknown)"}`,
       `3. ${S.thing?.l||"It"}: ${w.act}`, `Expected: ${w.exp}.`, `Actual: ${w.act}.`); }
   } else {
@@ -975,7 +975,7 @@ function prompt(){
   }
   const bn = builderNotes(); if (bn.length) L.push("", "For the builder:", ...bn.map(x=>"- "+x));
   L.push(S.shot ? `Screenshot: 1 attached to this message (report ${code()}). If it's missing, ask Phill for it.` : "Screenshot: none", "");
-  if (S.kind==="broken" && isSkins()) L.push("This is about the skin maker website (skins.phillm.dev), not Harry's Equestrian. Don't change or release the .mcaddon for it. Hold it for Phill: reproduce it on skins.phillm.dev on an iPad-sized screen, fix it in the skin maker's own code, and tell Phill what changed.");
+  if (S.kind==="broken" && isSkins()) L.push("This is about the Skin Studio website (skins.phillm.dev), not Harry's Equestrian. Don't change or release the .mcaddon for it. Hold it for Phill: reproduce it on skins.phillm.dev on an iPad-sized screen, fix it in Skin Studio's own code, and tell Phill what changed.");
   else if (S.kind==="broken") L.push("Please reproduce this on the test server, check it against expected_behaviour.md, fix it in the next .mcaddon and add a check to the per-item test.");
   else if (S.kind==="better") L.push("Please suggest how to make this change (tap-only, no fail states), say what it would take, and add it to the feature plan.");
   else L.push("Please turn this into a feature idea for the plan (tap-only, no fail states), say what it would take, and ask Phill before building it.");
@@ -1140,31 +1140,35 @@ function messages(){
 
 (function(){ const el=document.createElement("div"); el.id="pano"; el.setAttribute("aria-hidden","true"); el.style.backgroundImage="url(" + MAP + ")"; document.body.prepend(el); })();
 render();
-/* ---------- Skin maker (skins.phillm.dev): report choices + home-screen player ---------- */
+/* ---------- Skin Studio (skins.phillm.dev): report choices + home-screen player ---------- */
 const SKINS_URL = "https://skins.phillm.dev/";
 const isSkins = (s=S) => s.app === "skins";
 const APPS = [
   {v:"app:mod", label:"My mod", sub:"Harry's Equestrian"},
-  {v:"app:skins", label:"Skin maker", sub:"skins.phillm.dev"}
+  {v:"app:skins", label:"Skin Studio", sub:"Making skins"}
 ];
 const SKIN_TREE = [
+  {l:"Making a skin", tp:"skin", k:[
+    {l:"Human", sub:"Steve or Alex", tp:"skin", k: leaves(["Starting a human skin","Steve shape","Alex shape (thin arms)","Head and face","Body","Arms","Legs","Hat and jacket layer"], "skin:human:", "skin")},
+    {l:"Mob", tp:"skin", k: leaves(["Picking a mob","Painting the mob","How the mob looks"], "skin:mob:", "skin")},
+    {l:"Item", sub:"Swords, bows, tools", tp:"skin", k: leaves(["Picking an item","Painting the item","How the item looks"], "skin:item:", "skin")},
+    {l:"Block", sub:"Grass, stone, TNT", tp:"skin", k: leaves(["Picking a block","Painting the block","How the block looks"], "skin:block:", "skin")}]},
   {l:"Drawing and painting", tp:"skin", k: leaves(["Pencil","Eraser","Paint bucket","Picking a colour","Copying a colour from the skin","Brush size","Undo and redo","Drawing on both sides at once"], "skin:draw:", "skin")},
   {l:"The 3D model", tp:"skin", k: leaves(["Turning it round","Zooming in and out","Showing or hiding parts","The outer layer (hat and jacket)","Making it walk or pose"], "skin:model:", "skin")},
-  {l:"Parts of the skin", tp:"skin", k: leaves(["Head","Face","Body","Arms","Legs","Hat layer","Jacket and sleeves layer"], "skin:part:", "skin")},
-  {l:"Starting a skin", tp:"skin", k: leaves(["A new blank skin","A ready-made skin","Opening a skin I made","Opening a picture"], "skin:start:", "skin")},
-  {l:"Saving and my skins", tp:"skin", k: leaves(["Saving","My saved skins","Renaming a skin","Deleting a skin"], "skin:save:", "skin")},
+  {l:"Your skins", tp:"skin", k: leaves(["Saving a skin","The list of your skins","The All, Human, Mob, Item, Block buttons","Opening a skin I made","Renaming a skin","Deleting a skin"], "skin:yours:", "skin")},
+  {l:"The Library", tp:"skin", k: leaves(["Opening the Library","Finding a skin","Using a skin from the Library","Pictures not showing","It's slow"], "skin:library:", "skin")},
   {l:"Getting it into Minecraft", tp:"skin", k: leaves(["Downloading the skin","Putting it on in Minecraft","Thin arms or wide arms","It looks different in the game"], "skin:mc:", "skin")},
-  {l:"The page itself", tp:"skin", k: leaves(["Opening the page","Buttons","Menus","Words on the page","It's slow"], "skin:page:", "skin")}
+  {l:"The page itself", tp:"skin", k: leaves(["Opening the page","The Home button","Other buttons","Words on the page","It's slow"], "skin:page:", "skin")}
 ];
 const SKIN_UNSURE = {l:"I'm not sure", id:"skin:unsure", tp:"skin", vague:true};
-const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Opening a skin","Saving","Downloading","Putting it in Minecraft","Don't know"];
+const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Saving","Browsing the Library","Downloading","Putting it in Minecraft","Don't know"];
 const SKIN_TAPPED = ["Tapped on the skin","Pressed a button","Picked a tool","Dragged to turn it","Pinched to zoom","Pressed undo","Pressed save or download","Don't know"];
 BROKEN.push(
   {id:"skin_colour",label:"Wrong colour",exp:"it paints the colour I picked",act:"it painted the wrong colour"},
   {id:"skin_wontopen",label:"Wouldn't open",exp:"the page or skin opens",act:"the page or skin would not open"},
   {id:"skin_lost",label:"Lost my skin",exp:"my skin is saved and still there",act:"the skin or my drawing went missing"},
-  {id:"skin_ingame",label:"Wrong in Minecraft",exp:"the skin looks the same in Minecraft as in the skin maker",act:"it looked different or didn't work in Minecraft"},
-  {id:"skin_frozen",label:"Page froze or closed",exp:"the page keeps working",act:"the skin maker froze or closed"});
+  {id:"skin_ingame",label:"Wrong in Minecraft",exp:"the skin looks the same in Minecraft as in Skin Studio",act:"it looked different or didn't work in Minecraft"},
+  {id:"skin_frozen",label:"Page froze or closed",exp:"the page keeps working",act:"Skin Studio froze or closed"});
 BROKEN_FOR.other = ["vanished","stuck","looks","nothing","wrongthing","lost","crash","sound"];
 BROKEN_FOR.skin = ["looks","skin_colour","nothing","wrongthing","skin_wontopen","skin_lost","skin_ingame","skin_frozen"];
 
@@ -1379,7 +1383,7 @@ function prevPanel(){
       ${hl.length?`<ul class="relnotes">${hl.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:""}
       ${g.items.length===1 ? ((first.fixed||[]).length||first.file ? rowHTML(first) : "") : `<details${gi===0?" open":""}><summary>${gi===0?"Every version in this update":`See all ${g.items.length} versions`}</summary><div class="relvers">${g.items.map(rowHTML).join("")}</div></details>`}</div>`;
   };
-  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(r.app==="skins"?"Skin maker bug":KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
+  const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(r.app==="skins"?"Skin Studio bug":KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
       <p class="relhow">Each big update has a name. Open one to see every version in it.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
@@ -1447,7 +1451,7 @@ var fbFor = null, fbPick = null, fbNote = "", fbState = null; // fbState: null |
 function fbVersions(){ try { return JSON.parse(localStorage.getItem(FB_VER)||"[]"); } catch(e){ return []; } }
 function fbAllowed(r){ const v = r.sent && fixedIn(code(r)); return !!v && !(r.followups||[]).some(f=>f.release===v); }
 function fbAllowedVer(v){ return !fbVersions().includes(v); }
-function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong( in the skin maker)?: |Make it better\. |New idea! )/,""); return t.l; }
+function fbTitle(r){ const t=(r.parts?.[0]||r).thing; if (!t) return "your request"; if (t.vague) return (r.text||"your request").replace(/^(Something went wrong( in Skin Studio)?: |Make it better\. |New idea! )/,""); return t.l; }
 function closeFeedback(){ fbFor = null; fbPick = null; fbNote = ""; fbState = null; }
 function fbPanel(){
   if (!fbFor) return "";
