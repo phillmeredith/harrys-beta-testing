@@ -450,6 +450,10 @@ body.home .player .tile.mm.skinbtn{display:flex;align-items:center;justify-conte
 @media (prefers-reduced-motion:reduce){.pfig,.phead,.parm{animation:none!important}}
 /* portrait: the menu fills the middle, so the player sits lower and smaller */
 @media (max-aspect-ratio:1/1){.player{left:auto;right:0;bottom:calc(100% + clamp(10px,2dvh,28px));--px:clamp(4px,.52dvh,8px)}}
+
+.typeit{display:flex;justify-content:center;margin-top:clamp(10px,2.4dvh,26px)}
+.typeit .go{font-size:18px}
+.freebox textarea{min-height:clamp(140px,26dvh,260px)}
 </style>
 
 <style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>
@@ -635,12 +639,13 @@ const BROKEN = [
   {id:"wrongthing",label:"Did the wrong thing",exp:"it does what the Horse Guide says",act:"it did something different"},
   {id:"lost",label:"Lost my stuff",exp:"my things stay in my inventory or on the horse",act:"things went missing"},
   {id:"crash",label:"Game closed",exp:"the game keeps running",act:"Minecraft closed or froze"},
-  {id:"sound",label:"Sounds wrong",exp:"the normal sound plays",act:"the sound was wrong or missing"}
+  {id:"sound",label:"Sounds wrong",exp:"the normal sound plays",act:"the sound was wrong or missing"},
+  {id:"tooweak",label:"Too weak or won't go faster",exp:"it walks, trots, canters and gallops when asked",act:"it said it was too weak and would only walk"}
 ];
 const BROKEN_FOR = {
-  horse:["vanished","stuck","looks","wrongthing","sound","crash"], foals:["vanished","stuck","looks","wrongthing","sound"],
+  horse:["tooweak","vanished","stuck","looks","wrongthing","sound","crash"], foals:["vanished","stuck","looks","wrongthing","sound"],
   item:["vanished","looks","nothing","wrongthing","lost","sound","crash"], guide:["nothing","wrongthing","looks","lost","crash"],
-  yard:["vanished","looks","nothing","wrongthing","sound","crash"], riding:["stuck","wrongthing","looks","sound","crash"],
+  yard:["vanished","looks","nothing","wrongthing","sound","crash"], riding:["tooweak","stuck","wrongthing","looks","sound","crash"],
   shows:["nothing","wrongthing","looks","lost","crash"], other:BROKEN.map(b=>b.id)
 };
 const TAPPED = ["Tapped the horse","Tapped a block or thing","Used what was in my hand","Pressed a Horse Guide button","Got on or off","Jumped","Whistled","Just walking or riding","Don't know"];
@@ -674,7 +679,7 @@ const IC = { back: ico('<path d="M15 5l-7 7 7 7"/>'), up: ico('<path d="M12 19V5
 let S, drawer = false, showSaved = false, saveWarn = false;
 const PART_KEYS = ["thing","like","where","change","detail","what","doing","holding","tapped","words","often","when","onlyif"];
 function blankPart(){ return {thing:null, like:null, likeMode:null, where:null, change:null, detail:null, what:null, doing:null, holding:null, tapped:null, words:null, version:null, often:null, when:null, onlyif:null, pk:{path:[],page:0}}; }
-function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, app:null, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
+function reset(){ S = {id:"r"+Date.now(), step:0, kind:null, app:null, free:null, freeTyping:false, parts:[], ...blankPart(), laura:false, shot:false, text:null, base:null, versions:[], sent:null}; }
 const code = (s=S) => "HBT-" + s.id.slice(-4);
 
 const STORE = "fixit_reports_v1";
@@ -818,7 +823,14 @@ function render(){
     </div>`;
     wire(); if (drawer) openDrawer(); return;
   }
-  if (["thing","change","detail","holding"].includes(st) || (st==="like" && S.likeMode)){
+  if (S.freeTyping && S.kind==="broken"){
+    q = "Tell Daddy what went wrong";
+    body = `<section class="editor freebox"><label for="freetext" class="row-label" style="margin:0">Type it in your own words</label>
+      <p class="hint" style="margin:0">Say what happened and what you were doing. Daddy will read every word.</p>
+      <textarea id="freetext" spellcheck="true" autocapitalize="sentences" placeholder="My horse says it's too weak to go faster than walk">${esc(S.free||"")}</textarea></section>
+      <div class="btns"><button class="go quiet" id="freeback">Back to the choices</button><button class="go" id="freedone" ${S.free?"":"disabled"}>Done</button></div>
+      <p class="note" style="text-align:center">Tip: tap the microphone on the keyboard to say it instead.</p>`;
+  } else if (["thing","change","detail","holding"].includes(st) || (st==="like" && S.likeMode)){
     q = QUESTIONS[st]();
     if (st==="detail" && S.change.dt==="amount" && !S.amtWords){ ({q, body} = numberScreen()); }
     else if (st==="thing" && S.typing){
@@ -904,6 +916,8 @@ function render(){
       <button class="go quiet small" id="resend">Didn't go to Daddy? Send it again</button></div>`;
     wire(); return;
   }
+  const canType = S.kind==="broken" && !S.freeTyping && !S.typing && ["app","thing","what","doing","holding","tapped","words","often","version"].includes(st);
+  if (canType) body += `<div class="typeit"><button class="go quiet" id="typeit">Can't find it? Type it instead</button></div>`;
   app.innerHTML = head + `<div class="q"><div>${eyebrow}<h1>${esc(q)}</h1></div></div>` + body;
   wire();
   if (drawer) openDrawer();
@@ -927,17 +941,22 @@ function partSentence(p){
 }
 function sentence(){
   if (S.kind==="broken"){
-    const w = brokenObj(); if (!w) return "";
+    const w = brokenObj();
+    if (S.free){ const pre = w ? brokenSentence(w) + " " : S.thing && !S.thing.vague ? `${isSkins()?"Skin Studio, ":""}${S.thing.l}: ` : isSkins() ? "Skin Studio: " : ""; return pre + S.free; }
+    if (!w) return "";
+    return brokenSentence(w);
+  }
+  const parts = [...S.parts, S].map(partSentence).filter(Boolean);
+  const pre = S.kind==="better" ? "Make it better. " : "New idea! ";
+  return pre + parts.join(" And: ");
+}
+function brokenSentence(w){
     let s = S.thing?.vague ? `Something went wrong${isSkins()?" in Skin Studio":""}: ${lc(w.label)}` : `${isSkins()?"Skin Studio, ":""}${S.thing?.l}: ${lc(w.label)}`;
     if (S.doing && S.doing!=="Don't know") s += ` when I was ${lc(S.doing).replace("in the horse guide","in the Horse Guide")}`;
     if (S.holding && !S.holding.vague) s += S.holding.id==="hand:empty" ? " with nothing in my hand" : ` holding ${S.holding.l}`;
     if (S.tapped && S.tapped!=="Don't know") s += `. Just before, I ${lc(S.tapped).replace(/^tapped/,"tapped").replace(/^just walking or riding/,"was just walking or riding").replace(/^got on or off/,"got on or off")}`;
     if (S.words==="Yes, words came up") s += ". Some words came up on the screen";
     s += "."; if (S.often) s += ` ${S.often}.`; return s;
-  }
-  const parts = [...S.parts, S].map(partSentence).filter(Boolean);
-  const pre = S.kind==="better" ? "Make it better. " : "New idea! ";
-  return pre + parts.join(" And: ");
 }
 const trailOf = t => t ? `${t.l}${t.id?` (id ${t.id})`:""}${t.trail?` [${t.trail.join(" › ")}]`:""}` : "…";
 function prompt(){
@@ -950,6 +969,8 @@ function prompt(){
   L.push(`Sent: ${d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}, ${d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`);
   if (S.kind==="broken"){
     const w = brokenObj();
+    if (S.free) L.push(`Harry typed: "${S.free}"`);
+    if (!S.app) L.push("Where: Harry typed it before saying if it's the mod or Skin Studio. Work it out from his words, otherwise ask Phill.");
     L.push(`About: ${trailOf(S.thing)}`);
     if (w) L.push(`What happened: ${w.label} (${w.id})`);
     if (S.doing) L.push(`Harry was: ${S.doing}`);
@@ -1021,6 +1042,7 @@ function pick(v){
 function goBack(){
   const st = cur();
   if (S.typing){ S.typing=false; return render(); }
+  if (S.freeTyping){ S.freeTyping=false; return render(); }
   if (st==="detail" && S.amtWords && !S.pk.path.length && !S.pk.page){ S.amtWords=false; return render(); }
   if (st==="detail"){ S.num=null; S.numLog=null; }
   if (["thing","change","detail","holding","like"].includes(st)){
@@ -1034,6 +1056,13 @@ function goBack(){
 
 function wire(){
   const $ = id => document.getElementById(id);
+  if ($("typeit")) $("typeit").onclick=()=>{ S.freeTyping=true; render(); setTimeout(()=>$("freetext")?.focus(),50); };
+  if ($("freetext")){
+    const ta=$("freetext"), dn=$("freedone");
+    ta.oninput=()=>{ dn.disabled=!ta.value.trim(); };
+    $("freeback").onclick=()=>{ const v=ta.value.trim(); S.free=v||null; S.freeTyping=false; persist(); render(); };
+    dn.onclick=()=>{ const v=ta.value.trim(); if(!v) return; S.free=v; S.freeTyping=false; S.step=steps().indexOf("extras"); S.pk={path:[],page:0}; persist(); render(); };
+  }
   document.querySelectorAll(".tile[data-v]").forEach(b=>b.onclick=()=>pick(b.dataset.v));
   $("back") && ($("back").onclick=goBack);
   $("grown") && ($("grown").onclick=()=>{ drawer=!drawer; drawer?openDrawer():closeDrawer(); });
@@ -1418,6 +1447,7 @@ function reportTag(r){
 function builderNotes(){
   const N = [];
   if (S.kind === "broken"){
+    if (S.free) N.push("Harry typed this himself instead of tapping through every question, so some details (what he was doing, holding, how often) may be missing. Use his words first; ask Phill if it's unclear.");
     if (S.thing?.vague) N.push("Harry wasn't sure what it was about: use the screenshot and his sentence, otherwise ask Phill.");
     if (!isSkins() && !installedVersion() && (!S.version || S.version==="?")) N.push("Version unknown: assume the latest release, and say so in the reply.");
     if (S.words==="Yes, words came up" && !S.shot) N.push("Words came up on screen but there is no screenshot: the exact text may be in Harry's sentence. If not, ask Phill to get it.");

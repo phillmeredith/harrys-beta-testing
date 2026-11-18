@@ -437,6 +437,10 @@ body.home .player .tile.mm.skinbtn{display:flex;align-items:center;justify-conte
 @media (prefers-reduced-motion:reduce){.pfig,.phead,.parm{animation:none!important}}
 /* portrait: the menu fills the middle, so the player sits lower and smaller */
 @media (max-aspect-ratio:1/1){.player{left:auto;right:0;bottom:calc(100% + clamp(10px,2dvh,28px));--px:clamp(4px,.52dvh,8px)}}
+
+.typeit{display:flex;justify-content:center;margin-top:clamp(10px,2.4dvh,26px)}
+.typeit .go{font-size:18px}
+.freebox textarea{min-height:clamp(140px,26dvh,260px)}
 </style>
 
 <div class="app" id="app"></div>

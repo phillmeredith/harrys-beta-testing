@@ -93,6 +93,7 @@ function reportTag(r){
 function builderNotes(){
   const N = [];
   if (S.kind === "broken"){
+    if (S.free) N.push("Harry typed this himself instead of tapping through every question, so some details (what he was doing, holding, how often) may be missing. Use his words first; ask Phill if it's unclear.");
     if (S.thing?.vague) N.push("Harry wasn't sure what it was about: use the screenshot and his sentence, otherwise ask Phill.");
     if (!isSkins() && !installedVersion() && (!S.version || S.version==="?")) N.push("Version unknown: assume the latest release, and say so in the reply.");
     if (S.words==="Yes, words came up" && !S.shot) N.push("Words came up on screen but there is no screenshot: the exact text may be in Harry's sentence. If not, ask Phill to get it.");
