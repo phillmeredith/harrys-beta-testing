@@ -1415,7 +1415,7 @@ function prevPanel(){
   const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(r.app==="skins"?"Skin Studio bug":KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
-      <p class="relhow">Each big update has a name. Open one to see every version in it.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
+      <p class="relhow">Each big update has a name. Every version is saved here, so none of them are ever lost. Open one to see every version in it.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
       ${groups.map(card).join("")}</div>
     <div class="prevcol"><div class="listlabel">Harry's reports</div>
       <p class="relhow">Everything Harry has sent to Daddy, newest first.</p>

@@ -3,6 +3,7 @@
 The app reads `releases.json` from this site. The newest release must come first.
 
 1. Copy the build to `releases/HarrysEquestrian_v<version>.mcaddon`. Keep only the last 3 builds in the folder.
+   Also copy the same file to `archive/HarrysEquestrian_v<version>.mcaddon` and never delete anything in `archive/` (Phill, 2026-11-18: Harry likes knowing every version is saved). Git stores the two identical copies once.
 2. Add an entry to the top of `releases.json`:
 
 ```json
@@ -24,7 +25,8 @@ The app reads `releases.json` from this site. The newest release must come first
 - `fixed` lists the report codes from Harry's emails that this release fixes. His "My reports" list then shows "Fixed in 4.0.7".
 - `status` (optional) shows a short note on reports that aren't fixed yet.
 - Never delete old entries: the app's "Previous versions" page lists every entry in releases.json with its date, notes_for_harry and fixed codes, newest first. Each entry needs a `date` (YYYY-MM-DD).
-- When you remove an old build from `releases/`, set that entry's `file` to null so the app hides its Download button.
+- When you remove an old build from `releases/`, change that entry's `file` to its `archive/` path, so Harry can still download it. Only use null when no build exists at all (3.0.15 was a world template, with no .mcaddon).
+- `archive/` holds every build (about 600 MB). To keep clones quick, clone without it: `git clone --depth 1 --filter=blob:none --no-checkout <repo> dir && cd dir && git sparse-checkout set --no-cone '/*' '!/archive/' && git checkout main`, then add a new build with `git add --sparse archive/<file>`. GitHub Pages serves up to 1 GB, so there is room for about 40 more builds; after that, ask Phill before adding more.
 
 3. Commit to `main`, then run `git push origin main` and `git push origin main:gh-pages`. Pages serves the `gh-pages` branch.
 
