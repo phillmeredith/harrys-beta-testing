@@ -25,6 +25,8 @@ function releaseTile(){
     : `<button class="tile mm latestver" id="newver">Download latest</button>`}<button class="tile mm latestver" id="prevver">Previous versions</button></div>`;
 }
 var showPrev = false;
+// Names for each big update (first two numbers of the version). releases.json "update_names" can add or change these.
+const UPDATE_NAMES = {"4.0":"Foals and Flying","3.0":"The Big Art Update","2.0":"Shows and Hacks","1.10":"Yard Day","1.9":"My Horses","1.8":"The Horse Designer","1.7":"Harry's Yard","1.6":"The First Horses"};
 function relDate(d){ if (!d) return ""; const t = new Date(d+"T12:00:00"); return isNaN(t) ? "" : t.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
 function tsDate(t){ return t ? new Date(t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : ""; }
 function prevPanel(){
@@ -32,19 +34,37 @@ function prevPanel(){
   const iv = installedVersion(), list = REL.releases || [];
   const reps = Object.values(loadAll()).filter(r=>r.sent && r.kind).sort((a,b)=>b.sent-a.sent);
   const byCode = {}; reps.forEach(r=>{ byCode[code(r)] = r; });
-  const card = (r,i) => {
-    const notes = (r.notes_for_harry||[]).map(n=>`<li>${esc(n)}</li>`).join("");
+  const rowHTML = (r) => {
+    const notes = (r.notes_for_harry||[]).filter(n=>!/^A big new version number/.test(n)).map(n=>`<li>${esc(n)}</li>`).join("");
     const fx = (r.fixed||[]).map(c=>{ const rep = byCode[c]; return `<li><span class="fbh">Found by Harry</span> ${rep?`${esc(fbTitle(rep))} <small>reported ${esc(tsDate(rep.sent))} · ${esc(c)}</small>`:`<small>${esc(c)}</small>`}</li>`; }).join("");
-    const tags = (i===0?`<span class="vtag2">Latest</span>`:"") + (r.version===iv?`<span class="vtag2 have">You've got this</span>`:"");
-    return `<div class="relcard"><div class="relhead"><b>${esc(r.version)}</b><span>${esc(relDate(r.date))}</span>${tags}</div>
+    const tags = (r===list[0]?`<span class="vtag2">Latest</span>`:"") + (r.version===iv?`<span class="vtag2 have">You've got this</span>`:"");
+    return `<div class="relver"><div class="relhead small"><b>${esc(r.version)}</b><span>${esc(relDate(r.date))}</span>${tags}</div>
       ${notes?`<ul class="relnotes">${notes}</ul>`:`<p class="relhow">Small fixes.</p>`}${fx?`<ul class="relfixes">${fx}</ul>`:""}
-      ${r.file?`<a class="tile mm relget" data-ver="${esc(r.version)}" href="${esc(r.file)}" download>${i===0?"Download":"Download this version"}</a>`:""}</div>`;
+      ${r.file?`<a class="tile mm relget" data-ver="${esc(r.version)}" href="${esc(r.file)}" download>${r===list[0]?"Download":"Download this version"}</a>`:""}</div>`;
+  };
+  // Group versions into named updates by their first two numbers (4.0.x, 3.0.x, 1.10.x...)
+  const names = Object.assign({}, UPDATE_NAMES, REL.update_names||{});
+  const groups = [];
+  list.forEach(r=>{ const k = r.version.split(".").slice(0,2).join("."); let g = groups.find(x=>x.k===k); if (!g){ g = {k, items:[]}; groups.push(g); } g.items.push(r); });
+  const card = (g,gi) => {
+    const first = g.items[g.items.length-1], last = g.items[0];
+    const skip = n => /^A big new version number|^Small fixes/.test(n);
+    let hl = (first.notes_for_harry||[]).filter(n=>!skip(n));
+    g.items.slice(0,-1).reverse().forEach(r=>{ const n = (r.notes_for_harry||[]).find(x=>!skip(x)); if (n && !hl.includes(n)) hl.push(n); });
+    if (hl.length > 8) hl = hl.slice(0,8);
+    const nFix = g.items.reduce((n,r)=>n+(r.fixed||[]).length,0);
+    const has = g.items.some(r=>r.version===iv);
+    const dates = first.date===last.date ? relDate(first.date) : `${relDate(first.date)} to ${relDate(last.date)}`;
+    return `<div class="relcard"><div class="relhead"><b>${esc(g.k)}</b><span class="uname">${esc(names[g.k]||"Update")}</span>${gi===0?`<span class="vtag2">Latest</span>`:""}${has?`<span class="vtag2 have">You've got this</span>`:""}</div>
+      <p class="relhow">${esc(dates)} · ${g.items.length} version${g.items.length>1?"s":""}${nFix?` · ${nFix} found by Harry`:""}</p>
+      ${hl.length?`<ul class="relnotes">${hl.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`:""}
+      ${g.items.length===1 ? ((first.fixed||[]).length||first.file ? rowHTML(first) : "") : `<details${gi===0?" open":""}><summary>${gi===0?"Every version in this update":`See all ${g.items.length} versions`}</summary><div class="relvers">${g.items.map(rowHTML).join("")}</div></details>`}</div>`;
   };
   const rep = r => { const st = reportState(r); return `<div class="repcard" data-track="${r.id}" role="button" tabindex="0"><span class="rkind k-${r.kind}"></span><div class="rt"><b>${esc(fbTitle(r))}</b><small>${esc(KINDS[r.kind].word)} · reported ${esc(tsDate(r.sent))} · ${esc(code(r))}</small></div><span class="rstate st-${st[0]}">${esc(st[1])}</span></div>`; };
   return `<div class="homeover" data-close="prev"><div class="inner prevpanel">
     <div class="prevcol"><div class="listlabel">All versions</div>
-      <p class="relhow">What changed in each version, newest first.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
-      ${list.map(card).join("")}</div>
+      <p class="relhow">Each big update has a name. Open one to see every version in it.${list.length>1?" Only go back to an older one if Daddy asks.":""}</p>
+      ${groups.map(card).join("")}</div>
     <div class="prevcol"><div class="listlabel">Harry's reports</div>
       <p class="relhow">Everything Harry has sent to Daddy, newest first.</p>
       ${reps.length?reps.map(rep).join(""):`<p class="relhow">Nothing sent yet. When Harry sends a report it shows up here with its date.</p>`}</div>
