@@ -1,4 +1,4 @@
-<title>Harry's Beta Testing</title>
+<title>Harry's Stable Mod</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&display=swap">
@@ -122,6 +122,11 @@ body{background:#4E7A35}
     -3px 0 0 #000,3px 0 0 #000,0 -3px 0 #000,0 14px 0 #000,-3px 12px 0 #000,3px 12px 0 #000}
 .logo .l1{font-size:clamp(30px,4.5vw,52px)}
 .logo .l2{font-size:clamp(40px,8vw,96px);text-transform:uppercase}
+.logo .lw{position:relative;display:inline-block}
+.logo .badge{position:absolute;top:0;right:0;transform:rotate(6deg);font-family:"Silkscreen",var(--pix);font-weight:700;
+  font-size:clamp(12px,1.7vw,20px);line-height:1;text-transform:uppercase;letter-spacing:.04em;color:#2B1F16;
+  background:#F2C230;border:3px solid #000;box-shadow:inset 0 -3px 0 #B8891A,inset 0 3px 0 #FFE07A,3px 3px 0 rgba(0,0,0,.5);
+  padding:.35em .55em .3em;white-space:nowrap;pointer-events:none}
 .splash{position:absolute;right:-6%;bottom:-6px;color:#FFFF00;font:600 clamp(18px,2.4vw,28px) var(--pix);text-shadow:3px 3px 0 #3F3F00;transform:rotate(-17deg);white-space:nowrap;animation:splash .5s ease-in-out infinite alternate;transform-origin:center}
 @keyframes splash{from{transform:rotate(-17deg) scale(.94)}to{transform:rotate(-17deg) scale(1.06)}}
 .today{max-width:520px;text-align:center;font-size:19px;line-height:1.35;color:#fff;background:rgba(0,0,0,.55);border:2px solid #000;padding:12px 16px;text-shadow:2px 2px 0 #000}

@@ -1,6 +1,6 @@
 {
- "name": "Harry's Beta Testing",
- "short_name": "Beta Testing",
+ "name": "Harry's Stable Mod",
+ "short_name": "Stable Mod",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",

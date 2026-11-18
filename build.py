@@ -10,7 +10,7 @@ pre='''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Beta Testing">
+<meta name="apple-mobile-web-app-title" content="Stable Mod">
 <meta name="theme-color" content="#2B1F16">
 <meta name="robots" content="noindex,nofollow">
 <link rel="manifest" href="manifest.webmanifest">
@@ -20,7 +20,7 @@ pre='''<!doctype html>
 i=h.index('<div class="app" id="app">')
 html=pre+h[:i]+'<style>body{margin:0;padding-top:env(safe-area-inset-top,0px)}</style>\n</head><body>\n'+h[i:]+'<script>\n'+mp+'\n'+js+'</script>\n</body></html>\n'
 open(f'{out}/index.html','w').write(html)
-json.dump({"name":"Harry's Beta Testing","short_name":"Beta Testing","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#2B1F16","theme_color":"#2B1F16",
+json.dump({"name":"Harry's Stable Mod","short_name":"Stable Mod","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#2B1F16","theme_color":"#2B1F16",
  "icons":[{"src":"icon-180.png","sizes":"180x180","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]},open(f'{out}/manifest.webmanifest','w'),indent=1)
 open(f'{out}/sw.js','w').write('''const C="hbt-v2";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","index.html","manifest.webmanifest","icon-180.png"])));self.skipWaiting();});
