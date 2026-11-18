@@ -1,4 +1,4 @@
-<title>Harry's Stable Mod</title>
+<title>Harry's Mod</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&family=Jersey+15&display=swap">
@@ -112,7 +112,10 @@ body{color:var(--ink);font-family:var(--pix);font-size:20px;
 
 /* title-screen panorama behind every screen; darker away from the title screen */
 #pano{position:fixed;inset:-40px;z-index:-1;background-repeat:no-repeat;background-size:cover;background-position:50% 45%;filter:blur(6px) brightness(.6) saturate(1.05);animation:drift 60s ease-in-out infinite alternate}
-body.home #pano{filter:blur(3.5px) brightness(.82) saturate(1.1)}
+body.home #pano{filter:none;inset:0;animation:none;background-position:50% 60%}
+body.home::after{content:"";position:fixed;inset:auto 0 0 0;height:22dvh;z-index:-1;background:linear-gradient(transparent,rgba(0,0,0,.45));pointer-events:none}
+.logo .logoimg{display:block;width:min(86vw,780px,62dvh * 5.6);width:min(86vw,780px,calc(17dvh * 5.6));height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));-webkit-user-select:none;user-select:none}
+body.home .logo .badge{top:auto;bottom:-6%;right:-3%}
 @keyframes drift{from{transform:scale(1.05) translate(-1.5%,-1%)}to{transform:scale(1.15) translate(1.5%,1%)}}
 body{background:#4E7A35}
 .title-screen{min-height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;gap:22px;position:relative;padding-top:24px}

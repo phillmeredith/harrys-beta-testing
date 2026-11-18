@@ -257,7 +257,7 @@ function render(){
     const drafts = all.filter(r=>!r.sent), sent = all.filter(r=>r.sent);
     const row = r => { const st = reportState(r); return `<div class="rrow"><button class="rcard" data-resume="${r.id}"><span class="rkind k-${r.kind}"></span><span class="rwhat"><b>${esc((()=>{ const t=(r.parts?.[0]||r).thing; if(!t) return "Not finished"; if(t.vague) return (r.text||"Something").replace(/^(Something went wrong: |Make it better\. |New idea! )/,""); return t.l; })())}</b><small>${esc(KINDS[r.kind].label)}</small></span><span class="rstate st-${st[0]}">${esc(st[1])}</span></button>${fbAllowed(r)?`<button class="tile mm fbbtn" data-fb="${r.id}">Not quite right?</button>`:""}</div>`; };
     app.innerHTML = `<div class="title-screen">
-      <div class="logo"><div class="lw"><div class="l1">Harry's</div><div class="l2">Stable Mod</div><span class="badge">Beta</span></div></div>
+      <div class="logo"><div class="lw"><img class="logoimg" src="${LOGO}" alt="Harry's Mod" draggable="false"><span class="badge">Beta</span></div></div>
       ${sentToday() ? `<div class="today">Today's report is with Daddy. Come back tomorrow to send the next one.</div>` : ""}
       <div class="menu">
         ${Object.entries(KINDS).map(([k,v])=>`<button class="tile mm ${k==="broken"?"primary":""}" data-v="${k}">${esc(v.label)}</button>`).join("")}

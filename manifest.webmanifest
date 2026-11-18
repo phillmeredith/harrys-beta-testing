@@ -1,6 +1,6 @@
 {
- "name": "Harry's Stable Mod",
- "short_name": "Stable Mod",
+ "name": "Harry's Mod",
+ "short_name": "Harry's Mod",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
