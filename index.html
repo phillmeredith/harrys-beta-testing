@@ -433,7 +433,7 @@ body.home .menu .menurow .tile.mm{font-size:min(20px,2.6vw)}
 /* home-screen player (skin maker) */
 body:not(.home) .player{display:none}
 .player{position:absolute;left:calc(100% + clamp(24px,5vw,110px));bottom:0;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.2dvh,14px);z-index:2;--px:clamp(5px,.88dvh,12px)}
-.player .nametag{font-family:var(--pix);color:#fff;background:rgba(40,52,74,.78);padding:2px 12px 3px;font-size:clamp(16px,2.2vw,28px);line-height:1.2;letter-spacing:.5px}
+.player .nametag{margin-bottom:calc(var(--px)*3.6);font-family:var(--pix);color:#fff;background:rgba(40,52,74,.78);padding:2px 12px 3px;font-size:clamp(16px,2.2vw,28px);line-height:1.2;letter-spacing:.5px}
 .pstage{width:calc(var(--px)*16);height:calc(var(--px)*33);perspective:calc(var(--px)*160);filter:drop-shadow(0 calc(var(--px)*1) calc(var(--px)*1.5) rgba(0,0,0,.45))}
 .pfig{position:relative;width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-6deg) rotateY(-28deg);animation:pidle 7s ease-in-out infinite}
 @keyframes pidle{0%,100%{transform:rotateX(-6deg) rotateY(-28deg)}50%{transform:rotateX(-6deg) rotateY(-16deg)}}
@@ -541,7 +541,7 @@ const MC_TREE = {
     "Settings": ["Volume","Brightness","Text size","Controls layout"]
   }
 };
-const VERSION = "4.0.6";
+const VERSION = "4.2.0";
 // Hidden from the home screen for now (Phill, 2026-11-18). Empty the list to bring them back.
 const HIDDEN_KINDS = ["better","idea"];
 const KINDS = {
@@ -1212,27 +1212,47 @@ BROKEN_FOR.skin = ["looks","skin_colour","nothing","wrongthing","skin_wontopen",
 
 /* A blocky player for the home screen, drawn from a 64x64 skin in the standard layout
    (so a real skin PNG can be dropped in later). Original rider design, not Steve. */
-function makeRiderSkin(){
+function makeRiderSkin(){  // Harry: long strawberry-blond hair, olive hat cover with a grey pompom (drawn at 48,0), olive top with rust sleeves, jodhpurs, paddock boots
   const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d");
-  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  let seed = 11; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
   const shade = (hex, k) => { const n = parseInt(hex.slice(1),16); const f = v => Math.max(0,Math.min(255,Math.round(v*k))); return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`; };
   const fill = (x,y,w,h,col,j=.08) => { for(let i=0;i<w;i++) for(let k=0;k<h;k++){ g.fillStyle = shade(col, 1 - j + rnd()*j*2); g.fillRect(x+i,y+k,1,1); } };
+  const px = (x,y,col) => { g.fillStyle = col; g.fillRect(x,y,1,1); };
   const box = (u,v,w,h,d,col) => { fill(u+d,v,w,d,col); fill(u+d+w,v,w,d,col); fill(u,v+d,2*(w+d),h,col); };
-  const SK="#C68E62", HAIR="#5A3720", JACKET="#24406E", COLLAR="#E9E4D8", JOD="#E4D6B5", BOOT="#1E1A18";
-  // head
-  box(0,0,8,8,8,SK); fill(8,0,8,8,HAIR); fill(24,8,8,8,HAIR); fill(0,8,8,3,HAIR); fill(16,8,8,3,HAIR); fill(0,11,2,2,HAIR); fill(22,11,2,2,HAIR);
-  fill(8,8,8,2,HAIR); fill(8,10,1,1,HAIR); fill(15,10,1,1,HAIR);
-  g.fillStyle="#FFFFFF"; g.fillRect(9,12,2,1); g.fillRect(13,12,2,1); g.fillStyle="#3D6FB8"; g.fillRect(10,12,1,1); g.fillRect(13,12,1,1);
-  fill(11,14,2,1,"#A0604A",.03);
-  // body (jacket with white collar and buttons)
-  box(16,16,8,12,4,JACKET); fill(23,20,2,2,COLLAR,.03); fill(22,20,1,1,COLLAR,.03); fill(25,20,1,1,COLLAR,.03); fill(24,22,1,10,"#1B3156",.03);
-  g.fillStyle="#D8B45A"; g.fillRect(23,24,1,1); g.fillRect(23,27,1,1);
-  // arms: sleeves + hands
-  box(40,16,4,12,4,JACKET); fill(40,30,16,2,SK); fill(48,16,4,4,SK);
-  box(32,48,4,12,4,JACKET); fill(32,62,16,2,SK); fill(40,48,4,4,SK);
-  // legs: jodhpurs + tall boots
-  box(0,16,4,12,4,JOD); fill(0,25,16,7,BOOT); fill(8,16,4,4,BOOT);
-  box(16,48,4,12,4,JOD); fill(16,57,16,7,BOOT); fill(24,48,4,4,BOOT);
+  // long wavy hair: strawberry blond with lighter and darker strands
+  const hair = (x,y,w,h) => { for(let i=0;i<w;i++) for(let k=0;k<h;k++){ const r=rnd(); g.fillStyle = r<.22 ? "#E7A766" : r<.4 ? "#A85A2A" : shade("#C9803F", .94+rnd()*.12); g.fillRect(x+i,y+k,1,1); } };
+  const SK="#EDC3A2", HELM="#4A4636", HELM_D="#38352A", PEAK="#1A1A1C", TOP="#4B4938", SLEEVE="#9C5A2A", JOD="#504C3D", JOD_D="#454233", BOOT="#2B211C";
+  // head: fair skin, riding hat on top (olive cover, black peak), hair down both sides and the back
+  box(0,0,8,8,8,SK);
+  fill(8,0,8,8,HELM); fill(16,0,8,8,HELM_D);                 // hat top, underside
+  fill(0,8,32,3,HELM);                                        // hat band all round (rows 8-10)
+  fill(8,10,8,1,PEAK,.02);                                    // black peak over the eyes
+  px(9,9,"#CFC9B8"); px(10,9,"#BDB7A6");  // the little silver logo on the cover
+  hair(8,11,1,5); hair(15,11,1,5);                            // hair framing the face
+  hair(0,11,8,5); hair(16,11,8,5); hair(24,11,8,5);           // sides and back of the head
+  px(1,11,SK); px(2,11,SK); px(21,11,SK); px(22,11,SK);       // a bit of cheek showing by the ears
+  // face: blue eyes, rosy cheeks, freckles, a smile
+  px(9,12,"#FFFFFF"); px(10,12,"#4E86C6"); px(13,12,"#4E86C6"); px(14,12,"#FFFFFF");
+  px(9,13,"#E9A08E"); px(14,13,"#E9A08E"); px(10,13,"#C98A66"); px(13,13,"#C98A66"); px(11,13,"#C98A66");
+  px(10,14,"#C98272"); px(11,15,"#C47468"); px(12,15,"#C47468"); px(13,14,"#C98272");
+  // chin strap
+  px(8,15,PEAK); px(15,15,PEAK);
+  // body: olive base layer with a copper zip stripe, long hair over the shoulders and down the back
+  box(16,16,8,12,4,TOP);
+  fill(23,20,2,3,"#3E3C2E",.03); px(24,20,"#C07A3A"); px(24,21,"#9A9A9A"); px(23,20,"#3A382C");
+   // copper piping down the front
+  px(22,21,"#111111"); px(25,21,"#111111"); px(23,22,"#111111"); px(24,23,"#111111"); fill(23,24,2,3,"#1C1C1E",.02); // lanyard and whistle
+  hair(20,20,1,5); hair(27,20,1,5);                           // hair over the shoulders
+  hair(32,20,8,8); hair(33,28,6,1); hair(34,29,4,1);          // long hair down the back
+  hair(16,20,4,3); hair(28,20,4,3);                           // and over the sides
+  // arms: rust sleeves, hands
+  box(40,16,4,12,4,SLEEVE); fill(40,30,16,2,SK); fill(48,16,4,4,SK); fill(44,16,4,4,SLEEVE);
+  box(32,48,4,12,4,SLEEVE); fill(32,62,16,2,SK); fill(40,48,4,4,SK); fill(36,48,4,4,SLEEVE);
+  // legs: olive jodhpurs with knee patches, short zip paddock boots
+  box(0,16,4,12,4,JOD); fill(4,24,4,3,JOD_D,.04); fill(0,28,16,4,BOOT); fill(8,16,4,4,BOOT); px(6,28,"#5A4A40"); px(6,29,"#5A4A40");
+  box(16,48,4,12,4,JOD); fill(20,56,4,3,JOD_D,.04); fill(16,60,16,4,BOOT); fill(24,48,4,4,BOOT); px(21,60,"#5A4A40"); px(21,61,"#5A4A40");
+  // pompom on top of the hat (a 2x2x2 box at 56,0)
+  for(let i=0;i<16;i++) for(let k=0;k<8;k++){ g.fillStyle = shade("#B9B6B2", .85+rnd()*.3); g.fillRect(48+i,k,1,1); }
   return c.toDataURL();
 }
 let RIDER_SKIN = null;
@@ -1253,7 +1273,7 @@ function playerHTML(){
   return `<div class="player" aria-hidden="false">
     <div class="nametag">Harry</div>
     <div class="pstage" style="--skin:url(${RIDER_SKIN})"><div class="pfig">
-      ${P("phead",0,0,8,8,8,4,0)}${P("pbody",16,16,8,12,4,4,8)}
+      ${P("phead",0,0,8,8,8,4,0).replace(/<\/div>\s*$/, P("ppom",48,0,4,4,4,2,-3.4) + "</div>")}${P("pbody",16,16,8,12,4,4,8)}
       ${P("parm r",40,16,4,12,4,0,8)}${P("parm l",32,48,4,12,4,12,8)}
       ${P("pleg r",0,16,4,12,4,4,20)}${P("pleg l",16,48,4,12,4,8,20)}
     </div></div>

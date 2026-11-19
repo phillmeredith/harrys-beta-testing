@@ -1,4 +1,4 @@
-const VERSION = "4.0.6";
+const VERSION = "4.2.0";
 // Hidden from the home screen for now (Phill, 2026-11-18). Empty the list to bring them back.
 const HIDDEN_KINDS = ["better","idea"];
 const KINDS = {
