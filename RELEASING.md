@@ -48,3 +48,13 @@ Harry can open any sent report to see where it's up to. Two new kinds of email c
 
 ## Update names (from 2026-11-18)
 The app groups versions into named updates by their first two numbers (4.0.x is "Foals and Flying"). New features bump the middle number (4.1.0) and fixes bump the last one (4.1.1). When you start a new x.y, add its name under `"update_names": {"4.1": "Name"}` at the top level of releases.json. The built-in names are in src/releases.js (UPDATE_NAMES).
+
+## Skin Studio depends on each release (from 2026-11-19)
+Skin Studio (skins.phillm.dev, repo `skin-studio`) reads the newest build from this site's `releases.json` and lets Harry repaint the add-on's horses, foals, tack and hobby horses, then sends them back as a resource pack that replaces textures by path. The two projects are team mates: the full contract is `docs/mod-contract.md` in the skin-studio repo. Before publishing a build, check you haven't:
+- renamed or removed a horse coat (`textures/entity/phill_horse/<coat>.png`) or foal coat (`…/foal/<coat>.png`), or changed their size
+- changed the UVs, texture size or bone names of `geometry.phill.horse` or `geometry.phill.horse_foal` (and `geometry.phill.horse` must stay first in `phill_horse.geo.json`)
+- reordered a tack slot's texture array (Skin Studio saves tack as the game's item number; adding to the end is fine)
+- renamed the animations Skin Studio's Preview plays (listed in the contract)
+- changed the shape of `releases.json` (`latest`, `releases[].version`, `releases[].file`)
+
+If one of those has to change, say so in the release and tell the Skin Studio session; it runs `npm run sync-mod` and `npm run check-mod` (every Skin Studio deploy checks the latest release first and stops if something would break). When Skin Studio adds a feature Harry could report on, it adds the topic to `src/skins.js` (`SKIN_TREE`).

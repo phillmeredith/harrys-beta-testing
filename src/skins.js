@@ -11,15 +11,19 @@ const SKIN_TREE = [
     {l:"Mob", tp:"skin", k: leaves(["Picking a mob","Painting the mob","How the mob looks"], "skin:mob:", "skin")},
     {l:"Item", sub:"Swords, bows, tools", tp:"skin", k: leaves(["Picking an item","Painting the item","How the item looks"], "skin:item:", "skin")},
     {l:"Block", sub:"Grass, stone, TNT", tp:"skin", k: leaves(["Picking a block","Painting the block","How the block looks"], "skin:block:", "skin")}]},
+  {l:"Harry's horses", sub:"Horses, foals and families", tp:"skin", k: leaves(["Picking what to make","Choosing a coat to start from","Painting a horse","Painting a foal","Which coat it replaces in the game","A horse family (Mum, Dad and foal)","Switching between the family","Mirror painting on a horse","Hiding parts of the horse"], "skin:horse:", "skin")},
+  {l:"Advanced mode", sub:"Layers and special brushes", tp:"skin", k: leaves(["Switching to Advanced","Layers","Hiding or showing a layer","Merging layers","Soft brush","Blend brush","Dither brush","Hair brush","Softness and strength","Close-ups (eyes, nose, ears, mane, tail, hooves)","The colour helpers","Going back to Simple"], "skin:adv:", "skin")},
+  {l:"Preview", sub:"Seeing the horse in a world", tp:"skin", k: leaves(["Opening Preview","Riding (moving and turning)","The riding crop and reins","Galloping","Jumping","Poses (graze, rear, lie down, sleep)","Putting tack on","Places, time of day and weather","Photo mode","Taking a picture","Seeing the family together"], "skin:preview:", "skin")},
+  {l:"Back Up", sub:"Keeping your skins safe", tp:"skin", k: leaves(["Making a backup","Saving the backup file","Restoring a backup","Something missing after restoring"], "skin:backup:", "skin")},
   {l:"Drawing and painting", tp:"skin", k: leaves(["Pencil","Eraser","Paint bucket","Picking a colour","Copying a colour from the skin","Brush size","Undo and redo","Drawing on both sides at once"], "skin:draw:", "skin")},
   {l:"The 3D model", tp:"skin", k: leaves(["Turning it round","Zooming in and out","Showing or hiding parts","The outer layer (hat and jacket)","Making it walk or pose"], "skin:model:", "skin")},
   {l:"Your skins", tp:"skin", k: leaves(["Saving a skin","The list of your skins","The All, Human, Mob, Item, Block buttons","Opening a skin I made","Renaming a skin","Deleting a skin"], "skin:yours:", "skin")},
   {l:"The Library", tp:"skin", k: leaves(["Opening the Library","Finding a skin","Using a skin from the Library","Pictures not showing","It's slow"], "skin:library:", "skin")},
-  {l:"Getting it into Minecraft", tp:"skin", k: leaves(["Downloading the skin","Putting it on in Minecraft","Thin arms or wide arms","It looks different in the game"], "skin:mc:", "skin")},
+  {l:"Getting it into Minecraft", tp:"skin", k: leaves(["Downloading the skin","Putting it on in Minecraft","Thin arms or wide arms","It looks different in the game","Sending horses to Minecraft","My horse didn't change in the game"], "skin:mc:", "skin")},
   {l:"The page itself", tp:"skin", k: leaves(["Opening the page","The Home button","Other buttons","Words on the page","It's slow"], "skin:page:", "skin")}
 ];
 const SKIN_UNSURE = {l:"I'm not sure", id:"skin:unsure", tp:"skin", vague:true};
-const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Saving","Browsing the Library","Downloading","Putting it in Minecraft","Don't know"];
+const SKIN_DOING = ["Drawing","Picking a colour","Turning the 3D model","Saving","Browsing the Library","Downloading","Putting it in Minecraft","Painting a horse","Riding in Preview","Backing up","Don't know"];
 const SKIN_TAPPED = ["Tapped on the skin","Pressed a button","Picked a tool","Dragged to turn it","Pinched to zoom","Pressed undo","Pressed save or download","Don't know"];
 BROKEN.push(
   {id:"skin_colour",label:"Wrong colour",exp:"it paints the colour I picked",act:"it painted the wrong colour"},
