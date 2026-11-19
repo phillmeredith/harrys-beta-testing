@@ -798,7 +798,7 @@ function render(){
   if (!deviceToken()) { renderLock(); return; }
   const app = document.getElementById("app"), st = cur();
   const head = `<div class="bar">
-    <button class="round backbtn" id="back" aria-label="Back" ${S.step===0||st==="done"?"disabled":""}>${IC.back}<span>Back</span></button>
+    <button class="round backbtn" id="back" aria-label="Back" ${S.step===0?"disabled":""}>${IC.back}<span>Back</span></button>
     ${S.parts.length && !["kind","done"].includes(st) ? `<span class="partno">Part ${S.parts.length+1}</span>`:""}
     <div class="spacer"></div>
   </div>`;
@@ -915,6 +915,7 @@ function render(){
       <p>Daddy has your message. Claude will start fixing it.</p>
       ${SHOW_PUZZLE?puzzleHTML():""}
       <button class="go" id="again">Tell Daddy something else</button>
+      <button class="go quiet" id="gohome">Back to the home screen</button>
       <button class="go quiet small" id="resend">Didn't go to Daddy? Send it again</button></div>`;
     wire(); return;
   }
@@ -1043,6 +1044,7 @@ function pick(v){
 }
 function goBack(){
   const st = cur();
+  if (st==="done"){ reset(); return render(); }   // after sending, Back goes to the home screen (Phill, 2026-11-19)
   if (S.typing){ S.typing=false; return render(); }
   if (S.freeTyping){ S.freeTyping=false; return render(); }
   if (st==="detail" && S.amtWords && !S.pk.path.length && !S.pk.page){ S.amtWords=false; return render(); }
@@ -1085,6 +1087,7 @@ function wire(){
   $("fix") && ($("fix").onclick=()=>{ S.step=steps().indexOf("review")-2; S.pk={path:[],page:0}; render(); });
   $("send") && ($("send").onclick=shareSheet);
   $("again") && ($("again").onclick=()=>{reset();render();});
+  $("gohome") && ($("gohome").onclick=()=>{reset();render();});
   $("resend") && ($("resend").onclick=()=>{ S.step=steps().indexOf("review"); render(); });
   $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
