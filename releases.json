@@ -1,6 +1,21 @@
 {
-  "latest": "4.0.7",
+  "latest": "4.1.0",
+  "update_names": {
+    "4.0": "Foals and Flying",
+    "4.1": "Harry's Designs"
+  },
   "releases": [
+    {
+      "version": "4.1.0",
+      "date": "2026-11-19",
+      "file": "releases/HarrysEquestrian_v4.1.0.mcaddon",
+      "notes_for_harry": [
+        "Your own designs! 24 coats, 12 hobby horses and 8 of every kind of tack, ready for you to paint in Skin Studio",
+        "Open the Horse Guide and tap Harry's designs to give your horse one of your coats, or get your hobby horses and tack",
+        "Tack you paint works just like the piece you painted it on, and foals can take after a parent in your coat"
+      ],
+      "fixed": []
+    },
     {
       "version": "4.0.7",
       "date": "2026-11-18",
