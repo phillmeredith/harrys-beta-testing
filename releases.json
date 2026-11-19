@@ -1,10 +1,21 @@
 {
-  "latest": "4.1.0",
+  "latest": "4.2.0",
   "update_names": {
     "4.0": "Foals and Flying",
-    "4.1": "Harry's Designs"
+    "4.1": "Harry's Designs",
+    "4.2": "Harry's Shapes"
   },
   "releases": [
+    {
+      "version": "4.2.0",
+      "date": "2026-11-19",
+      "file": "releases/HarrysEquestrian_v4.2.0.mcaddon",
+      "notes_for_harry": [
+        "Your horses can have their own shape! A horn, a longer mane or tail, bigger ears or feathery hooves from Skin Studio's Shape Room",
+        "The shape goes on every horse wearing that coat of yours, foals too when Skin Studio makes one for them"
+      ],
+      "fixed": []
+    },
     {
       "version": "4.1.0",
       "date": "2026-11-19",
@@ -29,7 +40,7 @@
     {
       "version": "4.0.6",
       "date": "2026-11-14",
-      "file": "releases/HarrysEquestrian_v4.0.6.mcaddon",
+      "file": "archive/HarrysEquestrian_v4.0.6.mcaddon",
       "notes_for_harry": [
         "A flying checklist in the bottom-left corner shows what your horse still needs to fly",
         "Each piece gets a tick when it goes on",
