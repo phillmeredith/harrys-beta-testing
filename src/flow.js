@@ -372,7 +372,6 @@ function render(){
       <p>Daddy has your message. Claude will start fixing it.</p>
       ${SHOW_PUZZLE?puzzleHTML():""}
       <button class="go" id="again">Tell Daddy something else</button>
-      <button class="go quiet" id="gohome">Back to the home screen</button>
       <button class="go quiet small" id="resend">Didn't go to Daddy? Send it again</button></div>`;
     wire(); return;
   }
@@ -544,7 +543,6 @@ function wire(){
   $("fix") && ($("fix").onclick=()=>{ S.step=steps().indexOf("review")-2; S.pk={path:[],page:0}; render(); });
   $("send") && ($("send").onclick=shareSheet);
   $("again") && ($("again").onclick=()=>{reset();render();});
-  $("gohome") && ($("gohome").onclick=()=>{reset();render();});
   $("resend") && ($("resend").onclick=()=>{ S.step=steps().indexOf("review"); render(); });
   $("draftsbtn") && ($("draftsbtn").onclick=()=>{ showSaved="drafts"; render(); });
   $("sentbtn") && ($("sentbtn").onclick=()=>{ showSaved="sent"; render(); });
