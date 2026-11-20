@@ -1,11 +1,23 @@
 {
-  "latest": "4.2.0",
+  "latest": "4.2.1",
   "update_names": {
     "4.0": "Foals and Flying",
     "4.1": "Harry's Designs",
     "4.2": "Harry's Shapes"
   },
   "releases": [
+    {
+      "version": "4.2.1",
+      "date": "2026-11-20",
+      "file": "releases/HarrysEquestrian_v4.2.1.mcaddon",
+      "notes_for_harry": [
+        "Saddle racks and all the other racks are fixed! Your tack sits on the rack now instead of poking through it",
+        "Blankets fold over the rails, leads hang from their hooks and armour drapes over the top of its stand"
+      ],
+      "fixed": [
+        "HBT-6042"
+      ]
+    },
     {
       "version": "4.2.0",
       "date": "2026-11-19",
@@ -30,7 +42,7 @@
     {
       "version": "4.0.7",
       "date": "2026-11-18",
-      "file": "releases/HarrysEquestrian_v4.0.7.mcaddon",
+      "file": "archive/HarrysEquestrian_v4.0.7.mcaddon",
       "notes_for_harry": [
         "If your horse is too hungry or thirsty to go faster, it tells you what to give it",
         "A good meal and two buckets of water make your horse strong again straight away"
